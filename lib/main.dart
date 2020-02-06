@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
+import 'cluster.dart';
+import 'newcluster.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,21 +21,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class Cluster {
-  String name;
-
-  Cluster(this.name);
-
-  String toString() {
-    return name;
-  }
-
-  static List<Cluster> generateClusters() {
-    // read from save
-    return [Cluster("Raspberry"), Cluster("Raspberry2")];
   }
 }
 
@@ -101,25 +88,7 @@ class ClustersState extends State<Clusters> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          final Iterable<ListTile> tiles = _saved.map(
-            (Cluster cluster) {
-              return ListTile(
-                title: Text(
-                  cluster.name,
-                ),
-              );
-            },
-          );
-          final List<Widget> divided = ListTile.divideTiles(
-            context: context,
-            tiles: tiles,
-          ).toList();
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Add new cluster'),
-            ),
-            body: ListView(children: divided),
-          );
+          return NewCluster();
         },
       ),
     );
