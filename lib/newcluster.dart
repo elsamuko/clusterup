@@ -20,6 +20,7 @@ class NewClusterState extends State<NewCluster> {
                 if( _formKey.currentState.validate() ) {
                   _formKey.currentState.save();
                   dev.log("Saving new cluster ${_cluster}");
+                  Navigator.pop(context, _cluster);
                 }
               },
             ),

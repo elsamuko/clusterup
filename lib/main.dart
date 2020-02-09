@@ -84,14 +84,20 @@ class ClustersState extends State<Clusters> {
     }));
   }
 
-  void _clustersMenu() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
+  // https://stackoverflow.com/a/53861303
+  void _clustersMenu() async {
+    final Cluster result = await Navigator.of(context).push(
+      MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
           return NewCluster();
         },
       ),
     );
+
+    setState(() {
+      dev.log("Adding ${result}");
+      _clusters.add(result);
+    });
   }
 
   @override
@@ -102,17 +108,22 @@ class ClustersState extends State<Clusters> {
         actions: <Widget>[
           PopupMenuButton<ClusterOpts>(
             onSelected: (ClusterOpts result) {
-              switch( result ) {
-                case ClusterOpts.NewCluster: {
-                  dev.log("NewCluster");
-                  _clustersMenu();
-                } break;
-                case ClusterOpts.About: {
-                  dev.log("About");
-                } break;
+              switch (result) {
+                case ClusterOpts.NewCluster:
+                  {
+                    dev.log("NewCluster");
+                    _clustersMenu();
+                  }
+                  break;
+                case ClusterOpts.About:
+                  {
+                    dev.log("About");
+                  }
+                  break;
               }
-              },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<ClusterOpts>>[
+            },
+            itemBuilder: (BuildContext context) =>
+                <PopupMenuEntry<ClusterOpts>>[
               const PopupMenuItem<ClusterOpts>(
                 value: ClusterOpts.NewCluster,
                 child: Text('Add new cluster'),
