@@ -95,8 +95,10 @@ class ClustersState extends State<Clusters> {
     );
 
     setState(() {
-      dev.log("Adding ${result}");
-      _clusters.add(result);
+      if(result != null) {
+        dev.log("Adding ${result}");
+        _clusters.add(result);
+      }
     });
   }
 
