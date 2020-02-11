@@ -17,7 +17,7 @@ class NewClusterState extends State<NewCluster> {
           title: Text('Add new cluster'),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.check),
+              icon: Icon(Icons.check, size: 30 ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
