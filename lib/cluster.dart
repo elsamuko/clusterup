@@ -1,15 +1,15 @@
 import 'dart:core';
 
 class Cluster {
-  String name;
-  String user;
-  String domain;
-  int port;
+  String name = "";
+  String user = "";
+  String host = "";
+  int port = 22;
 
   Cluster(this.name);
 
   String toString() {
-    return name;
+    return "${name} : ${user}@${host}:${port}";
   }
 
   static List<Cluster> generateClusters() {
