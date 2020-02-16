@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
-import 'newcluster.dart';
+import 'cluster_view.dart';
 
 class ClustersState extends State<Clusters> {
   final _clusters = Cluster.generateClusters();
@@ -50,16 +50,12 @@ class ClustersState extends State<Clusters> {
     );
   }
 
-  void _showCluster(Cluster cluster) {
+  void _showCluster(Cluster cluster) async {
     dev.log("_showCluster : ${cluster}");
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Cluster ${cluster}'),
-        ),
-        body: Center(child: Text('Details of ${cluster}')),
-      );
+    final Cluster result = await Navigator.of(context)
+        .push(MaterialPageRoute<Cluster>(
+        builder: (BuildContext context) {
+      return ClusterView(cluster);
     }));
   }
 
@@ -68,13 +64,13 @@ class ClustersState extends State<Clusters> {
     final Cluster result = await Navigator.of(context).push(
       MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
-          return NewCluster();
+          return ClusterView();
         },
       ),
     );
 
     setState(() {
-      if(result != null) {
+      if (result != null) {
         dev.log("Adding ${result}");
         _clusters.add(result);
       }
@@ -104,7 +100,7 @@ class ClustersState extends State<Clusters> {
               }
             },
             itemBuilder: (BuildContext context) =>
-            <PopupMenuEntry<ClusterOpts>>[
+                <PopupMenuEntry<ClusterOpts>>[
               const PopupMenuItem<ClusterOpts>(
                 value: ClusterOpts.NewCluster,
                 child: Text('Add new cluster'),
