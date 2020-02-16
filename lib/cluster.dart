@@ -9,7 +9,7 @@ class Cluster {
   Cluster(this.name);
 
   String toString() {
-    return "${name} : ${user}@${host}:${port}";
+    return "$name : $user@$host:$port";
   }
 
   static List<Cluster> generateClusters() {
