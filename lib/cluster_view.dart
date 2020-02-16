@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
-import 'sshconnection.dart';
+import 'ssh_connection.dart';
 import 'cluster.dart';
 
-class NewClusterState extends State<NewCluster> {
-  Cluster _cluster = Cluster("");
+class ClusterViewState extends State<ClusterView> {
+
+  ClusterViewState();
+
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     dev.log("NewClusterState");
+    String title = ( widget._cluster != null ) ? 'Edit cluster' : 'Add new cluster';
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Add new cluster'),
+          title: Text(title),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check, size: 30 ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
-                  dev.log("Saving new cluster ${_cluster}");
-                  Navigator.pop(context, _cluster);
+                  dev.log("Saving new cluster ${widget._cluster}");
+                  Navigator.pop(context, widget._cluster);
                 }
               },
             ),
@@ -42,8 +45,9 @@ class NewClusterState extends State<NewCluster> {
                               labelText: 'name',
                             ),
                             onSaved: (String value) {
-                              _cluster.name = value;
+                              widget._cluster.name = value;
                             },
+                            initialValue: widget._cluster?.name,
                           ),
                           TextFormField(
                             decoration: const InputDecoration(
@@ -55,8 +59,9 @@ class NewClusterState extends State<NewCluster> {
                               BlacklistingTextInputFormatter(RegExp("[ ]"))
                             ],
                             onSaved: (String value) {
-                              _cluster.user = value;
+                              widget._cluster.user = value;
                             },
+                            initialValue: widget._cluster?.user,
                             validator: (String value) {
                               return value.contains('@')
                                   ? 'Do not use the @ char.'
@@ -73,8 +78,9 @@ class NewClusterState extends State<NewCluster> {
                               BlacklistingTextInputFormatter(RegExp("[ ]"))
                             ],
                             onSaved: (String value) {
-                              _cluster.host = value;
+                              widget._cluster.host = value;
                             },
+                            initialValue: widget._cluster?.host,
                             validator: (String value) {
                               return value.contains('@')
                                   ? 'Do not use the @ char.'
@@ -82,7 +88,6 @@ class NewClusterState extends State<NewCluster> {
                             },
                           ),
                           TextFormField(
-                            initialValue: "22",
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               icon: Icon(Icons.local_airport),
@@ -90,8 +95,9 @@ class NewClusterState extends State<NewCluster> {
                               labelText: 'port',
                             ),
                             onSaved: (String value) {
-                              _cluster.port = int.parse(value);
+                              widget._cluster.port = int.parse(value);
                             },
+                            initialValue: ( widget._cluster?.port ?? 22 ).toString(),
                             validator: (String value) {
                               if (int.tryParse(value) == 0) {
                                 return "Invalid port number";
@@ -110,8 +116,8 @@ class NewClusterState extends State<NewCluster> {
                   onPressed: () async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      dev.log("Testing ${_cluster}");
-      bool ok = await SSHConnection.test(_cluster.user, _cluster.host, _cluster.port);
+      dev.log("Testing ${widget._cluster}");
+      bool ok = await SSHConnection.test(widget._cluster.user, widget._cluster.host, widget._cluster.port);
     }
                   },
                   child: Text(
@@ -121,7 +127,10 @@ class NewClusterState extends State<NewCluster> {
   }
 }
 
-class NewCluster extends StatefulWidget {
+class ClusterView extends StatefulWidget {
+  Cluster _cluster;
+  ClusterView([this._cluster]);
+
   @override
-  NewClusterState createState() => NewClusterState();
+  ClusterViewState createState() => ClusterViewState();
 }
