@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:clusterup/rsa_key_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:clusterup/key.dart';
+import 'package:clusterup/ssh_key.dart';
 import 'package:pointycastle/export.dart';
 
 void main() {
   test('Key generation', () {
-    Key key = Key.generate();
+    SSHKey key = SSHKey.generate();
     String ssh = key.pubForSSH();
     expect(ssh.isEmpty, false);
   });
@@ -42,7 +42,7 @@ x+kgolmW9OICS9BoW96K8N8BCKOtRtH5xYGniWgIKItQLrVjnVNDAgMBAAE=
     String expectedSSH =
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCrtwUnVi/NlhO7TvqzJmlVJNAsU20EFmFijeS3QekYOqt+etCD7ZaAX8284orEeDJkxtYMC3NjCM23N/F/qEDE2QC4pdCuJP5+Ov/6mvy+6ZrxgIa1+htTZMfpIKJZlvTiAkvQaFveivDfAQijrUbR+cWBp4loCCiLUC61Y51TQw==";
 
-    Key key = Key.fromPEM(privPEM);
+    SSHKey key = SSHKey.fromPEM(privPEM);
 
     String ssh = key.pubForSSH();
     expect(ssh == expectedSSH, true);

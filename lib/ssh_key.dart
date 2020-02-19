@@ -5,11 +5,11 @@ import 'package:pointycastle/export.dart';
 import 'package:pointycastle/pointycastle.dart';
 import 'rsa_key_helper.dart';
 
-class Key {
+class SSHKey {
   RSAPrivateKey _privateKey;
   RSAPublicKey _publicKey;
 
-  Key(this._privateKey) {
+  SSHKey(this._privateKey) {
     BigInt publicExponent = RsaKeyHelper.getPublicExponent(_privateKey);
     assert(publicExponent == BigInt.from(65537)); // usually it's 65537
     _publicKey = RSAPublicKey(_privateKey.modulus, publicExponent);
@@ -66,8 +66,8 @@ class Key {
   }
 
   // https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md
-  static Key generate() {
-    SecureRandom rnd = Key._getSecureRandom();
+  static SSHKey generate() {
+    SecureRandom rnd = SSHKey._getSecureRandom();
 
     final rsaParams = RSAKeyGeneratorParameters(BigInt.from(65537), 4096, 64);
     final params = ParametersWithRandom(rsaParams, rnd);
@@ -79,11 +79,11 @@ class Key {
     final publicKey = pair.publicKey as RSAPublicKey;
     final privateKey = pair.privateKey as RSAPrivateKey;
 
-    return Key(privateKey);
+    return SSHKey(privateKey);
   }
 
-  static Key fromPEM(String PEM) {
+  static SSHKey fromPEM(String PEM) {
     RSAPrivateKey privateKey = RsaKeyHelper.parsePrivateKeyFromPem(PEM);
-    return Key(privateKey);
+    return SSHKey(privateKey);
   }
 }
