@@ -69,7 +69,7 @@ class SSHKey {
   static SSHKey generate() {
     SecureRandom rnd = SSHKey._getSecureRandom();
 
-    final rsaParams = RSAKeyGeneratorParameters(BigInt.from(65537), 4096, 64);
+    final rsaParams = RSAKeyGeneratorParameters(BigInt.from(65537), 2048, 64);
     final params = ParametersWithRandom(rsaParams, rnd);
 
     RSAKeyGenerator keyGenerator = RSAKeyGenerator();
