@@ -14,6 +14,6 @@ class Cluster {
 
   static List<Cluster> generateClusters() {
     //! \todo read from save
-    return [Cluster("Raspberry"), Cluster("Raspberry2")];
+    return [Cluster("Raspberry Pi")];
   }
 }
