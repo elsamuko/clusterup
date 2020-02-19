@@ -1,3 +1,4 @@
+import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
@@ -5,7 +6,6 @@ import 'ssh_connection.dart';
 import 'cluster.dart';
 
 class ClusterViewState extends State<ClusterView> {
-
   ClusterViewState();
 
   final _formKey = GlobalKey<FormState>();
@@ -13,14 +13,15 @@ class ClusterViewState extends State<ClusterView> {
   @override
   Widget build(BuildContext context) {
     dev.log("NewClusterState");
-    String title = ( widget._cluster != null ) ? 'Edit cluster' : 'Add new cluster';
+    String title =
+        (widget._cluster != null) ? 'Edit cluster' : 'Add new cluster';
 
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.check, size: 30 ),
+              icon: Icon(Icons.check, size: 30),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
@@ -97,7 +98,8 @@ class ClusterViewState extends State<ClusterView> {
                             onSaved: (String value) {
                               widget._cluster.port = int.parse(value);
                             },
-                            initialValue: ( widget._cluster?.port ?? 22 ).toString(),
+                            initialValue:
+                                (widget._cluster?.port ?? 22).toString(),
                             validator: (String value) {
                               if (int.tryParse(value) == 0) {
                                 return "Invalid port number";
@@ -114,11 +116,15 @@ class ClusterViewState extends State<ClusterView> {
                   color: Colors.blue,
                   textColor: Colors.white,
                   onPressed: () async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-      dev.log("Testing ${widget._cluster}");
-      bool ok = await SSHConnection.test(widget._cluster.user, widget._cluster.host, widget._cluster.port);
-    }
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      dev.log("Testing ${widget._cluster}");
+                      bool ok = await SSHConnection.test(
+                          widget._cluster.user,
+                          widget._cluster.host,
+                          widget._cluster.port,
+                          widget._key);
+                    }
                   },
                   child: Text(
                     "Test connection",
@@ -129,7 +135,8 @@ class ClusterViewState extends State<ClusterView> {
 
 class ClusterView extends StatefulWidget {
   Cluster _cluster;
-  ClusterView([this._cluster]);
+  SSHKey _key;
+  ClusterView(this._key, [this._cluster]);
 
   @override
   ClusterViewState createState() => ClusterViewState();

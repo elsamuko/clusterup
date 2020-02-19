@@ -48,7 +48,7 @@ class ClustersState extends State<Clusters> {
     dev.log("_showCluster : ${cluster}");
     final Cluster result = await Navigator.of(context)
         .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
-      return ClusterView(cluster);
+      return ClusterView(_sshKey, cluster);
     }));
   }
 
@@ -57,7 +57,7 @@ class ClustersState extends State<Clusters> {
     final Cluster result = await Navigator.of(context).push(
       MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
-          return ClusterView();
+          return ClusterView(_sshKey);
         },
       ),
     );
