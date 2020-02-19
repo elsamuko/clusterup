@@ -9,6 +9,7 @@ class ClusterViewState extends State<ClusterView> {
   ClusterViewState();
 
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,23 @@ class ClusterViewState extends State<ClusterView> {
     String title =
         (widget._cluster != null) ? 'Edit cluster' : 'Add new cluster';
 
+    void _testSSH() async {
+      dev.log("Testing ${widget._cluster}");
+      SSHConnectionResult result = await SSHConnection.test(
+          widget._cluster.user,
+          widget._cluster.host,
+          widget._cluster.port,
+          widget._key);
+
+      String text = result.success
+          ? "SSH connection successful!"
+          : "SSH connection failed : ${result.error}";
+      final snackBar = SnackBar(content: Text(text));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(title),
           actions: <Widget>[
@@ -118,12 +135,7 @@ class ClusterViewState extends State<ClusterView> {
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      dev.log("Testing ${widget._cluster}");
-                      bool ok = await SSHConnection.test(
-                          widget._cluster.user,
-                          widget._cluster.host,
-                          widget._cluster.port,
-                          widget._key);
+                      _testSSH();
                     }
                   },
                   child: Text(
