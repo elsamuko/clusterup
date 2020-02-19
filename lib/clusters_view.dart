@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
 import 'cluster_view.dart';
+import 'key_view.dart';
+import 'ssh_key.dart';
 
 class ClustersState extends State<Clusters> {
-  final _clusters = Cluster.generateClusters();
-  final List<Cluster> _saved = List<Cluster>();
-  ClusterOpts _selection;
+  List<Cluster> _clusters = Cluster.generateClusters();
+  SSHKey _sshKey;
 
   Widget _buildClustersOverview() {
     return ListView.builder(
@@ -18,7 +19,6 @@ class ClustersState extends State<Clusters> {
   }
 
   Widget _buildRow(Cluster cluster) {
-    final bool alreadySaved = _saved.contains(cluster);
     return ListTile(
       title: Text(
         cluster.name,
@@ -39,13 +39,7 @@ class ClustersState extends State<Clusters> {
         },
       ),
       onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(cluster);
-          } else {
-            _saved.add(cluster);
-          }
-        });
+        dev.log("play : ${cluster}");
       },
     );
   }
@@ -53,8 +47,7 @@ class ClustersState extends State<Clusters> {
   void _showCluster(Cluster cluster) async {
     dev.log("_showCluster : ${cluster}");
     final Cluster result = await Navigator.of(context)
-        .push(MaterialPageRoute<Cluster>(
-        builder: (BuildContext context) {
+        .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(cluster);
     }));
   }
@@ -77,8 +70,19 @@ class ClustersState extends State<Clusters> {
     });
   }
 
+  void _keyMenu() async {
+    _sshKey = await Navigator.of(context).push(
+      MaterialPageRoute<SSHKey>(
+        builder: (BuildContext context) {
+          return KeyView(_sshKey);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    String keyText = (_sshKey != null) ? "View SSH Key" : "Generate SSH Key";
     return Scaffold(
       appBar: AppBar(
         title: Text('Clusters'),
@@ -90,6 +94,12 @@ class ClustersState extends State<Clusters> {
                   {
                     dev.log("NewCluster");
                     _clustersMenu();
+                  }
+                  break;
+                case ClusterOpts.Key:
+                  {
+                    dev.log("Key");
+                    _keyMenu();
                   }
                   break;
                 case ClusterOpts.About:
@@ -105,6 +115,10 @@ class ClustersState extends State<Clusters> {
                 value: ClusterOpts.NewCluster,
                 child: Text('Add new cluster'),
               ),
+              PopupMenuItem<ClusterOpts>(
+                value: ClusterOpts.Key,
+                child: Text(keyText),
+              ),
               const PopupMenuItem<ClusterOpts>(
                 value: ClusterOpts.About,
                 child: Text('About'),
@@ -118,7 +132,7 @@ class ClustersState extends State<Clusters> {
   }
 }
 
-enum ClusterOpts { NewCluster, About }
+enum ClusterOpts { NewCluster, Key, About }
 
 class Clusters extends StatefulWidget {
   @override
