@@ -1,19 +1,25 @@
 import 'dart:core';
 
 class Cluster {
+  int id;
   String name = "";
   String user = "";
   String host = "";
   int port = 22;
 
-  Cluster(this.name);
+  Cluster(this.id, [this.name, this.user, this.host, this.port]);
 
   String toString() {
-    return "$name : $user@$host:$port";
+    return "$id : $name";
   }
 
-  static List<Cluster> generateClusters() {
-    //! \todo read from save
-    return [Cluster("Raspberry Pi")];
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'user': user,
+      'host': host,
+      'port': port,
+    };
   }
 }
