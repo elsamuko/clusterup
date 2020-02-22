@@ -57,7 +57,7 @@ class ClustersState extends State<Clusters> {
     final Cluster result = await Navigator.of(context).push(
       MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
-          return ClusterView(_sshKey);
+          return ClusterView.newCluster(_sshKey, _clusters.length);
         },
       ),
     );

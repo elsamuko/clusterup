@@ -148,7 +148,14 @@ class ClusterViewState extends State<ClusterView> {
 class ClusterView extends StatefulWidget {
   Cluster _cluster;
   SSHKey _key;
-  ClusterView(this._key, [this._cluster]);
+
+  ClusterView(this._key, this._cluster);
+
+  ClusterView.newCluster(this._key, int id) {
+    if (this._cluster == null) {
+      _cluster = Cluster(id);
+    }
+  }
 
   @override
   ClusterViewState createState() => ClusterViewState();
