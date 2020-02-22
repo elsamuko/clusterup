@@ -80,51 +80,54 @@ class ClustersState extends State<Clusters> {
     );
   }
 
+  PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
+    String keyText = (_sshKey != null) ? "View SSH Key" : "Generate SSH Key";
+    return PopupMenuButton<ClustersOpts>(
+      onSelected: (ClustersOpts result) {
+        switch (result) {
+          case ClustersOpts.NewCluster:
+            {
+              dev.log("NewCluster");
+              _clustersMenu();
+            }
+            break;
+          case ClustersOpts.Key:
+            {
+              dev.log("Key");
+              _keyMenu();
+            }
+            break;
+          case ClustersOpts.About:
+            {
+              dev.log("About");
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ClustersOpts>>[
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.NewCluster,
+          child: Text('Add new cluster'),
+        ),
+        PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.Key,
+          child: Text(keyText),
+        ),
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.About,
+          child: Text('About'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    String keyText = (_sshKey != null) ? "View SSH Key" : "Generate SSH Key";
     return Scaffold(
       appBar: AppBar(
         title: Text('Clusters'),
         actions: <Widget>[
-          PopupMenuButton<ClusterOpts>(
-            onSelected: (ClusterOpts result) {
-              switch (result) {
-                case ClusterOpts.NewCluster:
-                  {
-                    dev.log("NewCluster");
-                    _clustersMenu();
-                  }
-                  break;
-                case ClusterOpts.Key:
-                  {
-                    dev.log("Key");
-                    _keyMenu();
-                  }
-                  break;
-                case ClusterOpts.About:
-                  {
-                    dev.log("About");
-                  }
-                  break;
-              }
-            },
-            itemBuilder: (BuildContext context) =>
-                <PopupMenuEntry<ClusterOpts>>[
-              const PopupMenuItem<ClusterOpts>(
-                value: ClusterOpts.NewCluster,
-                child: Text('Add new cluster'),
-              ),
-              PopupMenuItem<ClusterOpts>(
-                value: ClusterOpts.Key,
-                child: Text(keyText),
-              ),
-              const PopupMenuItem<ClusterOpts>(
-                value: ClusterOpts.About,
-                child: Text('About'),
-              ),
-            ],
-          ),
+          _buildClustersPopUpButton(),
         ],
       ),
       body: _buildClustersOverview(),
@@ -132,7 +135,7 @@ class ClustersState extends State<Clusters> {
   }
 }
 
-enum ClusterOpts { NewCluster, Key, About }
+enum ClustersOpts { NewCluster, Key, About }
 
 class Clusters extends StatefulWidget {
   @override
