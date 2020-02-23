@@ -61,7 +61,9 @@ class ClustersState extends State<Clusters> {
         .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_sshKey, cluster);
     }));
-    _db.addCluster(result);
+    if (result != null) {
+      _db.addCluster(result);
+    }
   }
 
   // https://stackoverflow.com/a/53861303
