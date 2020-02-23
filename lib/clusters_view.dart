@@ -13,8 +13,12 @@ class ClustersState extends State<Clusters> {
 
   @override
   void initState() {
-    _db.readClusters().then((result) {
-      _clusters = result;
+    _db.getSSHKey().then((sshKey) {
+      _sshKey = sshKey;
+    });
+
+    _db.readClusters().then((clusters) {
+      _clusters = clusters;
       setState(() {});
     });
     super.initState();
@@ -98,6 +102,10 @@ class ClustersState extends State<Clusters> {
         },
       ),
     );
+
+    if (_sshKey != null) {
+      _db.setSSHKey(_sshKey);
+    }
   }
 
   void _showClusterMenu(Offset position, Cluster cluster) async {
