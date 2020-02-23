@@ -15,6 +15,13 @@ class SSHKey {
     _publicKey = RSAPublicKey(_privateKey.modulus, publicExponent);
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': "ssh_key",
+      'private': privString(),
+    };
+  }
+
   // https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md
   static SecureRandom _getSecureRandom() {
     final secureRandom = FortunaRandom();
@@ -83,6 +90,7 @@ class SSHKey {
   }
 
   static SSHKey fromPEM(String PEM) {
+    if (PEM.isEmpty) return null;
     RSAPrivateKey privateKey = RsaKeyHelper.parsePrivateKeyFromPem(PEM);
     return SSHKey(privateKey);
   }
