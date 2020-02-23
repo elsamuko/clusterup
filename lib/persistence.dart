@@ -5,7 +5,7 @@ import 'cluster.dart';
 // https://flutter.dev/docs/cookbook/persistence/sqlite
 class Persistence {
   final Future<Database> database = openDatabase(
-    [getDatabasesPath(), 'cluster_up.db'].join(),
+    [getDatabasesPath(), 'cluster_up.db'].join('/'),
     onCreate: (db, version) {
       return db.execute(
         "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER)",
