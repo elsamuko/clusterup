@@ -37,11 +37,11 @@ class Persistence {
     final List<Map<String, dynamic>> maps = await db.query('clusters');
     return List.generate(maps.length, (i) {
       return Cluster(
-        maps[i]['id'],
-        maps[i]['name'],
-        maps[i]['user'],
-        maps[i]['host'],
-        maps[i]['port'],
+        maps[i]['id'] ?? 0,
+        maps[i]['name'] ?? "",
+        maps[i]['user'] ?? "",
+        maps[i]['host'] ?? "",
+        maps[i]['port'] ?? 22,
       );
     });
   }
