@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:developer' as dev;
@@ -44,7 +43,7 @@ class KeyViewState extends State<KeyView> {
                   Text(
                       "Copy this SSH key into your '.ssh/authorized_keys2' file:"),
                   SizedBox(height: 10),
-                  SelectableText(snapshot.data.pubForSSH())
+                  SelectableText(snapshot.data.pubForSSH() + " clusterup")
                 ]));
           } else {
             child = Center(
