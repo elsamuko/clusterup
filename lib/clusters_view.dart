@@ -30,27 +30,32 @@ class ClustersState extends State<Clusters> {
   }
 
   Widget _buildRow(Cluster cluster) {
-    return ListTile(
-      title: Text(
-        cluster.name,
-      ),
-      leading: IconButton(
-        icon: Icon(Icons.settings),
-        onPressed: () {
-          _showCluster(cluster);
-        },
-      ),
-      trailing: IconButton(
-        icon: Icon(
-          Icons.play_arrow,
-          color: Colors.blue,
+    return GestureDetector(
+      child: ListTile(
+        title: Text(
+          cluster.name,
         ),
-        onPressed: () {
-          dev.log("_buildRow play : ${cluster}");
+        leading: IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () {
+            _showCluster(cluster);
+          },
+        ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.play_arrow,
+            color: Colors.blue,
+          ),
+          onPressed: () {
+            dev.log("Play : ${cluster}");
+          },
+        ),
+        onTap: () {
+          dev.log("Tap : ${cluster}");
         },
       ),
-      onTap: () {
-        dev.log("play : ${cluster}");
+      onLongPressStart: (LongPressStartDetails details) {
+        _showClusterMenu(details.globalPosition, cluster);
       },
     );
   }
@@ -93,6 +98,27 @@ class ClustersState extends State<Clusters> {
         },
       ),
     );
+  }
+
+  void _showClusterMenu(Offset position, Cluster cluster) async {
+    var itemRemove = PopupMenuItem(
+      child: Text("Remove"),
+      value: ClusterOpts.Remove,
+    );
+
+    var selected = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
+      items: [itemRemove],
+    );
+
+    if (selected == ClusterOpts.Remove) {
+      setState(() {
+        dev.log("Removing ${cluster}");
+        _clusters.remove(cluster);
+        _db.removeCluster(cluster);
+      });
+    }
   }
 
   PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
@@ -151,6 +177,7 @@ class ClustersState extends State<Clusters> {
 }
 
 enum ClustersOpts { NewCluster, Key, About }
+enum ClusterOpts { Remove }
 
 class Clusters extends StatefulWidget {
   @override
