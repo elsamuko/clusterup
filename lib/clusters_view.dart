@@ -1,3 +1,4 @@
+import 'package:clusterup/persistence.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
@@ -6,8 +7,18 @@ import 'key_view.dart';
 import 'ssh_key.dart';
 
 class ClustersState extends State<Clusters> {
-  List<Cluster> _clusters = Cluster.generateClusters();
+  Persistence _db = Persistence();
+  List<Cluster> _clusters = [];
   SSHKey _sshKey;
+
+  @override
+  void initState() {
+    _db.readClusters().then((result) {
+      _clusters = result;
+      setState(() {});
+    });
+    super.initState();
+  }
 
   Widget _buildClustersOverview() {
     return ListView.builder(
@@ -50,6 +61,7 @@ class ClustersState extends State<Clusters> {
         .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_sshKey, cluster);
     }));
+    _db.addCluster(result);
   }
 
   // https://stackoverflow.com/a/53861303
@@ -66,6 +78,7 @@ class ClustersState extends State<Clusters> {
       if (result != null) {
         dev.log("Adding ${result}");
         _clusters.add(result);
+        _db.addCluster(result);
       }
     });
   }
