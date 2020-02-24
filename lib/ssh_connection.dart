@@ -14,7 +14,7 @@ class SSHConnection {
   static Future<SSHConnectionResult> test(
       String user, String host, int port, SSHKey key) async {
     SSHConnectionResult rv = SSHConnectionResult(false);
-    var client = new SSHClient(
+    var client = SSHClient(
       host: host,
       port: port,
       username: user,
