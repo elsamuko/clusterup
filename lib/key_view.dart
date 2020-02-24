@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'ssh_key.dart';
 
@@ -13,6 +14,7 @@ class KeyViewState extends State<KeyView> {
   KeyViewState();
 
   Future<SSHKey> _getKey;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -37,13 +39,28 @@ class KeyViewState extends State<KeyView> {
 
           if (snapshot.hasData) {
             widget._key = snapshot.data;
+            String key = snapshot.data.pubForSSH() + " clusterup";
             child = Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(children: <Widget>[
                   Text(
                       "Copy this SSH key into your '.ssh/authorized_keys2' file:"),
                   SizedBox(height: 10),
-                  SelectableText(snapshot.data.pubForSSH() + " clusterup")
+                  FlatButton(
+                      color: Colors.black87,
+                      textColor: Colors.lightGreenAccent,
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: key));
+                        final snackBar = SnackBar(
+                            content: Text("Copied ssh key into clipboard"));
+                        _scaffoldKey.currentState.showSnackBar(snackBar);
+                      },
+                      child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Text(
+                            key,
+                            style: TextStyle(fontFamily: "monospace"),
+                          )))
                 ]));
           } else {
             child = Center(
@@ -58,6 +75,7 @@ class KeyViewState extends State<KeyView> {
           }
 
           return Scaffold(
+              key: _scaffoldKey,
               appBar: AppBar(
                 leading: IconButton(
                   icon: Icon(Icons.arrow_back),
