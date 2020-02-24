@@ -50,83 +50,86 @@ class ClusterViewState extends State<ClusterView> {
           ],
         ),
         body: ListView(children: <Widget>[
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.label),
-                              labelText: 'name',
-                            ),
-                            onSaved: (String value) {
-                              widget._cluster.name = value;
-                            },
-                            initialValue: widget._cluster?.name,
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.person),
-                              hintText: 'username',
-                              labelText: 'username',
-                            ),
-                            inputFormatters: [
-                              BlacklistingTextInputFormatter(RegExp("[ ]"))
+          Padding(
+              padding: EdgeInsets.all(6.0),
+              child: Card(
+                  elevation: 6,
+                  child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.label),
+                                  labelText: 'name',
+                                ),
+                                onSaved: (String value) {
+                                  widget._cluster.name = value;
+                                },
+                                initialValue: widget._cluster?.name,
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.person),
+                                  hintText: 'username',
+                                  labelText: 'username',
+                                ),
+                                inputFormatters: [
+                                  BlacklistingTextInputFormatter(RegExp("[ ]"))
+                                ],
+                                onSaved: (String value) {
+                                  widget._cluster.user = value;
+                                },
+                                initialValue: widget._cluster?.user,
+                                validator: (String value) {
+                                  return value.contains('@')
+                                      ? 'Do not use the @ char.'
+                                      : null;
+                                },
+                              ),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.computer),
+                                  hintText: 'Server domain',
+                                  labelText: 'server',
+                                ),
+                                inputFormatters: [
+                                  BlacklistingTextInputFormatter(RegExp("[ ]"))
+                                ],
+                                onSaved: (String value) {
+                                  widget._cluster.host = value;
+                                },
+                                initialValue: widget._cluster?.host,
+                                validator: (String value) {
+                                  return value.contains('@')
+                                      ? 'Do not use the @ char.'
+                                      : null;
+                                },
+                              ),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.local_airport),
+                                  hintText: 'SSH server port',
+                                  labelText: 'port',
+                                ),
+                                onSaved: (String value) {
+                                  widget._cluster.port = int.parse(value);
+                                },
+                                initialValue:
+                                    (widget._cluster?.port ?? 22).toString(),
+                                validator: (String value) {
+                                  if (int.tryParse(value) == 0) {
+                                    return "Invalid port number";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
                             ],
-                            onSaved: (String value) {
-                              widget._cluster.user = value;
-                            },
-                            initialValue: widget._cluster?.user,
-                            validator: (String value) {
-                              return value.contains('@')
-                                  ? 'Do not use the @ char.'
-                                  : null;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.computer),
-                              hintText: 'Server domain',
-                              labelText: 'server',
-                            ),
-                            inputFormatters: [
-                              BlacklistingTextInputFormatter(RegExp("[ ]"))
-                            ],
-                            onSaved: (String value) {
-                              widget._cluster.host = value;
-                            },
-                            initialValue: widget._cluster?.host,
-                            validator: (String value) {
-                              return value.contains('@')
-                                  ? 'Do not use the @ char.'
-                                  : null;
-                            },
-                          ),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.local_airport),
-                              hintText: 'SSH server port',
-                              labelText: 'port',
-                            ),
-                            onSaved: (String value) {
-                              widget._cluster.port = int.parse(value);
-                            },
-                            initialValue:
-                                (widget._cluster?.port ?? 22).toString(),
-                            validator: (String value) {
-                              if (int.tryParse(value) == 0) {
-                                return "Invalid port number";
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
-                        ],
-                      )))),
+                          ))))),
           Container(
               margin: const EdgeInsets.all(20.0),
               child: FlatButton(
