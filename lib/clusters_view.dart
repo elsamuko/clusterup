@@ -15,6 +15,7 @@ class ClustersState extends State<Clusters> {
   void initState() {
     _db.getSSHKey().then((sshKey) {
       _sshKey = sshKey;
+      setState(() {});
     });
 
     _db.readClusters().then((clusters) {
