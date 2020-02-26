@@ -79,7 +79,9 @@ class KeyViewState extends State<KeyView> {
               appBar: AppBar(
                 leading: IconButton(
                   icon: Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context, widget._key),
+                  onPressed: () {
+                    Navigator.pop(context, widget._key);
+                  },
                 ),
                 title: Text('View SSH key'),
               ),
