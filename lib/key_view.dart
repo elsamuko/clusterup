@@ -90,7 +90,7 @@ class KeyViewState extends State<KeyView> {
 
 class KeyView extends StatefulWidget {
   SSHKey _key;
-  KeyView([this._key]);
+  KeyView(this._key);
 
   @override
   KeyViewState createState() => KeyViewState();
