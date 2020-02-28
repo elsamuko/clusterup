@@ -14,8 +14,7 @@ class ClusterViewState extends State<ClusterView> {
   @override
   Widget build(BuildContext context) {
     dev.log("NewClusterState");
-    String title =
-        (widget._cluster != null) ? 'Edit cluster' : 'Add new cluster';
+    String title = widget._new ? 'Add new cluster' : 'Edit cluster';
 
     void _testSSH() async {
       dev.log("Testing ${widget._cluster}");
@@ -151,12 +150,14 @@ class ClusterViewState extends State<ClusterView> {
 class ClusterView extends StatefulWidget {
   Cluster _cluster;
   SSHKey _key;
+  bool _new = false;
 
   ClusterView(this._key, this._cluster);
 
   ClusterView.newCluster(this._key, int id) {
     if (this._cluster == null) {
       _cluster = Cluster(id);
+      _new = true;
     }
   }
 
