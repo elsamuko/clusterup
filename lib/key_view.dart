@@ -74,18 +74,23 @@ class KeyViewState extends State<KeyView> {
             ));
           }
 
-          return Scaffold(
-              key: _scaffoldKey,
-              appBar: AppBar(
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context, widget._key);
-                  },
-                ),
-                title: Text('View SSH key'),
-              ),
-              body: child);
+          return WillPopScope(
+              onWillPop: () async {
+                Navigator.pop(context, widget._key);
+                return false;
+              },
+              child: Scaffold(
+                  key: _scaffoldKey,
+                  appBar: AppBar(
+                    leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context, widget._key);
+                      },
+                    ),
+                    title: Text('View SSH key'),
+                  ),
+                  body: child));
         });
   }
 }
