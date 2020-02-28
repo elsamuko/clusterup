@@ -11,8 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cluster Up',
       theme: ThemeData(
-        primaryColor: Colors.blue,
-      ),
+          primaryColor: Colors.blue[800], brightness: Brightness.dark),
       home: Clusters(),
     );
   }

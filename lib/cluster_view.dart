@@ -133,7 +133,7 @@ class ClusterViewState extends State<ClusterView> {
           Container(
               margin: const EdgeInsets.all(20.0),
               child: FlatButton(
-                  color: Colors.blue,
+                  color: Colors.blue[800],
                   textColor: Colors.white,
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
