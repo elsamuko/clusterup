@@ -9,7 +9,7 @@ class Persistence {
     [getDatabasesPath(), 'cluster_up.db'].join('/'),
     onCreate: (db, version) {
       db.execute(
-        "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER)",
+        "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, actions TEXT)",
       );
       db.execute(
         "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
@@ -65,11 +65,12 @@ class Persistence {
     final List<Map<String, dynamic>> maps = await db.query('clusters');
     return List.generate(maps.length, (i) {
       return Cluster(
-        maps[i]['id'] ?? 0,
-        maps[i]['name'] ?? "",
-        maps[i]['user'] ?? "",
-        maps[i]['host'] ?? "",
-        maps[i]['port'] ?? 22,
+        id: maps[i]['id'] ?? 0,
+        name: maps[i]['name'] ?? "",
+        user: maps[i]['user'] ?? "",
+        host: maps[i]['host'] ?? "",
+        port: maps[i]['port'] ?? 22,
+        actionsJson: maps[i]['actions'] ?? "[]",
       );
     });
   }
