@@ -1,3 +1,4 @@
+import 'package:clusterup/remote_actions_view.dart';
 import 'package:clusterup/persistence.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
@@ -5,6 +6,7 @@ import 'cluster.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
 import 'ssh_key.dart';
+import 'remote_action.dart';
 
 class ClustersState extends State<Clusters> {
   Persistence _db = Persistence();
@@ -109,6 +111,16 @@ class ClustersState extends State<Clusters> {
     }
   }
 
+  void _actionsMenu() async {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return ActionsView();
+        },
+      ),
+    );
+  }
+
   void _showClusterMenu(Offset position, Cluster cluster) async {
     var itemRemove = PopupMenuItem(
       child: Text("Remove"),
@@ -147,6 +159,12 @@ class ClustersState extends State<Clusters> {
               _keyMenu();
             }
             break;
+          case ClustersOpts.Actions:
+            {
+              dev.log("Key");
+              _actionsMenu();
+            }
+            break;
           case ClustersOpts.About:
             {
               dev.log("About");
@@ -162,6 +180,10 @@ class ClustersState extends State<Clusters> {
         PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.Key,
           child: Text(keyText),
+        ),
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.Actions,
+          child: Text("Actions"),
         ),
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.About,
@@ -185,7 +207,7 @@ class ClustersState extends State<Clusters> {
   }
 }
 
-enum ClustersOpts { NewCluster, Key, About }
+enum ClustersOpts { NewCluster, Key, Actions, About }
 enum ClusterOpts { Remove }
 
 class Clusters extends StatefulWidget {
