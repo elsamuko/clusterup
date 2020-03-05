@@ -10,12 +10,12 @@ void main() {
   test('Persistence', () async {
     expect(true, true);
     var db = Persistence();
-    Cluster input = Cluster(1);
+    Cluster input = Cluster(id: 1);
     db.addCluster(input);
 
     List<Cluster> read = await db.readClusters();
 
-    expect(read[0].id, 1);
+    expect(read.last.id, 1);
     expect(true, true);
   });
 }
