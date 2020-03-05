@@ -23,6 +23,16 @@ class RemoteAction {
   @override
   int get hashCode => name.hashCode;
 
+  factory RemoteAction.getActionFor(String name) {
+    switch (name) {
+      case "df":
+        return RemoteAction.getDiskFreeAction();
+        break;
+      default:
+        return RemoteAction("");
+    }
+  }
+
   RemoteAction.getDiskFreeAction() {
     name = "df";
     description = "checks free disk space on /";
