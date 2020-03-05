@@ -2,8 +2,10 @@ import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
+import 'remote_actions_view.dart';
 import 'ssh_connection.dart';
 import 'cluster.dart';
+import 'remote_action.dart';
 
 class ClusterViewState extends State<ClusterView> {
   ClusterViewState();
@@ -130,7 +132,7 @@ class ClusterViewState extends State<ClusterView> {
                             ],
                           ))))),
           Container(
-              margin: const EdgeInsets.all(20.0),
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
               child: FlatButton(
                   color: Colors.blue[800],
                   textColor: Colors.white,
@@ -142,6 +144,27 @@ class ClusterViewState extends State<ClusterView> {
                   },
                   child: Text(
                     "Test connection",
+                  ))),
+          Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: FlatButton(
+                  color: Colors.orange[900],
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    dev.log("Configure Actions");
+                    Set<RemoteAction> selected =
+                        await Navigator.of(context).push(
+                      MaterialPageRoute<Set<RemoteAction>>(
+                        builder: (BuildContext context) {
+                          return ActionsView(saved: widget._cluster.actions);
+                        },
+                      ),
+                    );
+
+                    widget._cluster.actions = selected;
+                  },
+                  child: Text(
+                    "Actions",
                   ))),
         ]));
   }
@@ -156,7 +179,7 @@ class ClusterView extends StatefulWidget {
 
   ClusterView.newCluster(this._key, int id) {
     if (this._cluster == null) {
-      _cluster = Cluster(id);
+      _cluster = Cluster(id: id);
       _new = true;
     }
   }
