@@ -121,6 +121,17 @@ class ClustersState extends State<Clusters> {
     );
   }
 
+  void _aboutMenu() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Cluster up"),
+            content: Text("Control health of your servers"),
+          );
+        });
+  }
+
   void _showClusterMenu(Offset position, Cluster cluster) async {
     var itemRemove = PopupMenuItem(
       child: Text("Remove"),
@@ -168,6 +179,7 @@ class ClustersState extends State<Clusters> {
           case ClustersOpts.About:
             {
               dev.log("About");
+              _aboutMenu();
             }
             break;
         }
