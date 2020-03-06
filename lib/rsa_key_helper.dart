@@ -1,11 +1,8 @@
 // https://github.com/Vanethos/flutter_rsa_generator_example/blob/master/lib/utils/rsa_key_helper.dart
 
 import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 
 import "package:asn1lib/asn1lib.dart";
-import 'package:flutter/foundation.dart';
 import "package:pointycastle/export.dart";
 
 /// Helper class to handle RSA key generation and encoding
@@ -66,7 +63,7 @@ class RsaKeyHelper {
     var asn1Parser = ASN1Parser(privateKeyDER);
     var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
 
-    var modulus, publicExponent, privateExponent, p, q;
+    var modulus, /*publicExponent,*/ privateExponent, p, q;
     // Depending on the number of elements, we will either use PKCS1 or PKCS8
     if (topLevelSeq.elements.length == 3) {
       var privateKey = topLevelSeq.elements[2];
@@ -75,13 +72,13 @@ class RsaKeyHelper {
       var pkSeq = asn1Parser.nextObject() as ASN1Sequence;
 
       modulus = pkSeq.elements[1] as ASN1Integer;
-      publicExponent = pkSeq.elements[2] as ASN1Integer;
+      // publicExponent = pkSeq.elements[2] as ASN1Integer;
       privateExponent = pkSeq.elements[3] as ASN1Integer;
       p = pkSeq.elements[4] as ASN1Integer;
       q = pkSeq.elements[5] as ASN1Integer;
     } else {
       modulus = topLevelSeq.elements[1] as ASN1Integer;
-      publicExponent = topLevelSeq.elements[2] as ASN1Integer;
+      // publicExponent = topLevelSeq.elements[2] as ASN1Integer;
       privateExponent = topLevelSeq.elements[3] as ASN1Integer;
       p = topLevelSeq.elements[4] as ASN1Integer;
       q = topLevelSeq.elements[5] as ASN1Integer;
@@ -206,7 +203,6 @@ class RsaKeyHelper {
   static String encodePublicKeyToPemPKCS1(RSAPublicKey publicKey) {
     var topLevel = ASN1Sequence();
 
-    var PublicKeyInfo = ASN1Sequence();
     topLevel.add(ASN1Integer(publicKey.modulus));
     topLevel.add(ASN1Integer(publicKey.exponent));
 

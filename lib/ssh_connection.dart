@@ -23,7 +23,7 @@ class SSHConnection {
     if (client != null) {
       dev.log("trying to connect to $user@$host:$port");
       try {
-        String result = await client.connect();
+        await client.connect();
         dev.log("connected to $user@$host:$port");
         client.disconnect();
         dev.log("disconnected from $user@$host:$port");

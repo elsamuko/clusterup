@@ -6,7 +6,6 @@ import 'cluster.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
 import 'ssh_key.dart';
-import 'remote_action.dart';
 
 class ClustersState extends State<Clusters> {
   Persistence _db = Persistence();
@@ -54,11 +53,11 @@ class ClustersState extends State<Clusters> {
             color: Colors.blue,
           ),
           onPressed: () {
-            dev.log("Play : ${cluster}");
+            dev.log("Play : $cluster");
           },
         ),
         onTap: () {
-          dev.log("Tap : ${cluster}");
+          dev.log("Tap : $cluster");
         },
       ),
       onLongPressStart: (LongPressStartDetails details) {
@@ -68,7 +67,7 @@ class ClustersState extends State<Clusters> {
   }
 
   void _showCluster(Cluster cluster) async {
-    dev.log("_showCluster : ${cluster}");
+    dev.log("_showCluster : $cluster");
     final Cluster result = await Navigator.of(context)
         .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_sshKey, cluster);
@@ -90,7 +89,7 @@ class ClustersState extends State<Clusters> {
 
     setState(() {
       if (result != null) {
-        dev.log("Adding ${result}");
+        dev.log("Adding $result");
         _clusters.add(result);
         _db.addCluster(result);
       }
@@ -146,7 +145,7 @@ class ClustersState extends State<Clusters> {
 
     if (selected == ClusterOpts.Remove) {
       setState(() {
-        dev.log("Removing ${cluster}");
+        dev.log("Removing $cluster");
         _clusters.remove(cluster);
         _db.removeCluster(cluster);
       });

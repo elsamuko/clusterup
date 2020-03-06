@@ -83,15 +83,15 @@ class SSHKey {
     keyGenerator.init(params);
 
     final pair = keyGenerator.generateKeyPair();
-    final publicKey = pair.publicKey as RSAPublicKey;
+    // final publicKey = pair.publicKey as RSAPublicKey;
     final privateKey = pair.privateKey as RSAPrivateKey;
 
     return SSHKey(privateKey);
   }
 
-  static SSHKey fromPEM(String PEM) {
-    if (PEM.isEmpty) return null;
-    RSAPrivateKey privateKey = RsaKeyHelper.parsePrivateKeyFromPem(PEM);
+  static SSHKey fromPEM(String pem) {
+    if (pem.isEmpty) return null;
+    RSAPrivateKey privateKey = RsaKeyHelper.parsePrivateKeyFromPem(pem);
     return SSHKey(privateKey);
   }
 }

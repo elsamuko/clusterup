@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:clusterup/rsa_key_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:clusterup/ssh_key.dart';
@@ -54,5 +53,6 @@ x+kgolmW9OICS9BoW96K8N8BCKOtRtH5xYGniWgIKItQLrVjnVNDAgMBAAE=
     RSAPublicKey publicKey = RsaKeyHelper.parsePublicKeyFromPem(pubGen);
     RSAPublicKey publicKey2 = RsaKeyHelper.parsePublicKeyFromPem(pubPEM);
     expect(pubGen == pubPEM, true);
+    expect(publicKey == publicKey2, true);
   });
 }
