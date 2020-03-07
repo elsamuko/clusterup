@@ -20,11 +20,8 @@ class ClusterViewState extends State<ClusterView> {
 
     void _testSSH() async {
       dev.log("Testing ${widget._cluster}");
-      SSHConnectionResult result = await SSHConnection.test(
-          widget._cluster.user,
-          widget._cluster.host,
-          widget._cluster.port,
-          widget._key);
+      SSHConnectionResult result =
+          await SSHConnection.test(widget._cluster, widget._key);
 
       String text = result.success
           ? "SSH connection successful!"
