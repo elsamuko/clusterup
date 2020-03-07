@@ -1,6 +1,6 @@
-typedef Filter = ActionStatus Function(String stdout);
+typedef Filter = RemoteActionStatus Function(String stdout);
 
-enum ActionStatus { Success, Warning, Error, Unknown }
+enum RemoteActionStatus { Success, Warning, Error, Unknown }
 
 class RemoteAction {
   String name;
@@ -41,17 +41,17 @@ class RemoteAction {
       RegExp regExp = new RegExp("(\\d+)%");
       RegExpMatch match = regExp.firstMatch(stdout);
 
-      if (match.groupCount != 1) return ActionStatus.Unknown;
+      if (match.groupCount != 1) return RemoteActionStatus.Unknown;
 
       int percent = int.tryParse(match[1]);
 
-      if (percent == null) return ActionStatus.Unknown;
+      if (percent == null) return RemoteActionStatus.Unknown;
 
-      if (percent < 50) return ActionStatus.Success;
+      if (percent < 50) return RemoteActionStatus.Success;
 
-      if (percent < 80) return ActionStatus.Warning;
+      if (percent < 80) return RemoteActionStatus.Warning;
 
-      return ActionStatus.Error;
+      return RemoteActionStatus.Error;
     };
   }
 }
