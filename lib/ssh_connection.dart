@@ -3,30 +3,45 @@ import 'dart:developer' as dev;
 import 'package:clusterup/ssh_key.dart';
 import 'package:ssh/ssh.dart';
 import 'package:flutter/services.dart';
+import 'cluster.dart';
 
 class SSHConnectionResult {
   bool success;
   String error;
+  List<String> output = [];
   SSHConnectionResult(this.success, [this.error]);
 }
 
+// https://pub.dev/packages/ssh#-example-tab-
 class SSHConnection {
-  static Future<SSHConnectionResult> test(
-      String user, String host, int port, SSHKey key) async {
+  static Future<SSHConnectionResult> test(Cluster cluster, SSHKey key) async {
+    return run(cluster, key, []);
+  }
+
+  static Future<SSHConnectionResult> run(
+      Cluster cluster, SSHKey key, List<String> commands) async {
     SSHConnectionResult rv = SSHConnectionResult(false);
     var client = SSHClient(
-      host: host,
-      port: port,
-      username: user,
+      host: cluster.host,
+      port: cluster.port,
+      username: cluster.user,
       passwordOrKey: {"privateKey": key?.privString() ?? ""},
     );
     if (client != null) {
-      dev.log("trying to connect to $user@$host:$port");
+      dev.log("trying to connect to ${cluster.userHostPort()}");
       try {
-        await client.connect();
-        dev.log("connected to $user@$host:$port");
+        String result = await client.connect();
+        if (result == "session_connected") {
+          dev.log("connected to ${cluster.userHostPort()}");
+          for (String command in commands) {
+            dev.log("Running $command");
+            String out = await client.execute(command);
+            dev.log("Got $out");
+            rv.output.add(out);
+          }
+        }
         client.disconnect();
-        dev.log("disconnected from $user@$host:$port");
+        dev.log("disconnected from ${cluster.userHostPort()}");
         rv.success = true;
       } on PlatformException catch (e) {
         print('Error: ${e.code}\nError Message: ${e.message}');
