@@ -30,6 +30,10 @@ class Cluster {
     return "$id : $name";
   }
 
+  String userHostPort() {
+    return "$user@$host:port";
+  }
+
   Map<String, dynamic> toMap() {
     List<String> actionNames = [];
 
