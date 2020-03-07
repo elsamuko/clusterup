@@ -8,7 +8,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('Persistence', () async {
-    expect(true, true);
     var db = Persistence();
     Cluster input = Cluster(id: 1);
     db.addCluster(input);
@@ -16,6 +15,5 @@ void main() {
     List<Cluster> read = await db.readClusters();
 
     expect(read.last.id, 1);
-    expect(true, true);
   });
 }
