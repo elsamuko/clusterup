@@ -6,6 +6,7 @@ import 'remote_actions_view.dart';
 import 'ssh_connection.dart';
 import 'cluster.dart';
 import 'remote_action.dart';
+import 'remote_action_runner.dart';
 
 class ClusterViewState extends State<ClusterView> {
   ClusterViewState();
@@ -162,6 +163,23 @@ class ClusterViewState extends State<ClusterView> {
                   },
                   child: Text(
                     "Actions",
+                  ))),
+          Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: FlatButton(
+                  color: Colors.green[600],
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    widget._cluster.run(widget._key).then((v) {
+                      String text = widget._cluster.lastWasSuccess()
+                          ? "Tests successful!"
+                          : "Tests failed";
+                      final snackBar = SnackBar(content: Text(text));
+                      _scaffoldKey.currentState.showSnackBar(snackBar);
+                    });
+                  },
+                  child: Text(
+                    "Run",
                   ))),
         ]));
   }

@@ -1,6 +1,6 @@
 typedef Filter = RemoteActionStatus Function(String stdout);
 
-enum RemoteActionStatus { Success, Warning, Error, Unknown }
+enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
 class RemoteAction {
   String name;

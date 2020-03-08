@@ -49,15 +49,25 @@ class ClustersState extends State<Clusters> {
         ),
         trailing: IconButton(
           icon: Icon(
-            Icons.play_arrow,
-            color: Colors.blue,
+            cluster.running ? Icons.pause : Icons.play_arrow,
+            color: cluster.lastStatusAsColor,
+            size: 30,
           ),
           onPressed: () {
+            if (cluster.running) return;
             dev.log("Play : $cluster");
+            cluster.run(_sshKey).then((v) {
+              setState(() {
+                cluster.running = false;
+              });
+            });
+            setState(() {
+              cluster.running = true;
+            });
           },
         ),
         onTap: () {
-          dev.log("Tap : $cluster");
+          _showCluster(cluster);
         },
       ),
       onLongPressStart: (LongPressStartDetails details) {
