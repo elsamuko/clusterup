@@ -31,7 +31,7 @@ class Cluster {
   }
 
   String userHostPort() {
-    return "$user@$host:port";
+    return "$user@$host:$port";
   }
 
   Map<String, dynamic> toMap() {
