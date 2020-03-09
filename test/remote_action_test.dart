@@ -10,4 +10,10 @@ void main() {
 
     expect(status, RemoteActionStatus.Success);
   });
+
+  test('test action uptime', () {
+    RemoteAction action = RemoteAction.getUptimeAction();
+    RemoteActionStatus status = action.filter("""2020-03-09 17:32:20""");
+    expect(status, RemoteActionStatus.Success);
+  });
 }

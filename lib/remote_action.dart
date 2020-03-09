@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 typedef Filter = RemoteActionStatus Function(String stdout);
 
 enum RemoteActionStatus { Unknown, Success, Warning, Error }
@@ -7,11 +9,14 @@ class RemoteAction {
   String description;
   List<String> commands = [];
   Filter filter;
+  RemoteActionStatus status = RemoteActionStatus.Unknown;
+  String filtered;
   RemoteAction(this.name);
 
   static Set<RemoteAction> allActions() {
     return Set.from([
       RemoteAction.getDiskFreeAction(),
+      RemoteAction.getUptimeAction(),
     ]);
   }
 
@@ -28,6 +33,9 @@ class RemoteAction {
       case "df":
         return RemoteAction.getDiskFreeAction();
         break;
+      case "uptime":
+        return RemoteAction.getUptimeAction();
+        break;
       default:
         return RemoteAction("");
     }
@@ -43,15 +51,34 @@ class RemoteAction {
 
       if (match.groupCount != 1) return RemoteActionStatus.Unknown;
 
-      int percent = int.tryParse(match[1]);
+      filtered = match[1];
 
-      if (percent == null) return RemoteActionStatus.Unknown;
+      int percent = int.tryParse(filtered);
 
-      if (percent < 50) return RemoteActionStatus.Success;
+      if (percent == null) {
+        status = RemoteActionStatus.Unknown;
+        return status;
+      }
 
-      if (percent < 80) return RemoteActionStatus.Warning;
+      if (percent < 50) status = RemoteActionStatus.Success;
 
-      return RemoteActionStatus.Error;
+      if (percent < 80) status = RemoteActionStatus.Warning;
+
+      if (percent >= 80) status = RemoteActionStatus.Error;
+
+      return status;
+    };
+  }
+  RemoteAction.getUptimeAction() {
+    name = "uptime";
+    description = "checks uptime";
+    commands.add("uptime -s");
+    filter = (stdout) {
+      DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
+      DateTime started = format.parse(stdout);
+      filtered = started.toString();
+      status = RemoteActionStatus.Success;
+      return status;
     };
   }
 }
