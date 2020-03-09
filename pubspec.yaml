@@ -22,6 +22,7 @@ dependencies:
   asn1lib: ^0.6.0       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
   sqflite:              # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   path:                 # BSD https://github.com/dart-lang/path/blob/master/LICENSE
+  intl:                 # BSD https://github.com/dart-lang/intl/blob/master/LICENSE
   flutter:
     sdk: flutter
 
