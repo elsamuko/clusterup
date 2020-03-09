@@ -14,16 +14,10 @@ class Cluster {
   int port = 22;
   bool running = false;
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
-  Set<RemoteAction> actions = Set<RemoteAction>();
   Color lastStatusAsColor = Colors.white;
+  Set<RemoteAction> actions = Set<RemoteAction>();
 
-  Cluster(
-      {this.id,
-      this.name,
-      this.user,
-      this.host,
-      this.port,
-      String actionsJson}) {
+  Cluster({this.id, this.name, this.user, this.host, this.port, String actionsJson}) {
     if (actionsJson != null) {
       List<String> actionNames = jsonDecode(actionsJson).cast<String>();
 

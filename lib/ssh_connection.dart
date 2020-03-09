@@ -18,10 +18,9 @@ class SSHConnection {
     return run(cluster, key, []);
   }
 
-  static Future<SSHConnectionResult> run(
-      Cluster cluster, SSHKey key, List<String> commands) async {
+  static Future<SSHConnectionResult> run(Cluster cluster, SSHKey key, List<String> commands) async {
     SSHConnectionResult rv = SSHConnectionResult(false);
-    var client = SSHClient(
+    SSHClient client = SSHClient(
       host: cluster.host,
       port: cluster.port,
       username: cluster.user,
