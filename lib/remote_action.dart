@@ -49,6 +49,8 @@ class RemoteAction {
       RegExp regExp = new RegExp("(\\d+)%");
       RegExpMatch match = regExp.firstMatch(stdout);
 
+      if (match == null) return RemoteActionStatus.Unknown;
+
       if (match.groupCount != 1) return RemoteActionStatus.Unknown;
 
       filtered = match[1];
@@ -60,11 +62,11 @@ class RemoteAction {
         return status;
       }
 
-      if (percent < 50) status = RemoteActionStatus.Success;
-
-      if (percent < 80) status = RemoteActionStatus.Warning;
-
-      if (percent >= 80) status = RemoteActionStatus.Error;
+      if (percent < 50)
+        status = RemoteActionStatus.Success;
+      else if (percent < 80)
+        status = RemoteActionStatus.Warning;
+      else if (percent >= 80) status = RemoteActionStatus.Error;
 
       return status;
     };
