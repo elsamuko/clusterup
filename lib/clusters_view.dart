@@ -1,3 +1,4 @@
+import 'package:clusterup/load_save_view.dart';
 import 'package:clusterup/remote_actions_view.dart';
 import 'package:clusterup/persistence.dart';
 import 'package:flutter/material.dart';
@@ -78,8 +79,7 @@ class ClustersState extends State<Clusters> {
 
   void _showCluster(Cluster cluster) async {
     dev.log("_showCluster : $cluster");
-    final Cluster result = await Navigator.of(context)
-        .push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
+    final Cluster result = await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_sshKey, cluster);
     }));
     if (result != null) {
@@ -125,6 +125,16 @@ class ClustersState extends State<Clusters> {
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return ActionsView();
+        },
+      ),
+    );
+  }
+
+  void _loadSaveMenu() async {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return LoadSaveView();
         },
       ),
     );
@@ -185,6 +195,12 @@ class ClustersState extends State<Clusters> {
               _actionsMenu();
             }
             break;
+          case ClustersOpts.LoadSave:
+            {
+              dev.log("Load/Save");
+              _loadSaveMenu();
+            }
+            break;
           case ClustersOpts.About:
             {
               dev.log("About");
@@ -205,6 +221,10 @@ class ClustersState extends State<Clusters> {
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.Actions,
           child: Text("Actions"),
+        ),
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.LoadSave,
+          child: Text('Load/Save'),
         ),
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.About,
@@ -228,7 +248,7 @@ class ClustersState extends State<Clusters> {
   }
 }
 
-enum ClustersOpts { NewCluster, Key, Actions, About }
+enum ClustersOpts { NewCluster, Key, Actions, LoadSave, About }
 enum ClusterOpts { Remove }
 
 class Clusters extends StatefulWidget {
