@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'package:mime/mime.dart';
 import 'package:http_server/http_server.dart';
 
 void serveForever(String folder) async {
@@ -25,7 +26,12 @@ void serveForever(String folder) async {
     if (request.uri.path.startsWith("/stop")) break;
 
     if (request.method == "POST" && request.uri.path.startsWith("/upload")) {
-      String content = await utf8.decoder.bind(request).join();
+      // String content = await utf8.decoder.bind(request).join();
+      String boundary = request.headers.contentType.parameters['boundary'];
+      MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
+      String json = await utf8.decoder.bind(part).join();
+      File jsonFile = File("$folder/clusterup.json");
+      jsonFile.writeAsStringSync(json);
       request.response.redirect(Uri.parse('/'));
       request.response.close();
     }
