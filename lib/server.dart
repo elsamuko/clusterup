@@ -8,7 +8,7 @@ import 'package:http_server/http_server.dart';
 
 void serveForever(String folder) async {
   dev.log("Running server on http://localhost:3001");
-  HttpServer server = await HttpServer.bind(InternetAddress.loopbackIPv4, 3001);
+  HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
 
   if (server == null) {
     dev.log("Could not start server");
