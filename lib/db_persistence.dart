@@ -4,7 +4,7 @@ import 'dart:core';
 import 'cluster.dart';
 
 // https://flutter.dev/docs/cookbook/persistence/sqlite
-class Persistence {
+class DBPersistence {
   final Future<Database> database = openDatabase(
     [getDatabasesPath(), 'cluster_up.db'].join('/'),
     onCreate: (db, version) {

@@ -1,6 +1,6 @@
 import 'package:clusterup/load_save_view.dart';
 import 'package:clusterup/remote_actions_view.dart';
-import 'package:clusterup/persistence.dart';
+import 'package:clusterup/db_persistence.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
@@ -9,7 +9,7 @@ import 'key_view.dart';
 import 'ssh_key.dart';
 
 class ClustersState extends State<Clusters> {
-  Persistence _db = Persistence();
+  DBPersistence _db = DBPersistence();
   List<Cluster> _clusters = [];
   SSHKey _sshKey;
 

@@ -1,5 +1,5 @@
 import 'package:clusterup/cluster.dart';
-import 'package:clusterup/persistence.dart';
+import 'package:clusterup/db_persistence.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // must be run on device for method getDatabasesPath
@@ -7,8 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('Persistence', () async {
-    var db = Persistence();
+  test('DBPersistence', () async {
+    var db = DBPersistence();
     Cluster input = Cluster(id: 1);
     db.addCluster(input);
 
