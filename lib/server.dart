@@ -7,7 +7,9 @@ import 'package:mime/mime.dart';
 import 'package:http_server/http_server.dart';
 
 void serveForever(String folder) async {
-  dev.log("Running server on http://localhost:3001");
+  dev.log("Running server on http://localhost:3001, to access emulator, run");
+  dev.log("adb forward tcp:3001 tcp:3001");
+
   HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
 
   if (server == null) {
@@ -26,10 +28,12 @@ void serveForever(String folder) async {
     if (request.uri.path.startsWith("/stop")) break;
 
     if (request.method == "POST" && request.uri.path.startsWith("/upload")) {
-      // String content = await utf8.decoder.bind(request).join();
+      // parse multipart request
       String boundary = request.headers.contentType.parameters['boundary'];
       MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
       String json = await utf8.decoder.bind(part).join();
+
+      // write to file
       File jsonFile = File("$folder/clusterup.json");
       jsonFile.writeAsStringSync(json);
       request.response.redirect(Uri.parse('/'));
