@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:clusterup/ssh_key.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'remote_action.dart';
@@ -26,6 +27,19 @@ class Cluster {
       });
     }
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (this.id != other.id) return false;
+    if (this.name != other.name) return false;
+    if (this.user != other.user) return false;
+    if (this.host != other.host) return false;
+    if (!setEquals(this.actions, other.actions)) return false;
+    return true;
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode ^ user.hashCode ^ host.hashCode ^ actions.hashCode;
 
   String toString() {
     return "$id : $name";
