@@ -64,14 +64,7 @@ class DBPersistence {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('clusters');
     return List.generate(maps.length, (i) {
-      return Cluster(
-        id: maps[i]['id'] ?? 0,
-        name: maps[i]['name'] ?? "",
-        user: maps[i]['user'] ?? "",
-        host: maps[i]['host'] ?? "",
-        port: maps[i]['port'] ?? 22,
-        actionsJson: maps[i]['actions'] ?? "[]",
-      );
+      return Cluster.fromMap(maps[i]);
     });
   }
 }
