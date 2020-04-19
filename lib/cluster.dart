@@ -68,6 +68,10 @@ class Cluster {
     };
   }
 
+  Map<String, dynamic> toJson() {
+    return toMap();
+  }
+
   bool lastWasSuccess() {
     return lastStatus == RemoteActionStatus.Success;
   }
