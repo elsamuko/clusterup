@@ -72,6 +72,17 @@ class Cluster {
     return toMap();
   }
 
+  static Cluster fromMap(Map<String, dynamic> data) {
+    return Cluster(
+      id: data['id'] ?? 0,
+      name: data['name'] ?? "",
+      user: data['user'] ?? "",
+      host: data['host'] ?? "",
+      port: data['port'] ?? 22,
+      actionsJson: data['actions'] ?? "[]",
+    );
+  }
+
   bool lastWasSuccess() {
     return lastStatus == RemoteActionStatus.Success;
   }
