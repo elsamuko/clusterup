@@ -27,6 +27,18 @@ class DBPersistence {
     );
   }
 
+  Future<void> setClusters(List<Cluster> clusters) async {
+    final Database db = await database;
+    await db.delete('clusters');
+    clusters.forEach((cluster) async {
+      await db.insert(
+        'clusters',
+        cluster.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+  }
+
   Future<void> setSSHKey(SSHKey key) async {
     final Database db = await database;
     await db.insert(
