@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:clusterup/clusterup_data.dart';
 import 'package:clusterup/server.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
@@ -25,11 +26,24 @@ class LoadSaveViewState extends State<LoadSaveView> {
     getTemporaryDirectory().then((Directory tempDir) async {
       _base = "${tempDir.path}/web";
 
+      // write site
       artifacts.forEach((String artifact) async {
         File f = await File("$_base/$artifact").create(recursive: true);
         ByteData content = await rootBundle.load("res/web/$artifact");
         f.writeAsBytes(content.buffer.asInt8List());
       });
+
+      _server.json = widget._data.toJSON(_withPrivateKey);
+
+      _server.onJson = (String json) {
+        ClusterUpData data = ClusterUpData.fromJSON(json);
+        if (data.clusters != null) {
+          widget._data.clusters = data.clusters;
+        }
+        if (data.sshKey != null) {
+          widget._data.sshKey = data.sshKey;
+        }
+      };
 
       _server.start(_base);
     });
@@ -46,40 +60,47 @@ class LoadSaveViewState extends State<LoadSaveView> {
   Widget build(BuildContext context) {
     dev.log("load/save view");
 
-    return Scaffold(
-      appBar: AppBar(title: Text("Load/Save configuration")),
-      body: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(children: <Widget>[
-            SwitchListTile(
-              secondary: Icon(Icons.lock_outline),
-              title: Text("Include private key"),
-              value: _withPrivateKey,
-              onChanged: (v) {
-                setState(() {
-                  _withPrivateKey = v;
-                });
-              },
-            ),
-            Divider(),
-            Text("Server running on"),
-            SizedBox(height: 10),
-            FlatButton(
-                color: Colors.black87,
-                textColor: Colors.lightGreenAccent,
-                onPressed: () {},
-                child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Center(
-                      child: Text("http://$_ip:3001", style: TextStyle(fontFamily: "monospace")),
-                    )))
-          ])),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, widget._data);
+          return false;
+        },
+        child: Scaffold(
+          appBar: AppBar(title: Text("Load/Save configuration")),
+          body: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(children: <Widget>[
+                SwitchListTile(
+                  secondary: Icon(Icons.lock_outline),
+                  title: Text("Include private key"),
+                  value: _withPrivateKey,
+                  onChanged: (v) {
+                    setState(() {
+                      _withPrivateKey = v;
+                      _server.json = widget._data.toJSON(_withPrivateKey);
+                    });
+                  },
+                ),
+                Divider(),
+                Text("Server running on"),
+                SizedBox(height: 10),
+                FlatButton(
+                    color: Colors.black87,
+                    textColor: Colors.lightGreenAccent,
+                    onPressed: () {},
+                    child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Center(
+                          child: Text("http://$_ip:3001", style: TextStyle(fontFamily: "monospace")),
+                        )))
+              ])),
+        ));
   }
 }
 
 class LoadSaveView extends StatefulWidget {
-  LoadSaveView();
+  ClusterUpData _data;
+  LoadSaveView(this._data);
 
   @override
   LoadSaveViewState createState() => LoadSaveViewState();
