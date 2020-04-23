@@ -7,21 +7,21 @@ import 'cluster.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
 import 'ssh_key.dart';
+import 'clusterup_data.dart';
 
 class ClustersState extends State<Clusters> {
   DBPersistence _db = DBPersistence();
-  List<Cluster> _clusters = [];
-  SSHKey _sshKey;
+  ClusterUpData _data = ClusterUpData();
 
   @override
   void initState() {
     _db.getSSHKey().then((sshKey) {
-      _sshKey = sshKey;
+      _data.sshKey = sshKey;
       setState(() {});
     });
 
     _db.readClusters().then((clusters) {
-      _clusters = clusters;
+      _data.clusters = clusters;
       setState(() {});
     });
     super.initState();
@@ -29,10 +29,10 @@ class ClustersState extends State<Clusters> {
 
   Widget _buildClustersOverview() {
     return ListView.builder(
-        itemCount: _clusters.length,
+        itemCount: _data.clusters.length,
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          return _buildRow(_clusters[i]);
+          return _buildRow(_data.clusters[i]);
         });
   }
 
@@ -57,7 +57,7 @@ class ClustersState extends State<Clusters> {
           onPressed: () {
             if (cluster.running) return;
             dev.log("Play : $cluster");
-            cluster.run(_sshKey).then((v) {
+            cluster.run(_data.sshKey).then((v) {
               setState(() {
                 cluster.running = false;
               });
@@ -80,7 +80,7 @@ class ClustersState extends State<Clusters> {
   void _showCluster(Cluster cluster) async {
     dev.log("_showCluster : $cluster");
     final Cluster result = await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
-      return ClusterView(_sshKey, cluster);
+      return ClusterView(_data.sshKey, cluster);
     }));
     if (result != null) {
       _db.addCluster(result);
@@ -92,7 +92,7 @@ class ClustersState extends State<Clusters> {
     final Cluster result = await Navigator.of(context).push(
       MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
-          return ClusterView.newCluster(_sshKey, _clusters.length);
+          return ClusterView.newCluster(_data.sshKey, _data.clusters.length);
         },
       ),
     );
@@ -100,23 +100,23 @@ class ClustersState extends State<Clusters> {
     setState(() {
       if (result != null) {
         dev.log("Adding $result");
-        _clusters.add(result);
+        _data.clusters.add(result);
         _db.addCluster(result);
       }
     });
   }
 
   void _keyMenu() async {
-    _sshKey = await Navigator.of(context).push(
+    _data.sshKey = await Navigator.of(context).push(
       MaterialPageRoute<SSHKey>(
         builder: (BuildContext context) {
-          return KeyView(_sshKey);
+          return KeyView(_data.sshKey);
         },
       ),
     );
 
-    if (_sshKey != null) {
-      _db.setSSHKey(_sshKey);
+    if (_data.sshKey != null) {
+      _db.setSSHKey(_data.sshKey);
     }
   }
 
@@ -131,13 +131,20 @@ class ClustersState extends State<Clusters> {
   }
 
   void _loadSaveMenu() async {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    _data = await Navigator.of(context).push(
+      MaterialPageRoute<ClusterUpData>(
         builder: (BuildContext context) {
-          return LoadSaveView();
+          return LoadSaveView(_data);
         },
       ),
     );
+
+    if (_data != null) {
+      setState(() {
+        _db.setClusters(_data.clusters);
+        _db.setSSHKey(_data.sshKey);
+      });
+    }
   }
 
   void _aboutMenu() async {
@@ -166,14 +173,14 @@ class ClustersState extends State<Clusters> {
     if (selected == ClusterOpts.Remove) {
       setState(() {
         dev.log("Removing $cluster");
-        _clusters.remove(cluster);
+        _data.clusters.remove(cluster);
         _db.removeCluster(cluster);
       });
     }
   }
 
   PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
-    String keyText = (_sshKey != null) ? "View SSH Key" : "Generate SSH Key";
+    String keyText = (_data.sshKey != null) ? "View SSH Key" : "Generate SSH Key";
     return PopupMenuButton<ClustersOpts>(
       onSelected: (ClustersOpts result) {
         switch (result) {
