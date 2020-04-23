@@ -6,49 +6,6 @@ import 'dart:developer' as dev;
 import 'package:mime/mime.dart';
 import 'package:http_server/http_server.dart';
 
-void serveForever(String folder) async {
-  dev.log("Running server on http://localhost:3001, to access emulator, run");
-  dev.log("adb forward tcp:3001 tcp:3001");
-
-  HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
-
-  if (server == null) {
-    dev.log("Could not start server");
-    return;
-  }
-
-  VirtualDirectory staticFiles = VirtualDirectory(folder);
-  staticFiles.allowDirectoryListing = true;
-  staticFiles.directoryHandler = (dir, request) {
-    Uri indexUri = Uri.file(dir.path).resolve('index.html');
-    staticFiles.serveFile(File(indexUri.toFilePath()), request);
-  };
-
-  await for (HttpRequest request in server) {
-    if (request.uri.path.startsWith("/stop")) break;
-
-    if (request.method == "POST" && request.uri.path.startsWith("/upload")) {
-      // parse multipart request
-      String boundary = request.headers.contentType.parameters['boundary'];
-      MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
-      String json = await utf8.decoder.bind(part).join();
-
-      // write to file
-      File jsonFile = File("$folder/clusterup.json");
-      jsonFile.writeAsStringSync(json);
-      request.response.redirect(Uri.parse('/'));
-      request.response.close();
-    }
-
-    if (request.method == "GET") {
-      staticFiles.serveRequest(request);
-    }
-  }
-
-  server.close();
-  dev.log("Server stopped");
-}
-
 class Http {
   static Future<String> GET(String url) async {
     HttpClientRequest request = await HttpClient().getUrl(Uri.parse(url));
@@ -58,6 +15,59 @@ class Http {
 }
 
 class Server {
+  String json = "";
+  void Function(String) onJson;
+
+  void serveForever(String folder) async {
+    dev.log("Running server on http://localhost:3001, to access emulator, run");
+    dev.log("adb forward tcp:3001 tcp:3001");
+
+    HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
+
+    if (server == null) {
+      dev.log("Could not start server");
+      return;
+    }
+
+    VirtualDirectory staticFiles = VirtualDirectory(folder);
+    staticFiles.allowDirectoryListing = true;
+    staticFiles.directoryHandler = (dir, request) {
+      Uri indexUri = Uri.file(dir.path).resolve('index.html');
+      staticFiles.serveFile(File(indexUri.toFilePath()), request);
+    };
+
+    await for (HttpRequest request in server) {
+      if (request.uri.path.startsWith("/stop")) break;
+
+      if (request.uri.path == "/clusterup.json") {
+        request.response.write(this.json);
+        request.response.close();
+        continue;
+      }
+
+      if (request.method == "POST" && request.uri.path.startsWith("/upload")) {
+        // parse multipart request
+        String boundary = request.headers.contentType.parameters['boundary'];
+        MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
+        this.json = await utf8.decoder.bind(part).join();
+        if (this.onJson != null) {
+          this.onJson(this.json);
+        }
+
+        request.response.redirect(Uri.parse('/'));
+        request.response.close();
+        continue;
+      }
+
+      if (request.method == "GET") {
+        staticFiles.serveRequest(request);
+      }
+    }
+
+    server.close();
+    dev.log("Server stopped");
+  }
+
   void start(String folder) {
     serveForever(folder);
   }
