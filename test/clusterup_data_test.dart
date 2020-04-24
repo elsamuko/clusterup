@@ -1,10 +1,11 @@
+import 'package:clusterup/remote_action.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:clusterup/clusterup_data.dart';
 import 'package:clusterup/cluster.dart';
 
 void main() {
-  test('Running server', () async {
+  test('IO', () async {
     String privPEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXgIBAAKBgQCrtwUnVi/NlhO7TvqzJmlVJNAsU20EFmFijeS3QekYOqt+etCD
 7ZaAX8284orEeDJkxtYMC3NjCM23N/F/qEDE2QC4pdCuJP5+Ov/6mvy+6ZrxgIa1
@@ -29,7 +30,7 @@ s/NAKRvWDv52+0iZRWxTRie1/DQ/4dfKo2R07uctJcdnbw==
         user: "user",
         host: "host",
         port: 22,
-        actionsJson: "[\"df\"]",
+        actions: Set.of([RemoteAction.getActionFor("df")]),
       )
     ];
 
