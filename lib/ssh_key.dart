@@ -31,7 +31,9 @@ class SSHKey {
   }
 
   Map<String, dynamic> toJson() {
-    return toMap();
+    Map<String, dynamic> m = toMap();
+    m["ssh"] = pubForSSH();
+    return m;
   }
 
   // https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md
