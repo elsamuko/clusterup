@@ -15,19 +15,22 @@ class Http {
 }
 
 class Server {
+  int socket;
   String json = "";
   void Function(String) onJson;
   HttpServer server;
+
+  Server(this.socket);
 
   bool isRunning() {
     return server != null;
   }
 
   void serveForever(String folder) async {
-    dev.log("Running server on http://localhost:3001, to access emulator, run");
-    dev.log("adb forward tcp:3001 tcp:3001");
+    dev.log("Running server on http://localhost:$socket, to access emulator, run");
+    dev.log("adb forward tcp:$socket tcp:$socket");
 
-    this.server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
+    this.server = await HttpServer.bind(InternetAddress.anyIPv4, socket);
 
     if (this.server == null) {
       dev.log("Could not start server");

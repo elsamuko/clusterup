@@ -11,7 +11,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
   LoadSaveViewState();
   String _base;
   String _ip = "";
-  Server _server = Server();
+  Server _server = Server(3001);
   bool _withPrivateKey = false;
 
   @override
@@ -102,7 +102,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
             child: Padding(
                 padding: EdgeInsets.all(8),
                 child: Center(
-                  child: Text("http://$_ip:3001", style: TextStyle(fontFamily: "monospace")),
+                  child: Text("http://$_ip:${_server.socket}", style: TextStyle(fontFamily: "monospace")),
                 )))
       ];
     }
