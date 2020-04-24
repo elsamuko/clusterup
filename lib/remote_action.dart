@@ -36,6 +36,10 @@ class RemoteAction {
   @override
   int get hashCode => name.hashCode;
 
+  String toJson() {
+    return name;
+  }
+
   factory RemoteAction.getActionFor(String name) {
     switch (name) {
       case "df":
