@@ -15,11 +15,25 @@ class SSHKey {
     _publicKey = RSAPublicKey(_privateKey.modulus, publicExponent);
   }
 
+  @override
+  bool operator ==(dynamic other) {
+    return this._privateKey == other._privateKey;
+  }
+
+  @override
+  int get hashCode => _privateKey.hashCode;
+
   Map<String, dynamic> toMap() {
     return {
       'id': "ssh_key",
       'private': privString(),
     };
+  }
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> m = toMap();
+    m["ssh"] = pubForSSH();
+    return m;
   }
 
   // https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md

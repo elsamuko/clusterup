@@ -4,7 +4,7 @@ import 'dart:core';
 import 'cluster.dart';
 
 // https://flutter.dev/docs/cookbook/persistence/sqlite
-class Persistence {
+class DBPersistence {
   final Future<Database> database = openDatabase(
     [getDatabasesPath(), 'cluster_up.db'].join('/'),
     onCreate: (db, version) {
@@ -27,7 +27,21 @@ class Persistence {
     );
   }
 
+  Future<void> setClusters(List<Cluster> clusters) async {
+    final Database db = await database;
+    await db.delete('clusters');
+    clusters.forEach((cluster) async {
+      await db.insert(
+        'clusters',
+        cluster.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+  }
+
   Future<void> setSSHKey(SSHKey key) async {
+    if (key == null) return;
+
     final Database db = await database;
     await db.insert(
       'ssh_keys',
@@ -64,14 +78,7 @@ class Persistence {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('clusters');
     return List.generate(maps.length, (i) {
-      return Cluster(
-        id: maps[i]['id'] ?? 0,
-        name: maps[i]['name'] ?? "",
-        user: maps[i]['user'] ?? "",
-        host: maps[i]['host'] ?? "",
-        port: maps[i]['port'] ?? 22,
-        actionsJson: maps[i]['actions'] ?? "[]",
-      );
+      return Cluster.fromMap(maps[i]);
     });
   }
 }

@@ -20,6 +20,14 @@ class RemoteAction {
     ]);
   }
 
+  static Set<RemoteAction> getActionsFor(List<String> names) {
+    Set<RemoteAction> actions = Set<RemoteAction>();
+    names.forEach((String name) {
+      actions.add(RemoteAction.getActionFor(name));
+    });
+    return actions;
+  }
+
   @override
   bool operator ==(dynamic other) {
     return this.name == other.name;
@@ -27,6 +35,10 @@ class RemoteAction {
 
   @override
   int get hashCode => name.hashCode;
+
+  String toJson() {
+    return name;
+  }
 
   factory RemoteAction.getActionFor(String name) {
     switch (name) {

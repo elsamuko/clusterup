@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Load/Save clusters</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="bootstrap.css">
+    <style>
+        body {
+            height: 100%;
+            background-color: lightgrey;
+        }
+        #jsonPreview {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+    <script>
+        function loadJSON() {
+            var ajax = new XMLHttpRequest();
+            ajax.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("jsonPreview").innerHTML = this.responseText;
+                }
+            };
+            ajax.open("GET", "clusterup.json");
+            ajax.send();
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="d-flex align-items-center vh-100">
+        <div class="container">
+            <div class="d-flex">
+
+                <!--upload-->
+                <div class="p-2">
+                    <form method="post" action="upload" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <div class="input-group-prepend ">
+                                <button class="btn btn-primary" type="submit">Upload configuration</button>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile" accept="application/json">
+                                <label class="custom-file-label" for="jsonFile">Select file...</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!--download-->
+                <div class="ml-auto p-2">
+                        <a class="btn btn-success" href="/clusterup.json" download>Download configuration</a>
+                </div>
+            </div>
+
+            <!--json preview-->
+            <div class="card mt-3 bg-dark text-light">
+                <div class="card-body">
+                    <p id="jsonPreview" class="card-text text-monospace"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // display current config
+        loadJSON();
+
+        // show filename
+        (function () {
+            document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+                var fileName = document.getElementById("jsonFile").files[0].name;
+                var nextSibling = e.target.nextElementSibling
+                nextSibling.innerText = fileName
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

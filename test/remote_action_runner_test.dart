@@ -1,5 +1,5 @@
 import 'package:clusterup/cluster.dart';
-import 'package:clusterup/persistence.dart';
+import 'package:clusterup/db_persistence.dart';
 import 'package:clusterup/remote_action.dart';
 import 'package:clusterup/remote_action_runner.dart';
 import 'package:clusterup/ssh_key.dart';
@@ -11,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('RunCommands', () async {
-    var db = Persistence();
+    var db = DBPersistence();
     List<Cluster> read = await db.readClusters();
     SSHKey key = await db.getSSHKey();
     Cluster cluster = read.first;

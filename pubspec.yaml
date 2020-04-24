@@ -23,6 +23,9 @@ dependencies:
   sqflite:              # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   path:                 # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl:                 # BSD https://github.com/dart-lang/intl/blob/master/LICENSE
+  http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
+  path_provider:        # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
+  wifi:                 # MIT https://github.com/once10301/wifi/blob/master/LICENSE
   flutter:
     sdk: flutter
 
@@ -57,10 +60,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - res/web/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
