@@ -16,12 +16,12 @@ class ClusterUpData {
     Map<String, dynamic> data = {};
     data["clusters"] = clusters;
 
-    // include ssh public key
-    data["ssh"] = sshKey.pubForSSH();
-
     // include private key only on demand
     if (withPrivateKey) {
       data["key"] = sshKey;
+    } else {
+      // only ssh public key
+      data["key"] = {"ssh": sshKey.pubForSSH()};
     }
 
     // encode as multiline json
