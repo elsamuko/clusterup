@@ -16,15 +16,11 @@ class Cluster {
   bool running = false;
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
   Color lastStatusAsColor = Colors.white;
-  Set<RemoteAction> actions = Set<RemoteAction>();
+  Set<RemoteAction> actions;
 
-  Cluster({this.id, this.name, this.user, this.host, this.port, String actionsJson}) {
-    if (actionsJson != null) {
-      List<String> actionNames = jsonDecode(actionsJson).cast<String>();
-
-      actionNames.forEach((String name) {
-        actions.add(RemoteAction.getActionFor(name));
-      });
+  Cluster({this.id, this.name, this.user, this.host, this.port, this.actions}) {
+    if (actions == null) {
+      actions = Set<RemoteAction>();
     }
   }
 
@@ -69,17 +65,35 @@ class Cluster {
   }
 
   Map<String, dynamic> toJson() {
-    return toMap();
+    Map<String, dynamic> m = toMap();
+    m["actions"] = actions.toList();
+    return m;
   }
 
   static Cluster fromMap(Map<String, dynamic> data) {
+    Set<RemoteAction> actions = Set<RemoteAction>();
+
+    var blob = data['actions'];
+
+    if (blob != null) {
+      // if its json, decode first
+      if (blob.runtimeType == "".runtimeType) {
+        List<String> names = jsonDecode(blob).cast<String>();
+        actions = RemoteAction.getActionsFor(names);
+      } else {
+        blob.cast<String>().forEach((String name) {
+          actions.add(RemoteAction.getActionFor(name));
+        });
+      }
+    }
+
     return Cluster(
       id: data['id'] ?? 0,
       name: data['name'] ?? "",
       user: data['user'] ?? "",
       host: data['host'] ?? "",
       port: data['port'] ?? 22,
-      actionsJson: data['actions'] ?? "[]",
+      actions: actions,
     );
   }
 
