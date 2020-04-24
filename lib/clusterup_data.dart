@@ -24,7 +24,9 @@ class ClusterUpData {
       data["key"] = sshKey;
     }
 
-    return jsonEncode(data);
+    // encode as multiline json
+    JsonEncoder encoder = JsonEncoder.withIndent("  ");
+    return encoder.convert(data);
   }
 
   static ClusterUpData fromJSON(String input) {
