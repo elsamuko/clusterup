@@ -17,14 +17,19 @@ class Http {
 class Server {
   String json = "";
   void Function(String) onJson;
+  HttpServer server;
+
+  bool isRunning() {
+    return server != null;
+  }
 
   void serveForever(String folder) async {
     dev.log("Running server on http://localhost:3001, to access emulator, run");
     dev.log("adb forward tcp:3001 tcp:3001");
 
-    HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
+    this.server = await HttpServer.bind(InternetAddress.anyIPv4, 3001);
 
-    if (server == null) {
+    if (this.server == null) {
       dev.log("Could not start server");
       return;
     }
@@ -36,9 +41,7 @@ class Server {
       staticFiles.serveFile(File(indexUri.toFilePath()), request);
     };
 
-    await for (HttpRequest request in server) {
-      if (request.uri.path.startsWith("/stop")) break;
-
+    await for (HttpRequest request in this.server) {
       if (request.uri.path == "/clusterup.json") {
         request.response.write(this.json);
         request.response.close();
@@ -64,7 +67,6 @@ class Server {
       }
     }
 
-    server.close();
     dev.log("Server stopped");
   }
 
@@ -73,7 +75,10 @@ class Server {
   }
 
   void stop() async {
-    dev.log("Send stop request");
-    await Http.GET('http://localhost:3001/stop');
+    if (this.server != null) {
+      dev.log("Stopping server");
+      await this.server.close(force: true);
+      this.server = null;
+    }
   }
 }
