@@ -33,8 +33,10 @@ class LoadSaveViewState extends State<LoadSaveView> {
         f.writeAsBytes(content.buffer.asInt8List());
       });
 
+      // set current config as json string
       _server.json = widget._data.toJSON(_withPrivateKey);
 
+      // configure callback when server gets a new json string
       _server.onJson = (String json) {
         ClusterUpData data = ClusterUpData.fromJSON(json);
         if (data.clusters != null) {
@@ -44,8 +46,6 @@ class LoadSaveViewState extends State<LoadSaveView> {
           widget._data.sshKey = data.sshKey;
         }
       };
-
-      _server.start(_base);
     });
     super.initState();
   }
@@ -60,6 +60,53 @@ class LoadSaveViewState extends State<LoadSaveView> {
   Widget build(BuildContext context) {
     dev.log("load/save view");
 
+    List<Widget> children = <Widget>[
+      SwitchListTile(
+        secondary: Icon(Icons.lock_outline),
+        title: Text("Include private key"),
+        value: _withPrivateKey,
+        onChanged: (v) {
+          setState(() {
+            _withPrivateKey = v;
+            _server.json = widget._data.toJSON(_withPrivateKey);
+          });
+        },
+      ),
+      Divider(),
+      FlatButton(
+          color: _server.isRunning() ? Colors.red[800] : Colors.blue[800],
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              if (_server.isRunning()) {
+                _server.stop();
+              } else {
+                _server.start(_base);
+              }
+            });
+          },
+          child: Text(
+            _server.isRunning() ? "Stop server" : "Start server",
+          ))
+    ];
+
+    if (_server.isRunning()) {
+      children += <Widget>[
+        Divider(),
+        Text("Server running on"),
+        SizedBox(height: 10),
+        FlatButton(
+            color: Colors.black87,
+            textColor: Colors.lightGreenAccent,
+            onPressed: () {},
+            child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Center(
+                  child: Text("http://$_ip:3001", style: TextStyle(fontFamily: "monospace")),
+                )))
+      ];
+    }
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context, widget._data);
@@ -67,33 +114,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
         },
         child: Scaffold(
           appBar: AppBar(title: Text("Load/Save configuration")),
-          body: Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(children: <Widget>[
-                SwitchListTile(
-                  secondary: Icon(Icons.lock_outline),
-                  title: Text("Include private key"),
-                  value: _withPrivateKey,
-                  onChanged: (v) {
-                    setState(() {
-                      _withPrivateKey = v;
-                      _server.json = widget._data.toJSON(_withPrivateKey);
-                    });
-                  },
-                ),
-                Divider(),
-                Text("Server running on"),
-                SizedBox(height: 10),
-                FlatButton(
-                    color: Colors.black87,
-                    textColor: Colors.lightGreenAccent,
-                    onPressed: () {},
-                    child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Center(
-                          child: Text("http://$_ip:3001", style: TextStyle(fontFamily: "monospace")),
-                        )))
-              ])),
+          body: Padding(padding: EdgeInsets.all(20), child: Column(children: children)),
         ));
   }
 }
