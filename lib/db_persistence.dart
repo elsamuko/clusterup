@@ -40,6 +40,8 @@ class DBPersistence {
   }
 
   Future<void> setSSHKey(SSHKey key) async {
+    if (key == null) return;
+
     final Database db = await database;
     await db.insert(
       'ssh_keys',
