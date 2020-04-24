@@ -7,9 +7,7 @@ class ClusterUpData {
   List<Cluster> clusters;
   SSHKey sshKey;
   ClusterUpData({this.clusters, this.sshKey}) {
-    if (this.clusters == null) {
-      clusters = [];
-    }
+    clusters ??= [];
   }
 
   String toJSON(bool withPrivateKey) {

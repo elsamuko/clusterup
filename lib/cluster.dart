@@ -19,9 +19,7 @@ class Cluster {
   Set<RemoteAction> actions;
 
   Cluster({this.id, this.name, this.user, this.host, this.port, this.actions}) {
-    if (actions == null) {
-      actions = Set<RemoteAction>();
-    }
+    actions ??= Set<RemoteAction>();
   }
 
   @override
