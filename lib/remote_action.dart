@@ -17,6 +17,7 @@ class RemoteAction {
     return Set.from([
       RemoteAction.getDiskFreeAction(),
       RemoteAction.getUptimeAction(),
+      RemoteAction.getUpdatesAvailableAction(),
     ]);
   }
 
@@ -47,6 +48,9 @@ class RemoteAction {
         break;
       case "uptime":
         return RemoteAction.getUptimeAction();
+        break;
+      case "updates":
+        return RemoteAction.getUpdatesAvailableAction();
         break;
       default:
         return RemoteAction("");
@@ -92,6 +96,20 @@ class RemoteAction {
       DateTime started = format.parse(stdout);
       filtered = started.toString();
       status = RemoteActionStatus.Success;
+      return status;
+    };
+  }
+  RemoteAction.getUpdatesAvailableAction() {
+    name = "updates";
+    description = "checks available updates";
+    commands.add("apt list --upgradeable");
+    filter = (stdout) {
+      int lc = stdout.split("\n").length - 1; // minus "Listing... Done" message
+      filtered = lc.toString();
+      if (lc > 0)
+        status = RemoteActionStatus.Warning;
+      else
+        status = RemoteActionStatus.Success;
       return status;
     };
   }
