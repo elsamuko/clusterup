@@ -35,8 +35,13 @@ class SSHConnection {
           for (String command in commands) {
             dev.log("Running $command");
             String out = await client.execute(command);
-            dev.log("Got $out");
-            rv.output.add(out);
+            if (out.isNotEmpty) {
+              dev.log("Got $out");
+              rv.output += out.split("\r\n");
+              if (rv.output.last.isEmpty) {
+                rv.output.removeLast();
+              }
+            }
           }
         }
         client.disconnect();
