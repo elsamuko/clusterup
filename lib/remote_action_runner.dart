@@ -18,7 +18,7 @@ class RemoteActionRunner {
   Future<RemoteActionRunnerResult> run() async {
     RemoteActionRunnerResult result = RemoteActionRunnerResult();
     result._sshConnectionResult = await SSHConnection.run(_cluster, _sshKey, _action.commands);
-    result.remoteActionStatus = _action.filter(result._sshConnectionResult.output.join("\n"));
+    result.remoteActionStatus = _action.filter(result._sshConnectionResult.output);
     return result;
   }
 }

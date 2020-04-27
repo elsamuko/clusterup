@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-typedef Filter = RemoteActionStatus Function(String stdout);
+typedef Filter = RemoteActionStatus Function(List<String> lines);
 
 enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
@@ -61,22 +61,32 @@ class RemoteAction {
     name = "df";
     description = "checks free disk space on /";
     commands.add("df /");
-    filter = (stdout) {
-      RegExp regExp = new RegExp("(\\d+)%");
-      RegExpMatch match = regExp.firstMatch(stdout);
+    filter = (lines) {
+      status = RemoteActionStatus.Unknown;
 
-      if (match == null) return RemoteActionStatus.Unknown;
-
-      if (match.groupCount != 1) return RemoteActionStatus.Unknown;
-
-      filtered = match[1];
-
-      int percent = int.tryParse(filtered);
-
-      if (percent == null) {
-        status = RemoteActionStatus.Unknown;
+      // sth went wrong
+      if (lines.length < 2) {
         return status;
       }
+
+      RegExp regExp = new RegExp("(\\d+)%");
+      RegExpMatch match = regExp.firstMatch(lines[1]);
+
+      if (match == null) {
+        return status;
+      }
+
+      if (match.groupCount != 1) {
+        return status;
+      }
+
+      int percent = int.tryParse(match[1]);
+
+      if (percent == null) {
+        return status;
+      }
+
+      filtered = "$percent% used space";
 
       if (percent < 50)
         status = RemoteActionStatus.Success;
@@ -91,10 +101,15 @@ class RemoteAction {
     name = "uptime";
     description = "checks uptime";
     commands.add("uptime -s");
-    filter = (stdout) {
+    filter = (lines) {
+      // sth went wrong
+      if (lines.length < 1) return RemoteActionStatus.Unknown;
+
       DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
-      DateTime started = format.parse(stdout);
-      filtered = started.toString();
+      DateTime started = format.parse(lines[0]);
+      int days = DateTime.now().difference(started).inDays;
+      filtered = "$days days";
+
       status = RemoteActionStatus.Success;
       return status;
     };
