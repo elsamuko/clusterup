@@ -80,7 +80,10 @@ class Cluster {
         actions = RemoteAction.getActionsFor(names);
       } else {
         blob.cast<String>().forEach((String name) {
-          actions.add(RemoteAction.getActionFor(name));
+          RemoteAction action = RemoteAction.getActionFor(name);
+          if (action != null) {
+            actions.add(action);
+          }
         });
       }
     }

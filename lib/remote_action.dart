@@ -24,7 +24,10 @@ class RemoteAction {
   static Set<RemoteAction> getActionsFor(List<String> names) {
     Set<RemoteAction> actions = Set<RemoteAction>();
     names.forEach((String name) {
-      actions.add(RemoteAction.getActionFor(name));
+      RemoteAction action = RemoteAction.getActionFor(name);
+      if (action != null) {
+        actions.add(action);
+      }
     });
     return actions;
   }
@@ -49,11 +52,11 @@ class RemoteAction {
       case "uptime":
         return RemoteAction.getUptimeAction();
         break;
-      case "updates":
+      case "apt.updates":
         return RemoteAction.getAptUpdatesAvailableAction();
         break;
       default:
-        return RemoteAction("");
+        return null;
     }
   }
 
