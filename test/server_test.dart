@@ -15,6 +15,6 @@ void main() {
     String result = await Http.GET('http://localhost:3002');
     expect(result, "OK");
 
-    await server.stop();
+    server.stop();
   });
 }

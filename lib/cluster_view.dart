@@ -6,7 +6,6 @@ import 'remote_actions_view.dart';
 import 'ssh_connection.dart';
 import 'cluster.dart';
 import 'remote_action.dart';
-import 'remote_action_runner.dart';
 
 class ClusterViewState extends State<ClusterView> {
   ClusterViewState();
@@ -21,12 +20,9 @@ class ClusterViewState extends State<ClusterView> {
 
     void _testSSH() async {
       dev.log("Testing ${widget._cluster}");
-      SSHConnectionResult result =
-          await SSHConnection.test(widget._cluster, widget._key);
+      SSHConnectionResult result = await SSHConnection.test(widget._cluster, widget._key);
 
-      String text = result.success
-          ? "SSH connection successful!"
-          : "SSH connection failed : ${result.error}";
+      String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
       final snackBar = SnackBar(content: Text(text));
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
@@ -75,17 +71,13 @@ class ClusterViewState extends State<ClusterView> {
                                   hintText: 'username',
                                   labelText: 'username',
                                 ),
-                                inputFormatters: [
-                                  BlacklistingTextInputFormatter(RegExp("[ ]"))
-                                ],
+                                inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                 onSaved: (String value) {
                                   widget._cluster.user = value;
                                 },
                                 initialValue: widget._cluster?.user,
                                 validator: (String value) {
-                                  return value.contains('@')
-                                      ? 'Do not use the @ char.'
-                                      : null;
+                                  return value.contains('@') ? 'Do not use the @ char.' : null;
                                 },
                               ),
                               TextFormField(
@@ -94,17 +86,13 @@ class ClusterViewState extends State<ClusterView> {
                                   hintText: 'Server domain',
                                   labelText: 'server',
                                 ),
-                                inputFormatters: [
-                                  BlacklistingTextInputFormatter(RegExp("[ ]"))
-                                ],
+                                inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                 onSaved: (String value) {
                                   widget._cluster.host = value;
                                 },
                                 initialValue: widget._cluster?.host,
                                 validator: (String value) {
-                                  return value.contains('@')
-                                      ? 'Do not use the @ char.'
-                                      : null;
+                                  return value.contains('@') ? 'Do not use the @ char.' : null;
                                 },
                               ),
                               TextFormField(
@@ -117,8 +105,7 @@ class ClusterViewState extends State<ClusterView> {
                                 onSaved: (String value) {
                                   widget._cluster.port = int.parse(value);
                                 },
-                                initialValue:
-                                    (widget._cluster?.port ?? 22).toString(),
+                                initialValue: (widget._cluster?.port ?? 22).toString(),
                                 validator: (String value) {
                                   if (int.tryParse(value) == 0) {
                                     return "Invalid port number";
@@ -150,8 +137,7 @@ class ClusterViewState extends State<ClusterView> {
                   textColor: Colors.white,
                   onPressed: () async {
                     dev.log("Configure Actions");
-                    Set<RemoteAction> selected =
-                        await Navigator.of(context).push(
+                    Set<RemoteAction> selected = await Navigator.of(context).push(
                       MaterialPageRoute<Set<RemoteAction>>(
                         builder: (BuildContext context) {
                           return ActionsView(saved: widget._cluster.actions);
@@ -171,9 +157,7 @@ class ClusterViewState extends State<ClusterView> {
                   textColor: Colors.white,
                   onPressed: () async {
                     widget._cluster.run(widget._key).then((v) {
-                      String text = widget._cluster.lastWasSuccess()
-                          ? "Tests successful!"
-                          : "Tests failed";
+                      String text = widget._cluster.lastWasSuccess() ? "Tests successful!" : "Tests failed";
                       final snackBar = SnackBar(content: Text(text));
                       _scaffoldKey.currentState.showSnackBar(snackBar);
                     });

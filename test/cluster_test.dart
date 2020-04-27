@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:clusterup/ssh_key.dart';
-import 'package:clusterup/clusterup_data.dart';
 import 'package:clusterup/cluster.dart';
 
 void main() {
