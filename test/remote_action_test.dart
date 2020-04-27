@@ -17,7 +17,7 @@ void main() {
   });
 
   test('test action updates', () {
-    RemoteAction action = RemoteAction.getUpdatesAvailableAction();
+    RemoteAction action = RemoteAction.getAptUpdatesAvailableAction();
     RemoteActionStatus status = action.filter([
       "Listing... Done",
       "binutils-arm-linux-gnueabihf/stable 2.31.1-16+rpi2 armhf [upgradable from: 2.31.1-16+rpi1]",
