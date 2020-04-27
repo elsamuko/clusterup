@@ -118,13 +118,29 @@ class RemoteAction {
     name = "updates";
     description = "checks available updates";
     commands.add("apt list --upgradeable");
-    filter = (stdout) {
-      int lc = stdout.split("\n").length - 1; // minus "Listing... Done" message
-      filtered = lc.toString();
-      if (lc > 0)
-        status = RemoteActionStatus.Warning;
-      else
-        status = RemoteActionStatus.Success;
+    filter = (lines) {
+      // no updates available -> success
+      if (lines.length < 2) return RemoteActionStatus.Success;
+
+      // remove "Listing... Done" message
+      lines.removeAt(0);
+
+      int security = 0;
+      int other = 0;
+
+      lines.forEach((line) {
+        if (line.contains("-security "))
+          security++;
+        else
+          other++;
+      });
+
+      filtered = "$security security updates, $other other updates";
+
+      if (other > 0) status = RemoteActionStatus.Warning;
+      if (security > 0) status = RemoteActionStatus.Error;
+      if (lines.length == 0) status = RemoteActionStatus.Success;
+
       return status;
     };
   }
