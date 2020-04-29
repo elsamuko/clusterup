@@ -13,17 +13,24 @@
             height: 100%;
             background-color: lightgrey;
         }
+
         #jsonPreview {
             max-height: 500px;
             overflow-y: auto;
+            white-space: pre-wrap;
         }
     </style>
     <script>
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
         function loadJSON() {
             var ajax = new XMLHttpRequest();
             ajax.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("jsonPreview").innerHTML = this.responseText;
+                    document.getElementById("jsonPreview").innerHTML = escapeHtml(this.responseText);
                 }
             };
             ajax.open("GET", "clusterup.json");
@@ -46,7 +53,8 @@
                                 <button class="btn btn-primary" type="submit">Upload configuration</button>
                             </div>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile" accept="application/json">
+                                <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile"
+                                    accept="application/json">
                                 <label class="custom-file-label" for="jsonFile">Select file...</label>
                             </div>
                         </div>
@@ -55,7 +63,7 @@
 
                 <!--download-->
                 <div class="ml-auto p-2">
-                        <a class="btn btn-success" href="/clusterup.json" download>Download configuration</a>
+                    <a class="btn btn-success" href="/clusterup.json" download>Download configuration</a>
                 </div>
             </div>
 
