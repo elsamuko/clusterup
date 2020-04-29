@@ -12,6 +12,9 @@ class ClusterUpData {
 
   String toJSON(bool withPrivateKey) {
     Map<String, dynamic> data = {};
+
+    data["version"] = 1;
+
     data["clusters"] = clusters;
 
     if (sshKey != null) {
