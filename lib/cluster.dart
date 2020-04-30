@@ -111,6 +111,7 @@ class Cluster {
   Future<void> run(SSHKey key) async {
     lastStatus = RemoteActionStatus.Unknown;
     for (RemoteAction action in actions) {
+      action.reset();
       this.onActionStarted(action);
 
       RemoteActionRunner runner = RemoteActionRunner(this, action, key);

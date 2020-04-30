@@ -14,6 +14,11 @@ class RemoteAction {
 
   RemoteAction(this.name);
 
+  void reset() {
+    filtered = "";
+    status = RemoteActionStatus.Unknown;
+  }
+
   static Set<RemoteAction> allActions() {
     return Set.from([
       RemoteAction.getDiskFreeAction(),
