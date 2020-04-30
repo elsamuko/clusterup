@@ -85,6 +85,7 @@ class ClustersState extends State<Clusters> {
       return ClusterView(_data.sshKey, cluster);
     }));
     if (result != null) {
+      dev.log("_showCluster : Updating $cluster");
       _db.addCluster(result);
     }
   }
