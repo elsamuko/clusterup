@@ -10,7 +10,8 @@ class RemoteAction {
   List<String> commands = [];
   Filter filter;
   RemoteActionStatus status = RemoteActionStatus.Unknown;
-  String filtered;
+  String filtered = "";
+
   RemoteAction(this.name);
 
   static Set<RemoteAction> allActions() {
@@ -105,8 +106,10 @@ class RemoteAction {
     description = "checks uptime";
     commands.add("uptime -s");
     filter = (lines) {
+      status = RemoteActionStatus.Unknown;
+
       // sth went wrong
-      if (lines.length < 1) return RemoteActionStatus.Unknown;
+      if (lines.length < 1) return status;
 
       DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
       DateTime started = format.parse(lines[0]);
@@ -122,8 +125,10 @@ class RemoteAction {
     description = "checks available updates with apt";
     commands.add("apt list --upgradeable");
     filter = (lines) {
+      status = RemoteActionStatus.Success;
+
       // no updates available -> success
-      if (lines.length < 2) return RemoteActionStatus.Success;
+      if (lines.length < 2) return status;
 
       // remove "Listing... Done" message
       lines.removeAt(0);
