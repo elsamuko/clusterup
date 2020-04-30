@@ -41,28 +41,34 @@ class ResultsViewState extends State<ResultsView> {
 
   Widget _buildRow(RemoteAction action) {
     bool running = action == current;
-    Icon icon = Icon(running ? Icons.all_inclusive : Icons.done);
+    var ndicator = running
+        ? SizedBox(
+            child: CircularProgressIndicator(),
+            height: 15.0,
+            width: 15.0,
+          )
+        : Icon(Icons.done);
 
     if (!running) {
       switch (action.status) {
         case RemoteActionStatus.Unknown:
-          icon = Icon(Icons.done, color: Colors.white);
+          ndicator = Icon(Icons.done, color: Colors.white);
           break;
         case RemoteActionStatus.Success:
-          icon = Icon(Icons.check_circle, color: Colors.green[300]);
+          ndicator = Icon(Icons.check_circle, color: Colors.green[300]);
           break;
         case RemoteActionStatus.Warning:
-          icon = Icon(Icons.warning, color: Colors.orange[300]);
+          ndicator = Icon(Icons.warning, color: Colors.orange[300]);
           break;
         case RemoteActionStatus.Error:
-          icon = Icon(Icons.error, color: Colors.red[300]);
+          ndicator = Icon(Icons.error, color: Colors.red[300]);
           break;
       }
     }
     return ListTile(
       title: Text(action.name),
       subtitle: Text(action.filtered),
-      trailing: icon,
+      trailing: ndicator,
     );
   }
 
