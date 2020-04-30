@@ -1,7 +1,9 @@
 import 'package:clusterup/load_save_view.dart';
+import 'package:clusterup/remote_action_results_view.dart';
 import 'package:clusterup/remote_actions_view.dart';
 import 'package:clusterup/db_persistence.dart';
 import 'package:flutter/material.dart';
+import 'remote_actions_view.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
 import 'cluster_view.dart';
@@ -164,18 +166,30 @@ class ClustersState extends State<Clusters> {
       value: ClusterOpts.Remove,
     );
 
+    var itemLastRun = PopupMenuItem(
+      child: Text("Show last run"),
+      value: ClusterOpts.LastRun,
+    );
+
     var selected = await showMenu(
       context: context,
       position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
-      items: [itemRemove],
+      items: [itemLastRun, itemRemove],
     );
 
-    if (selected == ClusterOpts.Remove) {
-      setState(() {
-        dev.log("Removing $cluster");
-        _data.clusters.remove(cluster);
-        _db.removeCluster(cluster);
-      });
+    switch (selected) {
+      case ClusterOpts.Remove:
+        setState(() {
+          dev.log("Removing $cluster");
+          _data.clusters.remove(cluster);
+          _db.removeCluster(cluster);
+        });
+        break;
+      case ClusterOpts.LastRun:
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+          return ResultsView(null, cluster, false);
+        }));
+        break;
     }
   }
 
@@ -256,7 +270,7 @@ class ClustersState extends State<Clusters> {
 }
 
 enum ClustersOpts { NewCluster, Key, Actions, LoadSave, About }
-enum ClusterOpts { Remove }
+enum ClusterOpts { Remove, LastRun }
 
 class Clusters extends StatefulWidget {
   @override
