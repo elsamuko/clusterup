@@ -1,3 +1,4 @@
+import 'package:clusterup/remote_action_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -156,11 +157,9 @@ class ClusterViewState extends State<ClusterView> {
                   color: Colors.green[600],
                   textColor: Colors.white,
                   onPressed: () async {
-                    widget._cluster.run(widget._key).then((v) {
-                      String text = widget._cluster.lastWasSuccess() ? "Tests successful!" : "Tests failed";
-                      final snackBar = SnackBar(content: Text(text));
-                      _scaffoldKey.currentState.showSnackBar(snackBar);
-                    });
+                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+                      return ResultsView(widget._key, widget._cluster, true);
+                    }));
                   },
                   child: Text(
                     "Run",
