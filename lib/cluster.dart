@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'remote_action.dart';
 import 'remote_action_runner.dart';
 
+typedef OnActionCallback = void Function(RemoteAction action);
+
 class Cluster {
   int id;
   String name = "";
@@ -17,9 +19,13 @@ class Cluster {
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
   Color lastStatusAsColor = Colors.white;
   Set<RemoteAction> actions;
+  OnActionCallback onActionStarted;
+  OnActionCallback onActionFinished;
 
   Cluster({this.id, this.name, this.user, this.host, this.port, this.actions}) {
     actions ??= Set<RemoteAction>();
+    onActionStarted = (RemoteAction action) {};
+    onActionFinished = (RemoteAction action) {};
   }
 
   @override
@@ -105,8 +111,13 @@ class Cluster {
   Future<void> run(SSHKey key) async {
     lastStatus = RemoteActionStatus.Unknown;
     for (RemoteAction action in actions) {
+      this.onActionStarted(action);
+
       RemoteActionRunner runner = RemoteActionRunner(this, action, key);
       RemoteActionRunnerResult result = await runner.run();
+
+      this.onActionFinished(action);
+
       if (result.remoteActionStatus.index > lastStatus.index) {
         lastStatus = result.remoteActionStatus;
       }
