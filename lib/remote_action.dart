@@ -19,6 +19,8 @@ class RemoteAction {
       RemoteAction.getDiskFreeAction(),
       RemoteAction.getUptimeAction(),
       RemoteAction.getAptUpdatesAvailableAction(),
+      RemoteAction.getLsbDescriptionAction(),
+      RemoteAction.getUnameAction(),
     ]);
   }
 
@@ -55,6 +57,12 @@ class RemoteAction {
         break;
       case "apt.updates":
         return RemoteAction.getAptUpdatesAvailableAction();
+        break;
+      case "lsb_release":
+        return RemoteAction.getLsbDescriptionAction();
+        break;
+      case "uname":
+        return RemoteAction.getUnameAction();
         break;
       default:
         return null;
@@ -148,6 +156,46 @@ class RemoteAction {
       if (other > 0) status = RemoteActionStatus.Warning;
       if (security > 0) status = RemoteActionStatus.Error;
       if (lines.length == 0) status = RemoteActionStatus.Success;
+
+      return status;
+    };
+  }
+  RemoteAction.getLsbDescriptionAction() {
+    name = "lsb_release";
+    description = "queries distribution information";
+    commands.add("lsb_release -d");
+    filter = (lines) {
+      status = RemoteActionStatus.Unknown;
+
+      // must be one line
+      if (lines.length != 1) return status;
+
+      String line = lines.first;
+      String search = "Description:\t";
+
+      if (line.startsWith(search)) {
+        filtered = line.substring(search.length);
+        status = RemoteActionStatus.Success;
+      } else {
+        filtered = "Invalid description";
+        status = RemoteActionStatus.Warning;
+      }
+
+      return status;
+    };
+  }
+  RemoteAction.getUnameAction() {
+    name = "uname";
+    description = "queries kernel version";
+    commands.add("uname -r");
+    filter = (lines) {
+      status = RemoteActionStatus.Unknown;
+
+      // must be one line
+      if (lines.length != 1) return status;
+
+      filtered = lines.first;
+      status = RemoteActionStatus.Success;
 
       return status;
     };
