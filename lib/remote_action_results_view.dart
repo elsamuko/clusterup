@@ -37,6 +37,8 @@ class ResultsViewState extends State<ResultsView> {
     } else {
       actions = this._cluster.actions.toList();
     }
+
+    super.initState();
   }
 
   @override
