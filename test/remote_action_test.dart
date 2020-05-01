@@ -36,4 +36,16 @@ void main() {
 
     expect(status2, RemoteActionStatus.Error);
   });
+
+  test('test action lsb_release', () {
+    RemoteAction action = RemoteAction.getLsbDescriptionAction();
+    RemoteActionStatus status = action.filter(["Description:	Raspbian GNU/Linux 10 (buster)"]);
+    expect(status, RemoteActionStatus.Success);
+  });
+
+  test('test action uname', () {
+    RemoteAction action = RemoteAction.getUnameAction();
+    RemoteActionStatus status = action.filter(["4.19.66-v7+"]);
+    expect(status, RemoteActionStatus.Success);
+  });
 }
