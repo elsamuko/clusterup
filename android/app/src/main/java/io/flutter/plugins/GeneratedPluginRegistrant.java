@@ -14,9 +14,9 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 public final class GeneratedPluginRegistrant {
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
     ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
+      de.pdad.getip.GetIpPlugin.registerWith(shimPluginRegistry.registrarFor("de.pdad.getip.GetIpPlugin"));
     flutterEngine.getPlugins().add(new io.flutter.plugins.pathprovider.PathProviderPlugin());
     flutterEngine.getPlugins().add(new com.tekartik.sqflite.SqflitePlugin());
       sq.flutter.ssh.SshPlugin.registerWith(shimPluginRegistry.registrarFor("sq.flutter.ssh.SshPlugin"));
-      com.ly.wifi.WifiPlugin.registerWith(shimPluginRegistry.registrarFor("com.ly.wifi.WifiPlugin"));
   }
 }

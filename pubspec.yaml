@@ -25,7 +25,7 @@ dependencies:
   intl:                 # BSD https://github.com/dart-lang/intl/blob/master/LICENSE
   http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
   path_provider:        # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
-  wifi:                 # MIT https://github.com/once10301/wifi/blob/master/LICENSE
+  get_ip:               # https://github.com/lotrofans/get_ip_flutter/blob/master/LICENSE
   flutter:
     sdk: flutter
 
