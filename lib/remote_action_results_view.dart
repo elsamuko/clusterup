@@ -39,6 +39,13 @@ class ResultsViewState extends State<ResultsView> {
     }
   }
 
+  @override
+  void dispose() {
+    _cluster.onActionStarted = (RemoteAction action) {};
+    _cluster.onActionFinished = (RemoteAction action) {};
+    super.dispose();
+  }
+
   Widget _buildRow(RemoteAction action) {
     bool running = action == current;
     var ndicator = running
