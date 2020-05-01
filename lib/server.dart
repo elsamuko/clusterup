@@ -55,9 +55,9 @@ class Server {
         // parse multipart request
         String boundary = request.headers.contentType.parameters['boundary'];
         MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
-        this.json = await utf8.decoder.bind(part).join();
+        String json = await utf8.decoder.bind(part).join();
         if (this.onJson != null) {
-          this.onJson(this.json);
+          this.onJson(json);
         }
 
         request.response.redirect(Uri.parse('/'));
