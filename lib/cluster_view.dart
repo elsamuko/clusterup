@@ -14,6 +14,12 @@ class ClusterViewState extends State<ClusterView> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  void validate() {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+    }
+  }
+
   void _testSSH() async {
     dev.log("Testing ${widget._cluster}");
     SSHConnectionResult result = await SSHConnection.test(widget._cluster, widget._key);
@@ -45,7 +51,8 @@ class ClusterViewState extends State<ClusterView> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!widget._new) {
+          if (!widget._new && _formKey.currentState.validate()) {
+            _formKey.currentState.save();
             Navigator.pop(context, widget._cluster);
             return false;
           } else {
@@ -94,6 +101,7 @@ class ClusterViewState extends State<ClusterView> {
                                     validator: (String value) {
                                       return value.contains('@') ? 'Do not use the @ char.' : null;
                                     },
+                                    onEditingComplete: validate,
                                   ),
                                   TextFormField(
                                     decoration: const InputDecoration(
@@ -109,6 +117,7 @@ class ClusterViewState extends State<ClusterView> {
                                     validator: (String value) {
                                       return value.contains('@') ? 'Do not use the @ char.' : null;
                                     },
+                                    onEditingComplete: validate,
                                   ),
                                   TextFormField(
                                     keyboardType: TextInputType.number,
@@ -122,12 +131,14 @@ class ClusterViewState extends State<ClusterView> {
                                     },
                                     initialValue: (widget._cluster?.port ?? 22).toString(),
                                     validator: (String value) {
-                                      if (int.tryParse(value) == 0) {
+                                      int port = int.tryParse(value);
+                                      if (port == null || port > 65535) {
                                         return "Invalid port number";
                                       } else {
                                         return null;
                                       }
                                     },
+                                    onEditingComplete: validate,
                                   ),
                                 ],
                               ))))),
