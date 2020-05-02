@@ -79,11 +79,11 @@ class SSHKey {
   }
 
   String privString() {
-    return RsaKeyHelper.encodePrivateKeyToPemPKCS1(_privateKey);
+    return RsaKeyHelper.fromPrivateKeyToPEMPKCS1(_privateKey);
   }
 
   String pubString() {
-    return RsaKeyHelper.encodePublicKeyToPemPKCS1(_publicKey);
+    return RsaKeyHelper.fromPublicKeyToPEMPKCS1(_publicKey);
   }
 
   // https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md
@@ -105,7 +105,7 @@ class SSHKey {
 
   static SSHKey fromPEM(String pem) {
     if (pem.isEmpty) return null;
-    RSAPrivateKey privateKey = RsaKeyHelper.parsePrivateKeyFromPem(pem);
+    RSAPrivateKey privateKey = RsaKeyHelper.fromPEMToPrivateKey(pem);
     return SSHKey(privateKey);
   }
 }

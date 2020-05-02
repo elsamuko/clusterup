@@ -1,139 +1,53 @@
+// derived from
 // https://github.com/Vanethos/flutter_rsa_generator_example/blob/master/lib/utils/rsa_key_helper.dart
+//! \sa https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem
+//! \sa https://www.cem.me/pki/
 
 import 'dart:convert';
-
+import 'dart:typed_data';
 import "package:asn1lib/asn1lib.dart";
 import "package:pointycastle/export.dart";
 
-/// Helper class to handle RSA key generation and encoding
-//! \sa https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem
 class RsaKeyHelper {
-  /// Decode Public key from PEM Format
-  ///
-  /// Given a base64 encoded PEM [String] with correct headers and footers, return a
-  /// [RSAPublicKey]
-  ///
-  /// *PKCS1*
-  /// RSAPublicKey ::= SEQUENCE {
-  ///    modulus           INTEGER,  -- n
-  ///    publicExponent    INTEGER   -- e
-  /// }
-  ///
-  /// *PKCS8*
-  /// PublicKeyInfo ::= SEQUENCE {
-  ///   algorithm       AlgorithmIdentifier,
-  ///   PublicKey       BIT STRING
-  /// }
-  ///
-  /// AlgorithmIdentifier ::= SEQUENCE {
-  ///   algorithm       OBJECT IDENTIFIER,
-  ///   parameters      ANY DEFINED BY algorithm OPTIONAL
-  /// }
-  static RSAPublicKey parsePublicKeyFromPem(pemString) {
-    List<int> publicKeyDER = decodePEM(pemString);
-    var asn1Parser = ASN1Parser(publicKeyDER);
-    var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
-
-    var modulus, exponent;
-    // Depending on the first element type, we either have PKCS1 or 2
-    if (topLevelSeq.elements[0].runtimeType == ASN1Integer) {
-      modulus = topLevelSeq.elements[0] as ASN1Integer;
-      exponent = topLevelSeq.elements[1] as ASN1Integer;
-    } else {
-      var publicKeyBitString = topLevelSeq.elements[1];
-
-      var publicKeyAsn = ASN1Parser(publicKeyBitString.contentBytes());
-      ASN1Sequence publicKeySeq = publicKeyAsn.nextObject();
-      modulus = publicKeySeq.elements[0] as ASN1Integer;
-      exponent = publicKeySeq.elements[1] as ASN1Integer;
-    }
-
-    RSAPublicKey rsaPublicKey =
-        RSAPublicKey(modulus.valueAsBigInteger, exponent.valueAsBigInteger);
-
-    return rsaPublicKey;
-  }
-
-  /// Decode Private key from PEM Format
-  ///
-  /// Given a base64 encoded PEM [String] with correct headers and footers, return a
-  /// [RSAPrivateKey]
-  static RSAPrivateKey parsePrivateKeyFromPem(pemString) {
-    List<int> privateKeyDER = decodePEM(pemString);
-    var asn1Parser = ASN1Parser(privateKeyDER);
-    var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
-
-    var modulus, /*publicExponent,*/ privateExponent, p, q;
-    // Depending on the number of elements, we will either use PKCS1 or PKCS8
-    if (topLevelSeq.elements.length == 3) {
-      var privateKey = topLevelSeq.elements[2];
-
-      asn1Parser = ASN1Parser(privateKey.contentBytes());
-      var pkSeq = asn1Parser.nextObject() as ASN1Sequence;
-
-      modulus = pkSeq.elements[1] as ASN1Integer;
-      // publicExponent = pkSeq.elements[2] as ASN1Integer;
-      privateExponent = pkSeq.elements[3] as ASN1Integer;
-      p = pkSeq.elements[4] as ASN1Integer;
-      q = pkSeq.elements[5] as ASN1Integer;
-    } else {
-      modulus = topLevelSeq.elements[1] as ASN1Integer;
-      // publicExponent = topLevelSeq.elements[2] as ASN1Integer;
-      privateExponent = topLevelSeq.elements[3] as ASN1Integer;
-      p = topLevelSeq.elements[4] as ASN1Integer;
-      q = topLevelSeq.elements[5] as ASN1Integer;
-    }
-
-    RSAPrivateKey rsaPrivateKey = RSAPrivateKey(
-        modulus.valueAsBigInteger,
-        privateExponent.valueAsBigInteger,
-        p.valueAsBigInteger,
-        q.valueAsBigInteger);
-
-    return rsaPrivateKey;
-  }
-
-  static List<int> decodePEM(String pem) {
-    return base64.decode(removePemHeaderAndFooter(pem));
-  }
-
-  static String removePemHeaderAndFooter(String pem) {
-    var startsWith = [
+  /// convert PEM to DER
+  static Uint8List _fromPEMToDER(String pem) {
+    List<String> headers = [
       "-----BEGIN PUBLIC KEY-----",
-      "-----BEGIN RSA PRIVATE KEY-----",
-      "-----BEGIN RSA PUBLIC KEY-----",
       "-----BEGIN PRIVATE KEY-----",
+      "-----BEGIN RSA PUBLIC KEY-----",
+      "-----BEGIN RSA PRIVATE KEY-----",
     ];
-    var endsWith = [
+
+    List<String> footers = [
       "-----END PUBLIC KEY-----",
       "-----END PRIVATE KEY-----",
-      "-----END RSA PRIVATE KEY-----",
       "-----END RSA PUBLIC KEY-----",
+      "-----END RSA PRIVATE KEY-----",
     ];
+
+    for (String header in headers) {
+      if (pem.startsWith(header)) {
+        pem = pem.substring(header.length);
+        break;
+      }
+    }
+
+    for (String footer in footers) {
+      if (pem.endsWith(footer)) {
+        pem = pem.substring(0, pem.length - footer.length);
+        break;
+      }
+    }
 
     pem = pem.replaceAll(' ', '');
     pem = pem.replaceAll('\n', '');
     pem = pem.replaceAll('\r', '');
 
-    for (var s in startsWith) {
-      s = s.replaceAll(' ', '');
-      if (pem.startsWith(s)) {
-        pem = pem.substring(s.length);
-      }
-    }
-
-    for (var s in endsWith) {
-      s = s.replaceAll(' ', '');
-      if (pem.endsWith(s)) {
-        pem = pem.substring(0, pem.length - s.length);
-      }
-    }
-
-    return pem;
+    return base64.decode(pem);
   }
 
-  // wraps a string with newlines every 64 characters
-  static String wrap64(String input) {
+  /// wraps a string with newlines every 64 characters
+  static String _wrap64(String input) {
     StringBuffer buffer = StringBuffer();
     int size = input.length;
     int lines = size ~/ 64;
@@ -152,63 +66,169 @@ class RsaKeyHelper {
     return buffer.toString();
   }
 
-  // inverse of private exponent -> public exponent
+  /// inverse of private exponent -> public exponent
   //! \sa rsa_key_generator.dart
   static BigInt getPublicExponent(RSAPrivateKey privateKey) {
-    var pSub1 = (privateKey.p - BigInt.one);
-    var qSub1 = (privateKey.q - BigInt.one);
-    var phi = (pSub1 * qSub1);
-    var publicExponent = privateKey.exponent.modInverse(phi);
+    BigInt pSub1 = (privateKey.p - BigInt.one);
+    BigInt qSub1 = (privateKey.q - BigInt.one);
+    BigInt phi = (pSub1 * qSub1);
+    BigInt publicExponent = privateKey.exponent.modInverse(phi);
     return publicExponent;
   }
 
-  /// Encode Private key to PEM Format
-  ///
-  /// Given [RSAPrivateKey] returns a base64 encoded [String] with standard PEM headers and footers
-  static String encodePrivateKeyToPemPKCS1(RSAPrivateKey privateKey) {
-    var topLevel = ASN1Sequence();
+  /// parse rsa public key from PKCS1/PKCS8 ASN1 sequence
+  static RSAPublicKey _fromASN1ToPublicKey(ASN1Sequence sequence) {
+    RSAPublicKey pubKey;
 
-    var version = ASN1Integer(BigInt.from(0));
-    var modulus = ASN1Integer(privateKey.n);
-    var publicExponent = ASN1Integer(getPublicExponent(privateKey));
-    var privateExponent = ASN1Integer(privateKey.d);
-    var p = ASN1Integer(privateKey.p);
-    var q = ASN1Integer(privateKey.q);
-    var dP = privateKey.d % (privateKey.p - BigInt.from(1));
-    var exp1 = ASN1Integer(dP);
-    var dQ = privateKey.d % (privateKey.q - BigInt.from(1));
-    var exp2 = ASN1Integer(dQ);
-    var iQ = privateKey.q.modInverse(privateKey.p);
-    var co = ASN1Integer(iQ);
+    // PKCS1
+    if (sequence.elements.first.runtimeType == ASN1Integer) {
+      ASN1Integer modulus = sequence.elements[0];
+      ASN1Integer exponent = sequence.elements[1];
+      pubKey = RSAPublicKey(modulus.valueAsBigInteger, exponent.valueAsBigInteger);
+    }
+    // PKCS8 -> get PKCS1 part and reenter
+    else {
+      ASN1Object sub = sequence.elements[1];
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject();
+      pubKey = _fromASN1ToPublicKey(subSequence);
+    }
 
-    topLevel.add(version);
-    topLevel.add(modulus);
-    topLevel.add(publicExponent);
-    topLevel.add(privateExponent);
-    topLevel.add(p);
-    topLevel.add(q);
-    topLevel.add(exp1);
-    topLevel.add(exp2);
-    topLevel.add(co);
+    return pubKey;
+  }
 
-    String dataBase64 = base64.encode(topLevel.encodedBytes);
-    String wrapped = wrap64(dataBase64);
+  /// parse rsa public key from PKCS1/PKCS8 PEM
+  static RSAPublicKey fromPEMToPublicKey(String pem) {
+    Uint8List der = _fromPEMToDER(pem);
+    ASN1Sequence sequence = ASN1Parser(der).nextObject();
+    return _fromASN1ToPublicKey(sequence);
+  }
 
+  /// parse rsa private key from PKCS1/PKCS8 ASN1 sequence
+  static RSAPrivateKey _fromASN1ToPrivateKey(ASN1Sequence sequence) {
+    RSAPrivateKey privKey;
+
+    // PKCS1
+    if (sequence.elements[1].runtimeType == ASN1Integer) {
+      ASN1Integer modulus = sequence.elements[1];
+      // ASN1Integer publicExponent = sequence.elements[2];
+      ASN1Integer privateExponent = sequence.elements[3];
+      ASN1Integer p = sequence.elements[4];
+      ASN1Integer q = sequence.elements[5];
+      privKey = RSAPrivateKey(modulus.valueAsBigInteger, privateExponent.valueAsBigInteger, p.valueAsBigInteger, q.valueAsBigInteger);
+    }
+    // PKCS8 -> get PKCS1 part and reenter
+    else {
+      ASN1Object sub = sequence.elements[2];
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject();
+      privKey = _fromASN1ToPrivateKey(subSequence);
+    }
+
+    return privKey;
+  }
+
+  /// parse rsa public key from PKCS1/PKCS8 PEM
+  static RSAPrivateKey fromPEMToPrivateKey(String pem) {
+    Uint8List der = _fromPEMToDER(pem);
+    ASN1Sequence sequence = ASN1Parser(der).nextObject();
+    return _fromASN1ToPrivateKey(sequence);
+  }
+
+  /// generate PKCS1 ASN1 from rsa private key
+  static ASN1Sequence _fromPrivateKeyToASN1PKCS1(RSAPrivateKey privateKey) {
+    ASN1Sequence sequence = ASN1Sequence();
+
+    ASN1Integer version = ASN1Integer(BigInt.from(0));
+    ASN1Integer modulus = ASN1Integer(privateKey.modulus);
+    ASN1Integer publicExponent = ASN1Integer(getPublicExponent(privateKey));
+    ASN1Integer privateExponent = ASN1Integer(privateKey.exponent);
+    ASN1Integer p = ASN1Integer(privateKey.p);
+    ASN1Integer q = ASN1Integer(privateKey.q);
+    ASN1Integer exp1 = ASN1Integer(privateKey.d % (privateKey.p - BigInt.from(1)));
+    ASN1Integer exp2 = ASN1Integer(privateKey.d % (privateKey.q - BigInt.from(1)));
+    ASN1Integer co = ASN1Integer(privateKey.q.modInverse(privateKey.p));
+
+    sequence.add(version);
+    sequence.add(modulus);
+    sequence.add(publicExponent);
+    sequence.add(privateExponent);
+    sequence.add(p);
+    sequence.add(q);
+    sequence.add(exp1);
+    sequence.add(exp2);
+    sequence.add(co);
+
+    return sequence;
+  }
+
+  /// generate PKCS1 PEM from rsa private key
+  static String fromPrivateKeyToPEMPKCS1(RSAPrivateKey privateKey) {
+    ASN1Sequence sequence = _fromPrivateKeyToASN1PKCS1(privateKey);
+    String dataBase64 = base64.encode(sequence.encodedBytes);
+    String wrapped = _wrap64(dataBase64);
     return """-----BEGIN RSA PRIVATE KEY-----\n$wrapped-----END RSA PRIVATE KEY-----""";
   }
 
-  /// Encode Public key to PEM Format
-  ///
-  /// Given [RSAPublicKey] returns a base64 encoded [String] with standard PEM headers and footers
-  static String encodePublicKeyToPemPKCS1(RSAPublicKey publicKey) {
-    var topLevel = ASN1Sequence();
+  /// generate PKCS8 PEM from rsa private key
+  static String fromPrivateKeyToPEMPKCS8(RSAPrivateKey privateKey) {
+    ASN1Sequence sequence = ASN1Sequence();
 
-    topLevel.add(ASN1Integer(publicKey.modulus));
-    topLevel.add(ASN1Integer(publicKey.exponent));
+    // version
+    ASN1Integer version = ASN1Integer(BigInt.from(0));
 
-    var dataBase64 = base64.encode(topLevel.encodedBytes);
-    String wrapped = wrap64(dataBase64);
+    // private key algorithm identifier
+    ASN1Sequence identifier = ASN1Sequence();
+    ASN1ObjectIdentifier.registerFrequentNames();
+    identifier.add(ASN1ObjectIdentifier.fromName("rsaEncryption"));
+    identifier.add(ASN1Null());
 
+    // PKCS1
+    ASN1OctetString octets = ASN1OctetString(_fromPrivateKeyToASN1PKCS1(privateKey).encodedBytes);
+
+    sequence.add(version);
+    sequence.add(identifier);
+    sequence.add(octets);
+
+    String dataBase64 = base64.encode(sequence.encodedBytes);
+    String wrapped = _wrap64(dataBase64);
+
+    return """-----BEGIN PRIVATE KEY-----\n$wrapped-----END PRIVATE KEY-----""";
+  }
+
+  /// generate PKCS1 ASN1 from rsa public key
+  static ASN1Sequence _fromPublicKeyToASN1PKCS1(RSAPublicKey publicKey) {
+    ASN1Sequence sequence = ASN1Sequence();
+    sequence.add(ASN1Integer(publicKey.modulus));
+    sequence.add(ASN1Integer(publicKey.exponent));
+    return sequence;
+  }
+
+  /// generate PKCS1 PEM from rsa public key
+  static String fromPublicKeyToPEMPKCS1(RSAPublicKey publicKey) {
+    ASN1Sequence sequence = _fromPublicKeyToASN1PKCS1(publicKey);
+    String data64 = base64.encode(sequence.encodedBytes);
+    String wrapped = _wrap64(data64);
     return """-----BEGIN RSA PUBLIC KEY-----\n$wrapped-----END RSA PUBLIC KEY-----""";
+  }
+
+  /// generate PKCS8 PEM from rsa public key
+  static String fromPublicKeyToPEMPKCS8(RSAPublicKey publicKey) {
+    ASN1Sequence sequence = ASN1Sequence();
+
+    // private key algorithm identifier
+    ASN1Sequence identifier = ASN1Sequence();
+    ASN1ObjectIdentifier.registerFrequentNames();
+    identifier.add(ASN1ObjectIdentifier.fromName("rsaEncryption"));
+    identifier.add(ASN1Null());
+
+    // PKCS1
+    ASN1BitString bits = ASN1BitString(_fromPublicKeyToASN1PKCS1(publicKey).encodedBytes);
+
+    sequence.add(identifier);
+    sequence.add(bits);
+
+    String dataBase64 = base64.encode(sequence.encodedBytes);
+    String wrapped = _wrap64(dataBase64);
+
+    return """-----BEGIN PUBLIC KEY-----\n$wrapped-----END PUBLIC KEY-----""";
   }
 }
