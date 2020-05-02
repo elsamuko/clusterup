@@ -11,7 +11,7 @@ import 'key_view.dart';
 import 'ssh_key.dart';
 import 'clusterup_data.dart';
 
-class ClustersState extends State<Clusters> {
+class ClustersViewState extends State<ClustersView> {
   DBPersistence _db = DBPersistence();
   ClusterUpData _data = ClusterUpData();
 
@@ -273,7 +273,7 @@ class ClustersState extends State<Clusters> {
 enum ClustersOpts { NewCluster, Key, Actions, LoadSave, About }
 enum ClusterOpts { Remove, LastRun }
 
-class Clusters extends StatefulWidget {
+class ClustersView extends StatefulWidget {
   @override
-  ClustersState createState() => ClustersState();
+  ClustersViewState createState() => ClustersViewState();
 }
