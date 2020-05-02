@@ -6,3 +6,7 @@ Based on the [first app tutorial](https://flutter.dev/docs/get-started/codelab) 
 # Screenshot
 
 ![](res/screenshot.png)
+
+# Architecture
+
+Overview over cluster up's architecture: https://elsamuko.github.io/clusterup/architecture.html
