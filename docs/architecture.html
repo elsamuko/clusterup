@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>Cluster Up architecture</title>
+
+  <script type="text/javascript" src="vis-network.min.js"></script>
+  <link href="vis-network.min.css" rel="stylesheet" type="text/css" />
+
+  <style type="text/css">
+    body,
+    html {
+      height: 100%;
+    }
+
+    #architecture {
+      height: 95%;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="architecture"></div>
+
+  <script type="text/javascript">
+
+    var nodes = new vis.DataSet([
+      { id: 'main', label: 'App', group: 'main', shape: 'triangle' },
+      { id: 'cluster', font: { size: 30 }, label: 'Cluster', group: 'data', shape: 'box' },
+      { id: 'clusters_view', font: { size: 30 }, label: 'ClustersView', group: 'gui', shape: 'box' },
+      { id: 'clusterup_data', label: 'ClusterUpData', group: 'data' },
+      { id: 'cluster_view', label: 'ClusterView', group: 'gui' },
+      { id: 'db_persistence', label: 'DBPersistence', group: 'data', shape: 'database' },
+      { id: 'key_view', label: 'KeyView', group: 'gui' },
+      { id: 'load_save_view', label: 'LoadSaveView', group: 'gui' },
+      { id: 'remote_action', label: 'RemoteAction', group: 'data' },
+      { id: 'remote_action_results_view', label: 'ResultsView', group: 'gui' },
+      { id: 'remote_action_runner', label: 'RemoteActionRunner', group: 'helper' },
+      { id: 'remote_actions_view', label: 'ActionsView', group: 'gui' },
+      { id: 'server', label: 'Server', group: 'net' },
+      { id: 'ssh_connection', label: 'SSHConnection', group: 'net' },
+      { id: 'ssh_key', label: 'SSHKey', group: 'data' },
+    ]);
+
+    var edges = new vis.DataSet([
+      { from: 'main', to: 'clusters_view', arrows: 'to' },
+      { from: 'clusters_view', to: 'clusterup_data' },
+      { from: 'clusters_view', to: 'db_persistence' },
+      { from: 'clusterup_data', to: 'cluster' },
+      { from: 'cluster', to: 'remote_action' },
+      { from: 'cluster', to: 'remote_action_runner' },
+      { from: 'clusterup_data', to: 'ssh_key' },
+      { from: 'clusters_view', to: 'cluster_view', arrows: 'to' },
+      { from: 'clusters_view', to: 'key_view', arrows: 'to' },
+      { from: 'clusters_view', to: 'load_save_view', arrows: 'to' },
+      { from: 'load_save_view', to: 'server', arrows: 'to' },
+      { from: 'clusters_view', to: 'remote_actions_view', arrows: 'to' },
+      { from: 'cluster_view', to: 'remote_actions_view', arrows: 'to' },
+      { from: 'cluster_view', to: 'remote_action_results_view', arrows: 'to' },
+      { from: 'remote_action_runner', to: 'ssh_connection', arrows: 'to' },
+    ]);
+
+    var container = document.getElementById('architecture');
+
+    var data = {
+      nodes: nodes,
+      edges: edges
+    };
+
+    var options = {
+      nodes: {
+        shadow: true
+      },
+      edges: {
+        width: 2,
+        shadow: true
+      },
+    };
+
+    var network = new vis.Network(container, data, options);
+  </script>
+
+</body>
+
+</html>
