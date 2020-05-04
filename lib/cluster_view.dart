@@ -13,6 +13,7 @@ class ClusterViewState extends State<ClusterView> {
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool testingConnection = false;
 
   void validate() {
     if (_formKey.currentState.validate()) {
@@ -22,11 +23,19 @@ class ClusterViewState extends State<ClusterView> {
 
   void _testSSH() async {
     dev.log("Testing ${widget._cluster}");
+    setState(() {
+      testingConnection = true;
+    });
+
     SSHConnectionResult result = await SSHConnection.test(widget._cluster, widget._key);
 
     String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
     final snackBar = SnackBar(content: Text(text));
     _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    setState(() {
+      testingConnection = false;
+    });
   }
 
   @override
@@ -48,6 +57,16 @@ class ClusterViewState extends State<ClusterView> {
         },
       ));
     }
+
+    var indicator = testingConnection
+        ? SizedBox(
+            child: CircularProgressIndicator(),
+            height: 15.0,
+            width: 15.0,
+          )
+        : Text(
+            "Test connection",
+          );
 
     return WillPopScope(
         onWillPop: () async {
@@ -148,14 +167,12 @@ class ClusterViewState extends State<ClusterView> {
                       color: Colors.blue[800],
                       textColor: Colors.white,
                       onPressed: () async {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState.validate() && !testingConnection) {
                           _formKey.currentState.save();
                           _testSSH();
                         }
                       },
-                      child: Text(
-                        "Test connection",
-                      ))),
+                      child: indicator)),
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: FlatButton(
