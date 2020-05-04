@@ -74,6 +74,15 @@ class RemoteAction {
     }
   }
 
+  RemoteAction.getHostUpAction() {
+    name = "up";
+    status = RemoteActionStatus.Success;
+    description = "checks if host is up";
+    filter = (lines) {
+      return status;
+    };
+  }
+
   RemoteAction.getDiskFreeAction() {
     name = "df";
     description = "checks free disk space on /";

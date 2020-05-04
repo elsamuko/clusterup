@@ -1,6 +1,7 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
+import 'ssh_connection.dart';
 import 'cluster.dart';
 
 class ResultsViewState extends State<ResultsView> {
@@ -15,7 +16,8 @@ class ResultsViewState extends State<ResultsView> {
   @override
   void initState() {
     if (_run) {
-      actions = [];
+      actions = [RemoteAction.getHostUpAction()];
+      current = actions.first;
 
       // set callback for results
       _cluster.onActionStarted = (RemoteAction action) {
@@ -33,7 +35,17 @@ class ResultsViewState extends State<ResultsView> {
       };
 
       // run
-      _cluster.run(_key);
+      SSHConnection.test(_cluster, _key).then((SSHConnectionResult result) {
+        current = null;
+        if (result.success) {
+          _cluster.run(_key);
+        } else {
+          setState(() {
+            actions.first.status = RemoteActionStatus.Error;
+            actions.first.filtered = result.error;
+          });
+        }
+      });
     } else {
       actions = this._cluster.actions.toList();
     }
@@ -50,7 +62,7 @@ class ResultsViewState extends State<ResultsView> {
 
   Widget _buildRow(RemoteAction action) {
     bool running = action == current;
-    var ndicator = running
+    var indicator = running
         ? SizedBox(
             child: CircularProgressIndicator(),
             height: 15.0,
@@ -61,23 +73,23 @@ class ResultsViewState extends State<ResultsView> {
     if (!running) {
       switch (action.status) {
         case RemoteActionStatus.Unknown:
-          ndicator = Icon(Icons.done, color: Colors.white);
+          indicator = Icon(Icons.done, color: Colors.white);
           break;
         case RemoteActionStatus.Success:
-          ndicator = Icon(Icons.check_circle, color: Colors.green[300]);
+          indicator = Icon(Icons.check_circle, color: Colors.green[300]);
           break;
         case RemoteActionStatus.Warning:
-          ndicator = Icon(Icons.warning, color: Colors.orange[300]);
+          indicator = Icon(Icons.warning, color: Colors.orange[300]);
           break;
         case RemoteActionStatus.Error:
-          ndicator = Icon(Icons.error, color: Colors.red[300]);
+          indicator = Icon(Icons.error, color: Colors.red[300]);
           break;
       }
     }
     return ListTile(
       title: Text(action.name),
       subtitle: Text(action.filtered),
-      trailing: ndicator,
+      trailing: indicator,
     );
   }
 
