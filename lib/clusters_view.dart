@@ -87,6 +87,7 @@ class ClustersViewState extends State<ClustersView> {
     if (result != null) {
       dev.log("_showCluster : Updating $cluster");
       _db.addCluster(result);
+      setState(() {});
     }
   }
 
