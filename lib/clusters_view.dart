@@ -53,7 +53,7 @@ class ClustersViewState extends State<ClustersView> {
         trailing: IconButton(
           icon: Icon(
             cluster.running ? Icons.pause : Icons.play_arrow,
-            color: cluster.lastStatusAsColor,
+            color: cluster.statusColor(),
             size: 30,
           ),
           onPressed: () {

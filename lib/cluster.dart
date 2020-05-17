@@ -17,7 +17,6 @@ class Cluster {
   int port = 22;
   bool running = false;
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
-  Color lastStatusAsColor = Colors.white;
   Set<RemoteAction> actions;
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
@@ -123,20 +122,19 @@ class Cluster {
         lastStatus = result.remoteActionStatus;
       }
     }
+  }
 
+  Color statusColor() {
     switch (lastStatus) {
       case RemoteActionStatus.Unknown:
-        lastStatusAsColor = Colors.white;
-        break;
+        return Colors.white;
       case RemoteActionStatus.Success:
-        lastStatusAsColor = Colors.green[300];
-        break;
+        return Colors.green[300];
       case RemoteActionStatus.Warning:
-        lastStatusAsColor = Colors.orange[300];
-        break;
+        return Colors.orange[300];
       case RemoteActionStatus.Error:
-        lastStatusAsColor = Colors.red[300];
-        break;
+        return Colors.red[300];
     }
+    return Colors.white;
   }
 }
