@@ -108,6 +108,7 @@ class Cluster {
   }
 
   Future<void> run(SSHKey key) async {
+    running = true;
     lastStatus = RemoteActionStatus.Unknown;
     for (RemoteAction action in actions) {
       action.reset();
@@ -122,6 +123,7 @@ class Cluster {
         lastStatus = result.remoteActionStatus;
       }
     }
+    running = false;
   }
 
   Color statusColor() {

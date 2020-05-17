@@ -60,13 +60,9 @@ class ClustersViewState extends State<ClustersView> {
             if (cluster.running) return;
             dev.log("Play : $cluster");
             cluster.run(_data.sshKey).then((v) {
-              setState(() {
-                cluster.running = false;
-              });
+              setState(() {});
             });
-            setState(() {
-              cluster.running = true;
-            });
+            setState(() {});
           },
         ),
         onTap: () {
