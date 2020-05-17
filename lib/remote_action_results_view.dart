@@ -37,14 +37,15 @@ class ResultsViewState extends State<ResultsView> {
       // run
       SSHConnection.test(_cluster, _key).then((SSHConnectionResult result) {
         current = null;
-        if (result.success) {
-          _cluster.run(_key);
-        } else {
-          setState(() {
+        setState(() {
+          if (result.success) {
+            actions.first.status = RemoteActionStatus.Success;
+            _cluster.run(_key);
+          } else {
             actions.first.status = RemoteActionStatus.Error;
             actions.first.filtered = result.error;
-          });
-        }
+          }
+        });
       });
     } else {
       actions = this._cluster.actions.toList();
