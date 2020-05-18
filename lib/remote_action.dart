@@ -19,6 +19,10 @@ class RemoteAction {
     status = RemoteActionStatus.Unknown;
   }
 
+  static String pluralS(int count) {
+    return (count == 1) ? "" : "s";
+  }
+
   static Set<RemoteAction> allActions() {
     return Set.from([
       RemoteAction.getDiskFreeAction(),
@@ -88,8 +92,6 @@ class RemoteAction {
     description = "checks free disk space on /";
     commands.add("df /");
     filter = (lines) {
-      status = RemoteActionStatus.Unknown;
-
       // sth went wrong
       if (lines.length < 2) {
         return status;
@@ -128,15 +130,13 @@ class RemoteAction {
     description = "checks uptime";
     commands.add("uptime -s");
     filter = (lines) {
-      status = RemoteActionStatus.Unknown;
-
       // sth went wrong
       if (lines.length < 1) return status;
 
       DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
       DateTime started = format.parse(lines[0]);
       int days = DateTime.now().difference(started).inDays;
-      filtered = "$days days";
+      filtered = "$days day${pluralS(days)}";
 
       status = RemoteActionStatus.Success;
       return status;
@@ -150,7 +150,10 @@ class RemoteAction {
       status = RemoteActionStatus.Success;
 
       // no updates available -> success
-      if (lines.length < 2) return status;
+      if (lines.length < 2) {
+        filtered = "No updates available";
+        return status;
+      }
 
       // remove "Listing... Done" message
       lines.removeAt(0);
@@ -165,7 +168,7 @@ class RemoteAction {
           other++;
       });
 
-      filtered = "$security security updates, $other other updates";
+      filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
 
       if (other > 0) status = RemoteActionStatus.Warning;
       if (security > 0) status = RemoteActionStatus.Error;
@@ -179,8 +182,6 @@ class RemoteAction {
     description = "queries distribution information";
     commands.add("lsb_release -d");
     filter = (lines) {
-      status = RemoteActionStatus.Unknown;
-
       // must be one line
       if (lines.length != 1) return status;
 
@@ -203,8 +204,6 @@ class RemoteAction {
     description = "queries kernel version";
     commands.add("uname -r");
     filter = (lines) {
-      status = RemoteActionStatus.Unknown;
-
       // must be one line
       if (lines.length != 1) return status;
 
