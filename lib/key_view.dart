@@ -43,16 +43,14 @@ class KeyViewState extends State<KeyView> {
             child = Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(children: <Widget>[
-                  Text(
-                      "Copy this SSH key into your '.ssh/authorized_keys2' file:"),
+                  Text("Copy this SSH key into your '.ssh/authorized_keys' file:"),
                   SizedBox(height: 10),
                   FlatButton(
                       color: Colors.black87,
                       textColor: Colors.lightGreenAccent,
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
-                        final snackBar = SnackBar(
-                            content: Text("Copied ssh key into clipboard"));
+                        final snackBar = SnackBar(content: Text("Copied ssh key into clipboard"));
                         _scaffoldKey.currentState.showSnackBar(snackBar);
                       },
                       child: Padding(
