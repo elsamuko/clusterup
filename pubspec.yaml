@@ -17,7 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  ssh: ^0.0.6           # MIT https://github.com/shaqian/flutter_ssh/blob/master/LICENSE
+  ssh: ^0.0.7           # MIT https://github.com/shaqian/flutter_ssh/blob/master/LICENSE
   pointycastle: ^1.0.2  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
   asn1lib: ^0.6.4       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
   sqflite: ^1.3.0       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
