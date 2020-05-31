@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'package:clusterup/cluster_child.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class Cluster {
   String user = "";
   String host = "";
   int port = 22;
+  List<ClusterChild> children = [];
   bool running = false;
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
   Set<RemoteAction> actions;
