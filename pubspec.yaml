@@ -17,21 +17,21 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  ssh:                  # MIT https://github.com/shaqian/flutter_ssh/blob/master/LICENSE
-  pointycastle:         # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
-  asn1lib:              # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
-  sqflite:              # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
+  ssh: ^0.0.6           # MIT https://github.com/shaqian/flutter_ssh/blob/master/LICENSE
+  pointycastle: ^1.0.2  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
+  asn1lib: ^0.6.4       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
+  sqflite: ^1.3.0       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   path:                 # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl:                 # BSD https://github.com/dart-lang/intl/blob/master/LICENSE
   http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
   path_provider:        # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
-  get_ip:               # MIT https://github.com/lotrofans/get_ip_flutter/blob/master/LICENSE
+  get_ip: ^0.4.0        # MIT https://github.com/lotrofans/get_ip_flutter/blob/master/LICENSE
   flutter:
     sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^0.1.3 # MIT https://github.com/flutter/cupertino_icons/blob/master/LICENSE
 
 dev_dependencies:
   flutter_launcher_icons:
