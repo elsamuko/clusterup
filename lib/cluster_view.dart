@@ -1,8 +1,10 @@
+import 'package:clusterup/cluster_child_view.dart';
 import 'package:clusterup/remote_action_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
+import 'cluster_child.dart';
 import 'remote_actions_view.dart';
 import 'ssh_connection.dart';
 import 'cluster.dart';
@@ -38,6 +40,43 @@ class ClusterViewState extends State<ClusterView> {
     });
   }
 
+  void addChild() async {
+    final ClusterChild result = await Navigator.of(context).push(
+      MaterialPageRoute<ClusterChild>(
+        builder: (BuildContext context) {
+          return ClusterChildView.newClusterChild(widget._key, widget._cluster);
+        },
+      ),
+    );
+
+    setState(() {
+      if (result != null) {
+        dev.log("Adding $result");
+        widget._cluster.children.add(result);
+      }
+    });
+  }
+
+  Widget _buildClusterChildren() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
+      itemCount: widget._cluster.children.length,
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: (context, i) {
+        return _buildChildRow(widget._cluster.children[i]);
+      },
+    );
+  }
+
+  Widget _buildChildRow(ClusterChild child) {
+    return ListTile(
+      title: Text(
+        child.toString(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     dev.log("NewClusterState");
@@ -65,8 +104,125 @@ class ClusterViewState extends State<ClusterView> {
             width: 15.0,
           )
         : Text(
-            "Test connection",
+            "Test",
           );
+
+    Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+      FlatButton(
+          color: Colors.blue[800],
+          textColor: Colors.white,
+          onPressed: () async {
+            if (_formKey.currentState.validate() && !testingConnection) {
+              _formKey.currentState.save();
+              _testSSH();
+            }
+          },
+          child: indicator),
+      FlatButton(
+          color: Colors.orange[900],
+          textColor: Colors.white,
+          onPressed: () async {
+            dev.log("Configure Actions");
+            Set<RemoteAction> selected = await Navigator.of(context).push(
+              MaterialPageRoute<Set<RemoteAction>>(
+                builder: (BuildContext context) {
+                  return ActionsView(saved: widget._cluster.actions);
+                },
+              ),
+            );
+
+            widget._cluster.actions = selected;
+          },
+          child: Text(
+            "Actions",
+          )),
+      FlatButton(
+          color: Colors.green[600],
+          textColor: Colors.white,
+          onPressed: () async {
+            if (_formKey.currentState.validate() && !testingConnection) {
+              _formKey.currentState.save();
+              Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+                return ResultsView(widget._key, widget._cluster, true);
+              }));
+            }
+          },
+          child: Text(
+            "Run",
+          ))
+    ]);
+
+    Form form = Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.label),
+                labelText: 'name',
+              ),
+              onSaved: (String value) {
+                widget._cluster.name = value;
+              },
+              initialValue: widget._cluster?.name,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.person),
+                hintText: 'username',
+                labelText: 'username',
+              ),
+              inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+              onSaved: (String value) {
+                widget._cluster.user = value;
+              },
+              initialValue: widget._cluster?.user,
+              validator: (String value) {
+                return value.contains('@') ? 'Do not use the @ char.' : null;
+              },
+              onEditingComplete: validate,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.computer),
+                hintText: 'Server domain',
+                labelText: 'server',
+              ),
+              inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+              onSaved: (String value) {
+                widget._cluster.host = value;
+              },
+              initialValue: widget._cluster?.host,
+              validator: (String value) {
+                return value.contains('@') ? 'Do not use the @ char.' : null;
+              },
+              onEditingComplete: validate,
+            ),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                icon: Icon(Icons.local_airport),
+                hintText: 'SSH server port',
+                labelText: 'port',
+              ),
+              onSaved: (String value) {
+                widget._cluster.port = int.parse(value);
+              },
+              initialValue: (widget._cluster?.port ?? 22).toString(),
+              validator: (String value) {
+                int port = int.tryParse(value);
+                if (port == null || port > 65535) {
+                  return "Invalid port number";
+                } else {
+                  return null;
+                }
+              },
+              onEditingComplete: validate,
+            ),
+          ],
+        ));
+
+    Widget children = _buildClusterChildren();
 
     return WillPopScope(
         onWillPop: () async {
@@ -85,131 +241,18 @@ class ClusterViewState extends State<ClusterView> {
               title: Text(title),
               actions: checkButton,
             ),
-            body: ListView(children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.all(6.0),
-                  child: Card(
-                      elevation: 6,
-                      child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Form(
-                              key: _formKey,
-                              child: Column(
-                                children: <Widget>[
-                                  TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.label),
-                                      labelText: 'name',
-                                    ),
-                                    onSaved: (String value) {
-                                      widget._cluster.name = value;
-                                    },
-                                    initialValue: widget._cluster?.name,
-                                  ),
-                                  TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.person),
-                                      hintText: 'username',
-                                      labelText: 'username',
-                                    ),
-                                    inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
-                                    onSaved: (String value) {
-                                      widget._cluster.user = value;
-                                    },
-                                    initialValue: widget._cluster?.user,
-                                    validator: (String value) {
-                                      return value.contains('@') ? 'Do not use the @ char.' : null;
-                                    },
-                                    onEditingComplete: validate,
-                                  ),
-                                  TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.computer),
-                                      hintText: 'Server domain',
-                                      labelText: 'server',
-                                    ),
-                                    inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
-                                    onSaved: (String value) {
-                                      widget._cluster.host = value;
-                                    },
-                                    initialValue: widget._cluster?.host,
-                                    validator: (String value) {
-                                      return value.contains('@') ? 'Do not use the @ char.' : null;
-                                    },
-                                    onEditingComplete: validate,
-                                  ),
-                                  TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.local_airport),
-                                      hintText: 'SSH server port',
-                                      labelText: 'port',
-                                    ),
-                                    onSaved: (String value) {
-                                      widget._cluster.port = int.parse(value);
-                                    },
-                                    initialValue: (widget._cluster?.port ?? 22).toString(),
-                                    validator: (String value) {
-                                      int port = int.tryParse(value);
-                                      if (port == null || port > 65535) {
-                                        return "Invalid port number";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    onEditingComplete: validate,
-                                  ),
-                                ],
-                              ))))),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.blue[800],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate() && !testingConnection) {
-                          _formKey.currentState.save();
-                          _testSSH();
-                        }
-                      },
-                      child: indicator)),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.orange[900],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        dev.log("Configure Actions");
-                        Set<RemoteAction> selected = await Navigator.of(context).push(
-                          MaterialPageRoute<Set<RemoteAction>>(
-                            builder: (BuildContext context) {
-                              return ActionsView(saved: widget._cluster.actions);
-                            },
-                          ),
-                        );
-
-                        widget._cluster.actions = selected;
-                      },
-                      child: Text(
-                        "Actions",
-                      ))),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.green[600],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate() && !testingConnection) {
-                          _formKey.currentState.save();
-                          Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-                            return ResultsView(widget._key, widget._cluster, true);
-                          }));
-                        }
-                      },
-                      child: Text(
-                        "Run",
-                      ))),
-            ])));
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                addChild();
+              },
+              child: const Icon(Icons.add),
+            ),
+            bottomNavigationBar: bottomButtons,
+            body: Scrollbar(
+                child: ListView(children: <Widget>[
+              Padding(padding: EdgeInsets.all(0.0), child: Card(elevation: 6, child: Padding(padding: EdgeInsets.all(8.0), child: form))),
+              children
+            ]))));
   }
 }
 
