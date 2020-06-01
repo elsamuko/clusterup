@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:clusterup/cluster_child.dart';
+import 'package:clusterup/ssh_connection.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,10 @@ class Cluster {
 
   String userHostPort() {
     return "$user@$host:$port";
+  }
+
+  SSHCredentials creds() {
+    return SSHCredentials(user, host, port);
   }
 
   Map<String, dynamic> toMap() {

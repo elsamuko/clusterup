@@ -27,7 +27,7 @@ class ClusterViewState extends State<ClusterView> {
       testingConnection = true;
     });
 
-    SSHConnectionResult result = await SSHConnection.test(widget._cluster, widget._key);
+    SSHConnectionResult result = await SSHConnection.test(widget._cluster.creds(), widget._key);
 
     String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
     final snackBar = SnackBar(content: Text(text));

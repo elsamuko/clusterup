@@ -35,7 +35,7 @@ class ResultsViewState extends State<ResultsView> {
       };
 
       // run
-      SSHConnection.test(_cluster, _key).then((SSHConnectionResult result) {
+      SSHConnection.test(_cluster.creds(), _key).then((SSHConnectionResult result) {
         current = null;
         setState(() {
           if (result.success) {
