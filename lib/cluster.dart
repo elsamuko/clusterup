@@ -13,18 +13,20 @@ typedef OnActionCallback = void Function(RemoteAction action);
 
 class Cluster {
   int id;
-  String name = "";
-  String user = "";
-  String host = "";
-  int port = 22;
+  String name;
+  String user;
+  String host;
+  int port;
   List<ClusterChild> children = [];
+  Set<RemoteAction> actions;
+
+  // runtime
   bool running = false;
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
-  Set<RemoteAction> actions;
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
 
-  Cluster({this.id, this.name, this.user, this.host, this.port, this.actions}) {
+  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.actions}) {
     actions ??= Set<RemoteAction>();
     onActionStarted = (RemoteAction action) {};
     onActionFinished = (RemoteAction action) {};
@@ -36,12 +38,14 @@ class Cluster {
     if (this.name != other.name) return false;
     if (this.user != other.user) return false;
     if (this.host != other.host) return false;
+    if (this.port != other.port) return false;
+    if (!listEquals(this.children, other.children)) return false;
     if (!setEquals(this.actions, other.actions)) return false;
     return true;
   }
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ user.hashCode ^ host.hashCode ^ actions.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ user.hashCode ^ host.hashCode ^ port.hashCode ^ children.hashCode ^ actions.hashCode;
 
   String toString() {
     return "$id : $name";
