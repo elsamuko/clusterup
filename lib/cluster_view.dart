@@ -70,11 +70,38 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   Widget _buildChildRow(ClusterChild child) {
-    return ListTile(
-      title: Text(
-        child.toString(),
+    return GestureDetector(
+      child: ListTile(
+        title: Text(
+          child.toString(),
+        ),
       ),
+      onLongPressStart: (LongPressStartDetails details) {
+        _showClusterChildMenu(details.globalPosition, child);
+      },
     );
+  }
+
+  void _showClusterChildMenu(Offset position, ClusterChild child) async {
+    var itemRemove = PopupMenuItem(
+      child: Text("Remove"),
+      value: ClusterChildOpts.Remove,
+    );
+
+    var selected = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
+      items: [itemRemove],
+    );
+
+    switch (selected) {
+      case ClusterChildOpts.Remove:
+        setState(() {
+          dev.log("Removing $child");
+          widget._cluster.children.remove(child);
+        });
+        break;
+    }
   }
 
   @override
@@ -255,6 +282,8 @@ class ClusterViewState extends State<ClusterView> {
             ]))));
   }
 }
+
+enum ClusterChildOpts { Remove }
 
 class ClusterView extends StatefulWidget {
   Cluster _cluster;
