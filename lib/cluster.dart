@@ -17,7 +17,7 @@ class Cluster {
   String user;
   String host;
   int port;
-  List<ClusterChild> children = [];
+  List<ClusterChild> children;
   Set<RemoteAction> actions;
 
   // runtime
@@ -26,10 +26,15 @@ class Cluster {
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
 
-  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.actions}) {
+  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.actions, this.children}) {
     actions ??= Set<RemoteAction>();
+    children ??= [];
     onActionStarted = (RemoteAction action) {};
     onActionFinished = (RemoteAction action) {};
+  }
+
+  void addChild({String user, String host, int port}) {
+    children.add(ClusterChild(this, user: user, host: host, port: port));
   }
 
   @override
@@ -81,14 +86,13 @@ class Cluster {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> m = toMap();
     m["actions"] = actions.toList();
+    m["children"] = children;
     return m;
   }
 
-  static Cluster fromMap(Map<String, dynamic> data) {
+  // blob is real json or encoded json
+  static Set<RemoteAction> actionsFromBlob(blob) {
     Set<RemoteAction> actions = Set<RemoteAction>();
-
-    var blob = data['actions'];
-
     if (blob != null) {
       // if its json, decode first
       if (blob.runtimeType == "".runtimeType) {
@@ -103,15 +107,35 @@ class Cluster {
         });
       }
     }
+    return actions;
+  }
 
-    return Cluster(
+  static List<ClusterChild> childrenFromData(Cluster parent, List<dynamic> data) {
+    List<ClusterChild> children = [];
+    if (data != null) {
+      data.forEach((dynamic one) {
+        ClusterChild child = ClusterChild.fromMap(parent, one);
+        if (child != null) {
+          children.add(child);
+        }
+      });
+    }
+    return children;
+  }
+
+  static Cluster fromMap(Map<String, dynamic> data) {
+    Cluster cluster = Cluster(
       id: data['id'] ?? 0,
       name: data['name'] ?? "",
       user: data['user'] ?? "",
       host: data['host'] ?? "",
       port: data['port'] ?? 22,
-      actions: actions,
+      actions: actionsFromBlob(data['actions']),
     );
+
+    cluster.children = childrenFromData(cluster, data['children']);
+
+    return cluster;
   }
 
   bool lastWasSuccess() {
