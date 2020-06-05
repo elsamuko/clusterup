@@ -1,13 +1,10 @@
-import 'package:clusterup/remote_action_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'cluster.dart';
-import 'remote_actions_view.dart';
 import 'ssh_connection.dart';
 import 'cluster_child.dart';
-import 'remote_action.dart';
 
 class ClusterChildViewState extends State<ClusterChildView> {
   ClusterChildViewState();
@@ -117,7 +114,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     ),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
-                                      if (!value.isEmpty) {
+                                      if (value.isNotEmpty) {
                                         widget._child.user = value;
                                       }
                                     },
@@ -135,7 +132,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     ),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
-                                      if (!value.isEmpty) {
+                                      if (value.isNotEmpty) {
                                         widget._child.host = value;
                                       }
                                     },

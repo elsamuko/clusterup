@@ -28,8 +28,6 @@ class ClusterChild {
   int get hashCode => id.hashCode ^ user.hashCode ^ host.hashCode ^ port.hashCode;
 
   Map<String, dynamic> toMap() {
-    List<String> actionNames = [];
-
     return {
       'parent': parent.id,
       'id': id,

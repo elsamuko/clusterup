@@ -3,7 +3,6 @@ import 'dart:developer' as dev;
 import 'package:clusterup/ssh_key.dart';
 import 'package:ssh/ssh.dart';
 import 'package:flutter/services.dart';
-import 'cluster.dart';
 
 class SSHConnectionResult {
   bool success;

@@ -40,7 +40,7 @@ class DBPersistence {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
-    await cluster.children.forEach((ClusterChild child) async {
+    cluster.children.forEach((ClusterChild child) async {
       await _addChild(child);
     });
   }
