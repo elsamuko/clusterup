@@ -1,5 +1,5 @@
 import 'package:clusterup/cluster_child_view.dart';
-import 'package:clusterup/remote_action_results_view.dart';
+import 'package:clusterup/cluster_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,7 +170,7 @@ class ClusterViewState extends State<ClusterView> {
             if (_formKey.currentState.validate() && !testingConnection) {
               _formKey.currentState.save();
               Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-                return ResultsView(widget._key, widget._cluster, true);
+                return ClusterResultsView(widget._key, widget._cluster, true);
               }));
             }
           },

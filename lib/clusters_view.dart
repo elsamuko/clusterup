@@ -1,5 +1,5 @@
 import 'package:clusterup/load_save_view.dart';
-import 'package:clusterup/remote_action_results_view.dart';
+import 'package:clusterup/cluster_results_view.dart';
 import 'package:clusterup/remote_actions_view.dart';
 import 'package:clusterup/db_persistence.dart';
 import 'package:flutter/material.dart';
@@ -185,7 +185,7 @@ class ClustersViewState extends State<ClustersView> {
         break;
       case ClusterOpts.LastRun:
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return ResultsView(null, cluster, false);
+          return ClusterResultsView(null, cluster, false);
         }));
         break;
     }

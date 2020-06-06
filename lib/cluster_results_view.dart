@@ -4,14 +4,14 @@ import 'package:clusterup/ssh_key.dart';
 import 'ssh_connection.dart';
 import 'cluster.dart';
 
-class ResultsViewState extends State<ResultsView> {
+class ClusterResultsViewState extends State<ClusterResultsView> {
   SSHKey _key;
   bool _run = false;
   Cluster _cluster;
   List<RemoteAction> actions; // finished actions
   RemoteAction current;
 
-  ResultsViewState(this._key, this._cluster, this._run);
+  ClusterResultsViewState(this._key, this._cluster, this._run);
 
   @override
   void initState() {
@@ -115,13 +115,13 @@ class ResultsViewState extends State<ResultsView> {
   }
 }
 
-class ResultsView extends StatefulWidget {
+class ClusterResultsView extends StatefulWidget {
   SSHKey _key;
   Cluster _cluster;
   bool _run = false;
 
-  ResultsView(this._key, this._cluster, this._run);
+  ClusterResultsView(this._key, this._cluster, this._run);
 
   @override
-  ResultsViewState createState() => ResultsViewState(this._key, this._cluster, this._run);
+  ClusterResultsViewState createState() => ClusterResultsViewState(this._key, this._cluster, this._run);
 }
