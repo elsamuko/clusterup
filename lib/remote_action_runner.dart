@@ -19,7 +19,9 @@ class RemoteActionRunner {
   Future<RemoteActionRunnerResult> run() async {
     RemoteActionRunnerResult result = RemoteActionRunnerResult();
     result._sshConnectionResult = await SSHConnection.run(_cluster.creds(), _sshKey, _action.commands);
-    result.remoteActionStatus = _action.filter(result._sshConnectionResult.output);
+    if (result._sshConnectionResult.success) {
+      result.remoteActionStatus = _action.filter(result._sshConnectionResult.output);
+    }
     return result;
   }
 
@@ -29,7 +31,9 @@ class RemoteActionRunner {
     for (ClusterChild child in _cluster.children) {
       RemoteActionRunnerResult result = RemoteActionRunnerResult();
       result._sshConnectionResult = await SSHConnection.run(child.creds(), _sshKey, _action.commands);
-      result.remoteActionStatus = _action.filter(result._sshConnectionResult.output);
+      if (result._sshConnectionResult.success) {
+        result.remoteActionStatus = _action.filter(result._sshConnectionResult.output);
+      }
       results.add(result);
     }
 

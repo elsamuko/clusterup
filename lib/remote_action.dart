@@ -80,9 +80,9 @@ class RemoteAction {
 
   RemoteAction.getHostUpAction() {
     name = "up";
-    status = RemoteActionStatus.Success;
     description = "checks if host is up";
     filter = (lines) {
+      status = RemoteActionStatus.Success;
       return status;
     };
   }
