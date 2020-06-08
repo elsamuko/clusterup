@@ -74,7 +74,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     if (!running) {
       switch (action.status) {
         case RemoteActionStatus.Unknown:
-          indicator = Icon(Icons.done, color: Colors.white);
+          indicator = Text("-");
           break;
         case RemoteActionStatus.Success:
           indicator = Icon(Icons.check_circle, color: Colors.green[300]);
