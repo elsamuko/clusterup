@@ -149,7 +149,7 @@ class Cluster {
       action.reset();
       this.onActionStarted(action);
 
-      RemoteActionRunner runner = RemoteActionRunner(this, action, key);
+      RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
       RemoteActionRunnerResult result = await runner.run();
 
       this.onActionFinished(action);

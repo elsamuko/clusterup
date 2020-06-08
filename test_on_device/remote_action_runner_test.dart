@@ -17,7 +17,7 @@ void main() {
     Cluster cluster = read.first;
     RemoteAction action = RemoteAction.getDiskFreeAction();
 
-    RemoteActionRunner runner = RemoteActionRunner(cluster, action, key);
+    RemoteActionRunner runner = RemoteActionRunner(cluster.creds(), action, key);
     RemoteActionRunnerResult result = await runner.run();
 
     expect(result.remoteActionStatus, RemoteActionStatus.Success);
