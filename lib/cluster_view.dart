@@ -59,23 +59,40 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   Widget _buildClusterChildren() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
-      itemCount: widget._cluster.children.length,
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        return _buildChildRow(widget._cluster.children[i]);
-      },
-    );
+    return Card(
+        elevation: 6,
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemCount: widget._cluster.children.length,
+          itemBuilder: (context, i) {
+            return _buildChildRow(widget._cluster.children[i]);
+          },
+        ));
   }
 
   Widget _buildChildRow(ClusterChild child) {
+    Row row = Row(
+      children: <Widget>[
+        SizedBox(width: 4),
+        Icon(
+          Icons.child_care,
+          size: 18,
+          color: Colors.white70,
+        ),
+        SizedBox(width: 18),
+        Text(child.user ?? child.parent.user, style: TextStyle(color: child.user == null ? Colors.white30 : Colors.amberAccent)),
+        Text("@", style: TextStyle(color: Colors.white30)),
+        Text(child.host ?? child.parent.host, style: TextStyle(color: child.host == null ? Colors.white30 : Colors.amberAccent)),
+        Text(":", style: TextStyle(color: Colors.white30)),
+        Text((child.port ?? child.parent.port).toString(), style: TextStyle(color: child.port == null ? Colors.white30 : Colors.amberAccent)),
+      ],
+    );
+
     return GestureDetector(
       child: ListTile(
-        title: Text(
-          child.toString(),
-        ),
+        contentPadding: EdgeInsets.only(left: 8),
+        title: row,
       ),
       onLongPressStart: (LongPressStartDetails details) {
         _showClusterChildMenu(details.globalPosition, child);
@@ -184,77 +201,10 @@ class ClusterViewState extends State<ClusterView> {
           ))
     ]);
 
-    Form form = Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(Icons.label),
-                labelText: 'name',
-              ),
-              onSaved: (String value) {
-                widget._cluster.name = value;
-              },
-              initialValue: widget._cluster?.name,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(Icons.person),
-                hintText: 'username',
-                labelText: 'username',
-              ),
-              inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
-              onSaved: (String value) {
-                widget._cluster.user = value;
-              },
-              initialValue: widget._cluster?.user,
-              validator: (String value) {
-                return value.contains('@') ? 'Do not use the @ char.' : null;
-              },
-              onEditingComplete: validate,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(Icons.computer),
-                hintText: 'Server domain',
-                labelText: 'server',
-              ),
-              inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
-              onSaved: (String value) {
-                widget._cluster.host = value;
-              },
-              initialValue: widget._cluster?.host,
-              validator: (String value) {
-                return value.contains('@') ? 'Do not use the @ char.' : null;
-              },
-              onEditingComplete: validate,
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.local_airport),
-                hintText: 'SSH server port',
-                labelText: 'port',
-              ),
-              onSaved: (String value) {
-                widget._cluster.port = int.parse(value);
-              },
-              initialValue: (widget._cluster?.port ?? 22).toString(),
-              validator: (String value) {
-                int port = int.tryParse(value);
-                if (port == null || port > 65535) {
-                  return "Invalid port number";
-                } else {
-                  return null;
-                }
-              },
-              onEditingComplete: validate,
-            ),
-          ],
-        ));
-
-    Widget children = _buildClusterChildren();
+    List<Widget> widgets = [_buildClusterCard()];
+    if (widget._cluster.children.isNotEmpty) {
+      widgets.add(_buildClusterChildren());
+    }
 
     return WillPopScope(
         onWillPop: () async {
@@ -280,11 +230,83 @@ class ClusterViewState extends State<ClusterView> {
               child: const Icon(Icons.add),
             ),
             bottomNavigationBar: bottomButtons,
-            body: Scrollbar(
-                child: ListView(children: <Widget>[
-              Padding(padding: EdgeInsets.all(0.0), child: Card(elevation: 6, child: Padding(padding: EdgeInsets.all(8.0), child: form))),
-              children
-            ]))));
+            body: Scrollbar(child: ListView(children: widgets))));
+  }
+
+  Widget _buildClusterCard() {
+    return Card(
+        elevation: 6,
+        child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.label),
+                        labelText: 'name',
+                      ),
+                      onSaved: (String value) {
+                        widget._cluster.name = value;
+                      },
+                      initialValue: widget._cluster?.name,
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: 'username',
+                        labelText: 'username',
+                      ),
+                      inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+                      onSaved: (String value) {
+                        widget._cluster.user = value;
+                      },
+                      initialValue: widget._cluster?.user,
+                      validator: (String value) {
+                        return value.contains('@') ? 'Do not use the @ char.' : null;
+                      },
+                      onEditingComplete: validate,
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.computer),
+                        hintText: 'Server domain',
+                        labelText: 'server',
+                      ),
+                      inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+                      onSaved: (String value) {
+                        widget._cluster.host = value;
+                      },
+                      initialValue: widget._cluster?.host,
+                      validator: (String value) {
+                        return value.contains('@') ? 'Do not use the @ char.' : null;
+                      },
+                      onEditingComplete: validate,
+                    ),
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.local_airport),
+                        hintText: 'SSH server port',
+                        labelText: 'port',
+                      ),
+                      onSaved: (String value) {
+                        widget._cluster.port = int.parse(value);
+                      },
+                      initialValue: (widget._cluster?.port ?? 22).toString(),
+                      validator: (String value) {
+                        int port = int.tryParse(value);
+                        if (port == null || port > 65535) {
+                          return "Invalid port number";
+                        } else {
+                          return null;
+                        }
+                      },
+                      onEditingComplete: validate,
+                    ),
+                  ],
+                ))));
   }
 }
 
