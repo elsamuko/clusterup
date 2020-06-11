@@ -1,4 +1,5 @@
 import 'package:clusterup/cluster_child_view.dart';
+import 'package:clusterup/cluster_children_results_view.dart';
 import 'package:clusterup/cluster_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
@@ -170,7 +171,11 @@ class ClusterViewState extends State<ClusterView> {
             if (_formKey.currentState.validate() && !testingConnection) {
               _formKey.currentState.save();
               Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-                return ClusterResultsView(widget._key, widget._cluster, true);
+                if (widget._cluster.children.isEmpty) {
+                  return ClusterResultsView(widget._key, widget._cluster, true);
+                } else {
+                  return ClusterChildrenResultsView(widget._key, widget._cluster, true);
+                }
               }));
             }
           },
