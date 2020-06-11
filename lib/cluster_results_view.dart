@@ -49,7 +49,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     } else {
       actions = this._cluster.actions.map((action) {
         return RemoteActionPair(action);
-      });
+      }).toList();
     }
 
     super.initState();
