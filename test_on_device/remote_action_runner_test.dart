@@ -18,8 +18,8 @@ void main() {
     RemoteAction action = RemoteAction.getDiskFreeAction();
 
     RemoteActionRunner runner = RemoteActionRunner(cluster.creds(), action, key);
-    RemoteActionRunnerResult result = await runner.run();
+    RemoteActionResult result = await runner.run();
 
-    expect(result.remoteActionStatus, RemoteActionStatus.Success);
+    expect(result.status, RemoteActionStatus.Success);
   });
 }
