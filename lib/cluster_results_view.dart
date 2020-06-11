@@ -8,7 +8,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
   SSHKey _key;
   bool _run = false;
   Cluster _cluster;
-  List<RemoteAction> actions; // finished actions
+  List<RemoteActionPair> actions; // finished actions
   RemoteAction current;
 
   ClusterResultsViewState(this._key, this._cluster, this._run);
@@ -16,19 +16,19 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
   @override
   void initState() {
     if (_run) {
-      actions = [RemoteAction.getHostUpAction()];
-      current = actions.first;
+      actions = [RemoteActionPair(RemoteAction.getHostUpAction())];
+      current = actions.first.action;
 
       // set callback for results
-      _cluster.onActionStarted = (RemoteAction action) {
+      _cluster.onActionStarted = (RemoteActionPair pair) {
         setState(() {
-          current = action;
-          actions.add(action);
+          current = pair.action;
+          actions.add(pair);
         });
       };
 
       // set callback for results
-      _cluster.onActionFinished = (RemoteAction action) {
+      _cluster.onActionFinished = (RemoteActionPair action) {
         setState(() {
           current = null;
         });
@@ -39,16 +39,17 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         current = null;
         setState(() {
           if (result.success) {
-            actions.first.status = RemoteActionStatus.Success;
+            actions.first.results.add(RemoteActionResult.success());
             _cluster.run(_key);
           } else {
-            actions.first.status = RemoteActionStatus.Error;
-            actions.first.filtered = result.error;
+            actions.first.results.add(RemoteActionResult.error(result.error));
           }
         });
       });
     } else {
-      actions = this._cluster.actions.toList();
+      actions = this._cluster.actions.map((action) {
+        return RemoteActionPair(action);
+      });
     }
 
     super.initState();
@@ -56,13 +57,14 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
 
   @override
   void dispose() {
-    _cluster.onActionStarted = (RemoteAction action) {};
-    _cluster.onActionFinished = (RemoteAction action) {};
+    _cluster.onActionStarted = (_) {};
+    _cluster.onActionFinished = (_) {};
     super.dispose();
   }
 
-  Widget _buildRow(RemoteAction action) {
-    bool running = action == current;
+  Widget _buildRow(RemoteActionPair pair) {
+    RemoteActionResult result = pair.results.isNotEmpty ? pair.results.first : RemoteActionResult.unknown();
+    bool running = pair.action == current;
     var indicator = running
         ? SizedBox(
             child: CircularProgressIndicator(),
@@ -72,7 +74,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         : Icon(Icons.done);
 
     if (!running) {
-      switch (action.status) {
+      switch (result.status) {
         case RemoteActionStatus.Unknown:
           indicator = Text("-");
           break;
@@ -88,8 +90,8 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
       }
     }
     return ListTile(
-      title: Text(action.name),
-      subtitle: Text(action.filtered),
+      title: Text(pair.action.name),
+      subtitle: Text(result.filtered),
       trailing: indicator,
     );
   }

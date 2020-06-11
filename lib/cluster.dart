@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'remote_action.dart';
 import 'remote_action_runner.dart';
 
-typedef OnActionCallback = void Function(RemoteAction action);
+typedef OnActionCallback = void Function(RemoteActionPair action);
 
 class Cluster {
   int id;
@@ -29,8 +29,8 @@ class Cluster {
   Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.actions, this.children}) {
     actions ??= Set<RemoteAction>();
     children ??= [];
-    onActionStarted = (RemoteAction action) {};
-    onActionFinished = (RemoteAction action) {};
+    onActionStarted = (RemoteActionPair action) {};
+    onActionFinished = (RemoteActionPair action) {};
   }
 
   void addChild({String user, String host, int port}) {
@@ -146,16 +146,20 @@ class Cluster {
     running = true;
     lastStatus = RemoteActionStatus.Unknown;
     for (RemoteAction action in actions) {
-      action.reset();
-      this.onActionStarted(action);
+      RemoteActionPair rv = RemoteActionPair(action);
+      this.onActionStarted(rv);
 
       RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
-      RemoteActionRunnerResult result = await runner.run();
+      rv.results.add(await runner.run());
 
-      this.onActionFinished(action);
+      this.onActionFinished(rv);
 
-      if (result.remoteActionStatus.index > lastStatus.index) {
-        lastStatus = result.remoteActionStatus;
+      if (rv.results.first.status.index > lastStatus.index) {
+        lastStatus = rv.results.first.status;
+      }
+    }
+    running = false;
+  }
       }
     }
     running = false;
