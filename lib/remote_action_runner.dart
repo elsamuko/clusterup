@@ -16,6 +16,8 @@ class RemoteActionRunner {
     SSHConnectionResult sshConnectionResult = await SSHConnection.run(_creds, _sshKey, _action.commands);
     if (sshConnectionResult.success) {
       result = _action.filter(sshConnectionResult.output);
+    } else {
+      result = RemoteActionResult.error(sshConnectionResult.error);
     }
     return result;
   }
