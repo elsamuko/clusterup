@@ -160,6 +160,25 @@ class Cluster {
     }
     running = false;
   }
+
+  Future<void> runChildren(SSHKey key) async {
+    running = true;
+    lastStatus = RemoteActionStatus.Unknown;
+    for (RemoteAction action in actions) {
+      RemoteActionPair rv = RemoteActionPair(action);
+      this.onActionStarted(rv);
+
+      for (ClusterChild child in children) {
+        RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
+        rv.results.add(await runner.run());
+      }
+
+      this.onActionFinished(rv);
+
+      for (RemoteActionResult result in rv.results) {
+        if (result.status.index > lastStatus.index) {
+          lastStatus = result.status;
+        }
       }
     }
     running = false;
