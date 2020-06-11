@@ -40,6 +40,14 @@ class DBPersistence {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
+    // remove old
+    db.delete(
+      "children",
+      where: "parent=?",
+      whereArgs: [cluster.id],
+    );
+
+    // add new
     cluster.children.forEach((ClusterChild child) async {
       await _addChild(child);
     });
