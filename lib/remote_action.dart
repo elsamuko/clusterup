@@ -15,6 +15,22 @@ class RemoteActionResult {
   String filtered = "";
   RemoteActionResult(this.status, {this.filtered = ""});
 
+  bool unknown() {
+    return status == RemoteActionStatus.Unknown;
+  }
+
+  bool success() {
+    return status == RemoteActionStatus.Success;
+  }
+
+  bool warning() {
+    return status == RemoteActionStatus.Warning;
+  }
+
+  bool error() {
+    return status == RemoteActionStatus.Error;
+  }
+
   RemoteActionResult.success([String filtered = ""]) {
     status = RemoteActionStatus.Success;
     this.filtered = filtered;
