@@ -1,3 +1,4 @@
+import 'package:clusterup/cluster_children_results_view.dart';
 import 'package:clusterup/load_save_view.dart';
 import 'package:clusterup/cluster_results_view.dart';
 import 'package:clusterup/remote_actions_view.dart';
@@ -185,7 +186,11 @@ class ClustersViewState extends State<ClustersView> {
         break;
       case ClusterOpts.LastRun:
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return ClusterResultsView(null, cluster, false);
+          if (cluster.children.isNotEmpty) {
+            return ClusterChildrenResultsView(null, cluster, false);
+          } else {
+            return ClusterResultsView(null, cluster, false);
+          }
         }));
         break;
     }
