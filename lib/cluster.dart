@@ -169,8 +169,10 @@ class Cluster {
       this.onActionStarted(rv);
 
       for (ClusterChild child in children) {
-        RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
-        rv.results.add(await runner.run());
+        if (child.up) {
+          RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
+          rv.results.add(await runner.run());
+        }
       }
 
       this.onActionFinished(rv);

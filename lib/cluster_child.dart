@@ -7,6 +7,7 @@ class ClusterChild {
   String user;
   String host;
   int port;
+  bool up; // true, if valid and reachable
   ClusterChild(this.parent, {this.user, this.host, this.port}) {
     id = parent.children.length;
   }
