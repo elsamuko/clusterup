@@ -2,9 +2,9 @@ import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
-import 'cluster.dart';
-import 'ssh_connection.dart';
-import 'cluster_child.dart';
+import '../cluster.dart';
+import '../ssh_connection.dart';
+import '../cluster_child.dart';
 
 class ClusterChildViewState extends State<ClusterChildView> {
   ClusterChildViewState();

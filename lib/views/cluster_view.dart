@@ -1,15 +1,15 @@
-import 'package:clusterup/cluster_child_view.dart';
-import 'package:clusterup/cluster_children_results_view.dart';
-import 'package:clusterup/cluster_results_view.dart';
-import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
-import 'cluster_child.dart';
+import 'cluster_child_view.dart';
+import 'cluster_children_results_view.dart';
+import 'cluster_results_view.dart';
 import 'remote_actions_view.dart';
-import 'ssh_connection.dart';
-import 'cluster.dart';
-import 'remote_action.dart';
+import '../ssh_key.dart';
+import '../cluster_child.dart';
+import '../ssh_connection.dart';
+import '../cluster.dart';
+import '../remote_action.dart';
 
 class ClusterViewState extends State<ClusterView> {
   ClusterViewState();

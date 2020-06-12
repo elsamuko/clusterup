@@ -1,8 +1,8 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import 'ssh_connection.dart';
-import 'cluster.dart';
+import '../ssh_connection.dart';
+import '../cluster.dart';
 
 class ClusterResultsViewState extends State<ClusterResultsView> {
   SSHKey _key;

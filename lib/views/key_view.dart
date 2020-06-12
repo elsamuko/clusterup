@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as dev;
-import 'ssh_key.dart';
+import '../ssh_key.dart';
 
 // helper function for compute
 SSHKey generateSSHKey(int) {

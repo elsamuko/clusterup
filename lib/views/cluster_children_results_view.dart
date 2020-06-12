@@ -2,8 +2,8 @@ import 'package:clusterup/cluster_child.dart';
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import 'ssh_connection.dart';
-import 'cluster.dart';
+import '../ssh_connection.dart';
+import '../cluster.dart';
 
 class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> {
   SSHKey _key;
@@ -76,7 +76,6 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
   }
 
   Widget _buildRow(RemoteActionPair pair) {
-    RemoteActionResult result = pair.results.isNotEmpty ? pair.results.first : RemoteActionResult.unknown();
     bool running = pair.action == current;
     var indicator = running
         ? SizedBox(
