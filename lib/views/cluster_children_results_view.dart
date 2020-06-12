@@ -1,5 +1,7 @@
+import 'dart:developer' as dev;
 import 'package:clusterup/cluster_child.dart';
 import 'package:clusterup/remote_action.dart';
+import 'package:clusterup/views/result_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
 import '../ssh_connection.dart';
@@ -55,6 +57,7 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
             } else {
               actions.first.results.add(RemoteActionResult.error(result.error));
             }
+            actions.first.results.last.from = result.creds.toString();
           });
           _cluster.runChildren(_key);
         });
@@ -73,6 +76,13 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
     _cluster.onActionStarted = (_) {};
     _cluster.onActionFinished = (_) {};
     super.dispose();
+  }
+
+  void _showResultDetails(RemoteActionPair pair) async {
+    dev.log("_showResultDetails : $pair");
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      return ResultDetailsView(pair);
+    }));
   }
 
   Widget _buildRow(RemoteActionPair pair) {
@@ -114,6 +124,9 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
       ]);
     }
     return ListTile(
+      onTap: () {
+        _showResultDetails(pair);
+      },
       title: Row(
         children: <Widget>[
           Expanded(child: Text(pair.action.name)),
