@@ -242,6 +242,7 @@ class ClusterViewState extends State<ClusterView> {
               actions: checkButton,
             ),
             floatingActionButton: FloatingActionButton(
+              backgroundColor: Color(0xff565656),
               onPressed: () {
                 addChild();
               },
