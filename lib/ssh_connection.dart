@@ -8,7 +8,8 @@ class SSHConnectionResult {
   bool success;
   String error;
   List<String> output = [];
-  SSHConnectionResult(this.success, [this.error]);
+  SSHCredentials creds;
+  SSHConnectionResult(this.success, this.creds, [this.error]);
 }
 
 class SSHCredentials {
@@ -28,7 +29,7 @@ class SSHConnection {
   }
 
   static Future<SSHConnectionResult> run(SSHCredentials creds, SSHKey key, List<String> commands) async {
-    SSHConnectionResult rv = SSHConnectionResult(false);
+    SSHConnectionResult rv = SSHConnectionResult(false, creds);
     SSHClient client = SSHClient(
       host: creds.host,
       port: creds.port,
