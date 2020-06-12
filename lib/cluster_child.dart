@@ -13,7 +13,7 @@ class ClusterChild {
   }
 
   String toString() {
-    return "$user@$host:$port";
+    return "${user ?? parent.user}@${host ?? parent.host}:${port ?? parent.port}";
   }
 
   @override
