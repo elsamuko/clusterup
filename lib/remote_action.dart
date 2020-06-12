@@ -13,6 +13,7 @@ class RemoteActionPair {
 class RemoteActionResult {
   RemoteActionStatus status = RemoteActionStatus.Unknown;
   String filtered = "";
+  String from = "";
   RemoteActionResult(this.status, {this.filtered = ""});
 
   bool unknown() {
