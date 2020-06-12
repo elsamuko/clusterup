@@ -19,6 +19,7 @@ class Cluster {
   int port;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
+  List<RemoteActionPair> results;
 
   // runtime
   bool running = false;
@@ -144,18 +145,18 @@ class Cluster {
 
   Future<void> run(SSHKey key) async {
     running = true;
-    lastStatus = RemoteActionStatus.Unknown;
+
     for (RemoteAction action in actions) {
-      RemoteActionPair rv = RemoteActionPair(action);
-      this.onActionStarted(rv);
+      results.add(RemoteActionPair(action));
+      this.onActionStarted(results.last);
 
       RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
-      rv.results.add(await runner.run());
+      results.last.results.add(await runner.run());
 
-      this.onActionFinished(rv);
+      this.onActionFinished(results.last);
 
-      if (rv.results.first.status.index > lastStatus.index) {
-        lastStatus = rv.results.first.status;
+      if (results.last.results.first.status.index > lastStatus.index) {
+        lastStatus = results.last.results.first.status;
       }
     }
     running = false;
@@ -163,22 +164,22 @@ class Cluster {
 
   Future<void> runChildren(SSHKey key) async {
     running = true;
-    lastStatus = RemoteActionStatus.Unknown;
+
     for (RemoteAction action in actions) {
-      RemoteActionPair rv = RemoteActionPair(action);
-      this.onActionStarted(rv);
+      results.add(RemoteActionPair(action));
+      this.onActionStarted(results.last);
 
       for (ClusterChild child in children) {
         if (child.up) {
           RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
-          rv.results.add(await runner.run());
-          rv.results.last.from = child.toString();
+          results.last.results.add(await runner.run());
+          results.last.results.last.from = child.toString();
         }
       }
 
-      this.onActionFinished(rv);
+      this.onActionFinished(results.last);
 
-      for (RemoteActionResult result in rv.results) {
+      for (RemoteActionResult result in results.last.results) {
         if (result.status.index > lastStatus.index) {
           lastStatus = result.status;
         }

@@ -11,7 +11,6 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
   SSHKey _key;
   bool _run = false;
   Cluster _cluster;
-  List<RemoteActionPair> actions; // finished actions
   RemoteAction current;
 
   ClusterChildrenResultsViewState(this._key, this._cluster, this._run);
@@ -29,14 +28,13 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
   @override
   void initState() {
     if (_run) {
-      actions = [RemoteActionPair(RemoteAction.getHostUpAction())];
-      current = actions.first.action;
+      _cluster.results = [RemoteActionPair(RemoteAction.getHostUpAction())];
+      current = _cluster.results.first.action;
 
       // set callback for results
       _cluster.onActionStarted = (RemoteActionPair pair) {
         setState(() {
           current = pair.action;
-          actions.add(pair);
         });
       };
 
@@ -51,21 +49,19 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
       testSSH().then((List<SSHConnectionResult> results) {
         current = null;
         setState(() {
+          _cluster.lastStatus = RemoteActionStatus.Success;
           results.forEach((SSHConnectionResult result) {
             if (result.success) {
-              actions.first.results.add(RemoteActionResult.success());
+              _cluster.results.first.results.add(RemoteActionResult.success());
             } else {
-              actions.first.results.add(RemoteActionResult.error(result.error));
+              _cluster.results.first.results.add(RemoteActionResult.error(result.error));
+              _cluster.lastStatus = RemoteActionStatus.Error;
             }
-            actions.first.results.last.from = result.creds.toString();
+            _cluster.results.first.results.last.from = result.creds.toString();
           });
           _cluster.runChildren(_key);
         });
       });
-    } else {
-      actions = this._cluster.actions.map((action) {
-        return RemoteActionPair(action);
-      }).toList();
     }
 
     super.initState();
@@ -149,10 +145,10 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
           title: Text(_run ? "Running on ${_cluster.name}" : "Last run on ${_cluster.name}"),
         ),
         body: ListView.builder(
-            itemCount: actions.length,
+            itemCount: _cluster.results.length,
             padding: const EdgeInsets.all(16.0),
             itemBuilder: (context, i) {
-              return _buildRow(actions.elementAt(i));
+              return _buildRow(_cluster.results.elementAt(i));
             }));
   }
 }
