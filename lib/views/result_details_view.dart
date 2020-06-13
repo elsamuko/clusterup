@@ -7,35 +7,35 @@ class ResultDetailsViewState extends State<ResultDetailsView> {
 
   ResultDetailsViewState(this.pair);
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Widget _buildRow(RemoteActionResult result) {
-    Function colorFor = (RemoteActionStatus status) {
-      switch (status) {
-        case RemoteActionStatus.Unknown:
-          return TextStyle(color: Colors.white);
-        case RemoteActionStatus.Success:
-          return TextStyle(color: Colors.greenAccent);
-        case RemoteActionStatus.Warning:
-          return TextStyle(color: Colors.orangeAccent);
-        case RemoteActionStatus.Error:
-          return TextStyle(color: Colors.redAccent);
-        default:
-          return TextStyle(color: Colors.white);
-      }
-    };
+    TextStyle style;
+    var indicator;
+
+    switch (result.status) {
+      case RemoteActionStatus.Unknown:
+        style = TextStyle(color: Colors.white);
+        indicator = Text("-");
+        break;
+      case RemoteActionStatus.Success:
+        style = TextStyle(color: Colors.greenAccent);
+        indicator = Icon(Icons.check_circle, color: Colors.green[300]);
+        break;
+      case RemoteActionStatus.Warning:
+        style = TextStyle(color: Colors.orangeAccent);
+        indicator = Icon(Icons.warning, color: Colors.orange[300]);
+        break;
+      case RemoteActionStatus.Error:
+        style = TextStyle(color: Colors.redAccent);
+        indicator = Icon(Icons.error, color: Colors.red[300]);
+        break;
+      default:
+        style = TextStyle(color: Colors.white);
+    }
 
     return ListTile(
       subtitle: Text(result.filtered),
-      title: Text(result.from, style: colorFor(result.status)),
+      title: Text(result.from, style: style),
+      trailing: indicator,
     );
   }
 
