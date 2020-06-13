@@ -167,6 +167,7 @@ class ClustersViewState extends State<ClustersView> {
     var itemLastRun = PopupMenuItem(
       child: Text("Show last run"),
       value: ClusterOpts.LastRun,
+      enabled: cluster.results.isNotEmpty,
     );
 
     var selected = await showMenu(
