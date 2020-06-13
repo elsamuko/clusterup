@@ -32,7 +32,7 @@ class ClustersViewState extends State<ClustersView> {
   Widget _buildClustersOverview() {
     return ListView.builder(
         itemCount: _data.clusters.length,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         itemBuilder: (context, i) {
           return _buildRow(_data.clusters[i]);
         });
@@ -41,14 +41,14 @@ class ClustersViewState extends State<ClustersView> {
   Widget _buildRow(Cluster cluster) {
     return GestureDetector(
       child: ListTile(
-        title: Text(
-          cluster.name,
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () {
-            _showCluster(cluster);
-          },
+        title: Row(
+          children: <Widget>[
+            SizedBox(width: 20, child: Text(cluster.id.toString(), style: TextStyle(color: Colors.grey), textAlign: TextAlign.right)),
+            SizedBox(width: 20),
+            Text(
+              cluster.name,
+            )
+          ],
         ),
         trailing: IconButton(
           icon: Icon(
