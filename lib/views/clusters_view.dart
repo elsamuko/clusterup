@@ -200,12 +200,6 @@ class ClustersViewState extends State<ClustersView> {
     return PopupMenuButton<ClustersOpts>(
       onSelected: (ClustersOpts result) {
         switch (result) {
-          case ClustersOpts.NewCluster:
-            {
-              dev.log("NewCluster");
-              _clustersMenu();
-            }
-            break;
           case ClustersOpts.Key:
             {
               dev.log("Key");
@@ -233,10 +227,6 @@ class ClustersViewState extends State<ClustersView> {
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<ClustersOpts>>[
-        const PopupMenuItem<ClustersOpts>(
-          value: ClustersOpts.NewCluster,
-          child: Text('Add new cluster'),
-        ),
         PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.Key,
           child: Text(keyText),
@@ -266,12 +256,19 @@ class ClustersViewState extends State<ClustersView> {
           _buildClustersPopUpButton(),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xff565656),
+        onPressed: () {
+          _clustersMenu();
+        },
+        child: const Icon(Icons.add),
+      ),
       body: _buildClustersOverview(),
     );
   }
 }
 
-enum ClustersOpts { NewCluster, Key, Actions, LoadSave, About }
+enum ClustersOpts { Key, Actions, LoadSave, About }
 enum ClusterOpts { Remove, LastRun }
 
 class ClustersView extends StatefulWidget {
