@@ -19,7 +19,7 @@ class Cluster {
   int port;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
-  List<RemoteActionPair> results;
+  List<RemoteActionPair> results = [];
 
   // runtime
   bool running = false;
