@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'cluster.dart';
 import 'ssh_key.dart';
@@ -34,14 +35,23 @@ class ClusterUpData {
 
   static ClusterUpData fromJSON(String input) {
     ClusterUpData output = ClusterUpData();
-    Map<String, dynamic> data = jsonDecode(input);
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(input);
+    } on FormatException catch (e) {
+      dev.log("json parse error ${e.toString()}");
+    }
 
-    data["clusters"].forEach((clusterData) {
-      output.clusters.add(Cluster.fromMap(clusterData));
-    });
+    if (data != null) {
+      if (data.containsKey("clusters")) {
+        data["clusters"].forEach((clusterData) {
+          output.clusters.add(Cluster.fromMap(clusterData));
+        });
+      }
 
-    if (data.containsKey("key")) {
-      output.sshKey = SSHKey.fromPEM(data["key"]["private"]);
+      if (data.containsKey("key")) {
+        output.sshKey = SSHKey.fromPEM(data["key"]["private"]);
+      }
     }
 
     return output;
