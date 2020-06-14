@@ -157,15 +157,15 @@ class Cluster {
     lastStatus = RemoteActionStatus.Unknown;
 
     if (hasEnabledChildren()) {
-      runChildren(key);
+      _runChildren(key);
     } else {
-      runSolo(key);
+      _runSolo(key);
     }
 
     running = false;
   }
 
-  Future<void> runSolo(SSHKey key) async {
+  Future<void> _runSolo(SSHKey key) async {
     // check if host is up
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
     this.onActionStarted(results.first);
@@ -195,7 +195,7 @@ class Cluster {
     }
   }
 
-  Future<void> runChildren(SSHKey key) async {
+  Future<void> _runChildren(SSHKey key) async {
     // check if host is up
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
     this.onActionStarted(results.first);
