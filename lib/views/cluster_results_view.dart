@@ -1,7 +1,6 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import '../ssh_connection.dart';
 import '../cluster.dart';
 
 class ClusterResultsViewState extends State<ClusterResultsView> {
@@ -15,9 +14,6 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
   @override
   void initState() {
     if (_run) {
-      _cluster.results = [RemoteActionPair(RemoteAction.getHostUpAction())];
-      current = _cluster.results.first.action;
-
       // set callback for results
       _cluster.onActionStarted = (RemoteActionPair pair) {
         setState(() {
@@ -33,19 +29,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
       };
 
       // run
-      SSHConnection.test(_cluster.creds(), _key).then((SSHConnectionResult result) {
-        current = null;
-        setState(() {
-          if (result.success) {
-            _cluster.results.first.results.add(RemoteActionResult.success());
-            _cluster.lastStatus = RemoteActionStatus.Success;
-            _cluster.run(_key);
-          } else {
-            _cluster.results.first.results.add(RemoteActionResult.error(result.error));
-            _cluster.lastStatus = RemoteActionStatus.Error;
-          }
-        });
-      });
+      _cluster.run(_key);
     }
 
     super.initState();

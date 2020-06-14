@@ -2,13 +2,17 @@ import 'cluster.dart';
 import 'ssh_connection.dart';
 
 class ClusterChild {
+  // persisted
   Cluster parent;
   int id;
   String user;
   String host;
   int port;
-  bool up; // true, if valid and reachable
   bool enabled;
+
+  // runtime only
+  bool up = false; // true, if valid and reachable
+
   ClusterChild(this.parent, {this.user, this.host, this.port, this.enabled = true}) {
     id = parent.children.length;
   }

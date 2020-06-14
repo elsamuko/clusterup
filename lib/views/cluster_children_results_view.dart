@@ -61,7 +61,7 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
             }
             _cluster.results.first.results.last.from = result.creds.toString();
           });
-          _cluster.runChildren(_key);
+          _cluster.run(_key);
         });
       });
     }

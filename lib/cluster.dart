@@ -12,18 +12,20 @@ import 'remote_action_runner.dart';
 typedef OnActionCallback = void Function(RemoteActionPair action);
 
 class Cluster {
+  // persisted
   int id;
   String name;
   String user;
   String host;
   int port;
-  bool enabled;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
-  List<RemoteActionPair> results = [];
+  bool enabled;
 
-  // runtime
+  // runtime only
   bool running = false;
+  bool up = false; // true, if valid and reachable
+  List<RemoteActionPair> results = [];
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
@@ -147,14 +149,44 @@ class Cluster {
   }
 
   Future<void> run(SSHKey key) async {
+    if (children.any((ClusterChild child) => child.enabled)) {
+      return runChildren(key);
+    } else {
+      return runSolo(key);
+    }
+  }
+
+  Future<void> runSolo(SSHKey key) async {
     running = true;
 
+    // check if host is up
+    results = [RemoteActionPair(RemoteAction.getHostUpAction())];
+    this.onActionStarted(results.last);
+    SSHConnectionResult result = await SSHConnection.test(creds(), key);
+    if (result.success) {
+      results.first.results.add(RemoteActionResult.success());
+      lastStatus = RemoteActionStatus.Success;
+      up = true;
+    } else {
+      results.first.results.add(RemoteActionResult.error(result.error));
+      lastStatus = RemoteActionStatus.Error;
+      up = false;
+    }
+    results.first.results.first.from = creds().toString();
+    this.onActionFinished(results.last);
+
+    if (!up) {
+      return;
+    }
+
+    // run actions
     for (RemoteAction action in actions) {
       results.add(RemoteActionPair(action));
       this.onActionStarted(results.last);
 
       RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
       results.last.results.add(await runner.run());
+      results.last.results.last.from = creds().toString();
 
       this.onActionFinished(results.last);
 
@@ -162,6 +194,7 @@ class Cluster {
         lastStatus = results.last.results.first.status;
       }
     }
+
     running = false;
   }
 
