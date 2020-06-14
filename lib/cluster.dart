@@ -197,6 +197,21 @@ class Cluster {
   Future<void> runChildren(SSHKey key) async {
     running = true;
 
+    // check if host is up
+    results = [RemoteActionPair(RemoteAction.getHostUpAction())];
+    this.onActionStarted(results.first);
+
+    for (ClusterChild child in children) {
+      if (child.enabled) {
+        RemoteActionRunner runner = RemoteActionRunner(child.creds(), results.first.action, key);
+        results.first.results.add(await runner.run());
+        results.first.results.last.from = child.toString();
+        child.up = results.first.results.last.success();
+      }
+    }
+
+    this.onActionFinished(results.first);
+
     for (RemoteAction action in actions) {
       results.add(RemoteActionPair(action));
       this.onActionStarted(results.last);

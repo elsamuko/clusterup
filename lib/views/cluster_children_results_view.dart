@@ -1,10 +1,8 @@
 import 'dart:developer' as dev;
-import 'package:clusterup/cluster_child.dart';
 import 'package:clusterup/remote_action.dart';
 import 'package:clusterup/views/result_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import '../ssh_connection.dart';
 import '../cluster.dart';
 
 class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> {
@@ -15,24 +13,9 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
 
   ClusterChildrenResultsViewState(this._key, this._cluster, this._run);
 
-  Future<List<SSHConnectionResult>> testSSH() async {
-    List<SSHConnectionResult> results = [];
-    for (ClusterChild child in _cluster.children) {
-      if (child.enabled) {
-        SSHConnectionResult result = await SSHConnection.test(child.creds(), _key);
-        child.up = result.success;
-        results.add(result);
-      }
-    }
-    return results;
-  }
-
   @override
   void initState() {
     if (_run) {
-      _cluster.results = [RemoteActionPair(RemoteAction.getHostUpAction())];
-      current = _cluster.results.first.action;
-
       // set callback for results
       _cluster.onActionStarted = (RemoteActionPair pair) {
         setState(() {
@@ -48,22 +31,7 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
       };
 
       // run
-      testSSH().then((List<SSHConnectionResult> results) {
-        current = null;
-        setState(() {
-          _cluster.lastStatus = RemoteActionStatus.Success;
-          results.forEach((SSHConnectionResult result) {
-            if (result.success) {
-              _cluster.results.first.results.add(RemoteActionResult.success());
-            } else {
-              _cluster.results.first.results.add(RemoteActionResult.error(result.error));
-              _cluster.lastStatus = RemoteActionStatus.Error;
-            }
-            _cluster.results.first.results.last.from = result.creds.toString();
-          });
-          _cluster.run(_key);
-        });
-      });
+      _cluster.run(_key);
     }
 
     super.initState();
