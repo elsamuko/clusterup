@@ -1,23 +1,59 @@
 import 'package:intl/intl.dart';
 
-typedef Filter = RemoteActionStatus Function(List<String> lines);
+typedef Filter = RemoteActionResult Function(List<String> lines);
 
 enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+class RemoteActionPair {
+  RemoteAction action;
+  List<RemoteActionResult> results = [];
+  RemoteActionPair(this.action);
+}
+
+class RemoteActionResult {
+  RemoteActionStatus status = RemoteActionStatus.Unknown;
+  String filtered = "";
+  String from = "";
+  RemoteActionResult(this.status, {this.filtered = ""});
+
+  bool unknown() {
+    return status == RemoteActionStatus.Unknown;
+  }
+
+  bool success() {
+    return status == RemoteActionStatus.Success;
+  }
+
+  bool warning() {
+    return status == RemoteActionStatus.Warning;
+  }
+
+  bool error() {
+    return status == RemoteActionStatus.Error;
+  }
+
+  RemoteActionResult.success([String filtered = ""]) {
+    status = RemoteActionStatus.Success;
+    this.filtered = filtered;
+  }
+  RemoteActionResult.warning([String filtered = ""]) {
+    status = RemoteActionStatus.Warning;
+    this.filtered = filtered;
+  }
+  RemoteActionResult.error([String filtered = ""]) {
+    status = RemoteActionStatus.Error;
+    this.filtered = filtered;
+  }
+  RemoteActionResult.unknown() {
+    status = RemoteActionStatus.Unknown;
+  }
+}
 
 class RemoteAction {
   String name;
   String description;
   List<String> commands = [];
   Filter filter;
-  RemoteActionStatus status = RemoteActionStatus.Unknown;
-  String filtered = "";
-
-  RemoteAction(this.name);
-
-  void reset() {
-    filtered = "";
-    status = RemoteActionStatus.Unknown;
-  }
 
   static String pluralS(int count) {
     return (count == 1) ? "" : "s";
@@ -80,10 +116,9 @@ class RemoteAction {
 
   RemoteAction.getHostUpAction() {
     name = "up";
-    status = RemoteActionStatus.Success;
     description = "checks if host is up";
     filter = (lines) {
-      return status;
+      return RemoteActionResult.success();
     };
   }
 
@@ -94,35 +129,35 @@ class RemoteAction {
     filter = (lines) {
       // sth went wrong
       if (lines.length < 2) {
-        return status;
+        return RemoteActionResult.unknown();
       }
 
       RegExp regExp = new RegExp("(\\d+)%");
       RegExpMatch match = regExp.firstMatch(lines[1]);
 
       if (match == null) {
-        return status;
+        return RemoteActionResult.unknown();
       }
 
       if (match.groupCount != 1) {
-        return status;
+        return RemoteActionResult.unknown();
       }
 
       int percent = int.tryParse(match[1]);
 
       if (percent == null) {
-        return status;
+        return RemoteActionResult.unknown();
       }
 
-      filtered = "$percent% used space";
+      String filtered = "$percent% used space";
 
       if (percent < 50)
-        status = RemoteActionStatus.Success;
+        return RemoteActionResult.success(filtered);
       else if (percent < 80)
-        status = RemoteActionStatus.Warning;
-      else if (percent >= 80) status = RemoteActionStatus.Error;
+        return RemoteActionResult.warning(filtered);
+      else if (percent >= 80) return RemoteActionResult.error(filtered);
 
-      return status;
+      return RemoteActionResult.unknown();
     };
   }
   RemoteAction.getUptimeAction() {
@@ -131,15 +166,14 @@ class RemoteAction {
     commands.add("uptime -s");
     filter = (lines) {
       // sth went wrong
-      if (lines.length < 1) return status;
+      if (lines.length < 1) return RemoteActionResult.unknown();
 
       DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
       DateTime started = format.parse(lines[0]);
       int days = DateTime.now().difference(started).inDays;
-      filtered = "$days day${pluralS(days)}";
+      String filtered = "$days day${pluralS(days)}";
 
-      status = RemoteActionStatus.Success;
-      return status;
+      return RemoteActionResult.success(filtered);
     };
   }
   RemoteAction.getAptUpdatesAvailableAction() {
@@ -147,12 +181,9 @@ class RemoteAction {
     description = "checks available updates with apt";
     commands.add("apt list --upgradeable");
     filter = (lines) {
-      status = RemoteActionStatus.Success;
-
       // no updates available -> success
       if (lines.length < 2) {
-        filtered = "No updates available";
-        return status;
+        return RemoteActionResult.success("No updates available");
       }
 
       // remove "Listing... Done" message
@@ -168,13 +199,13 @@ class RemoteAction {
           other++;
       });
 
-      filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
+      String filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
 
-      if (other > 0) status = RemoteActionStatus.Warning;
-      if (security > 0) status = RemoteActionStatus.Error;
-      if (lines.length == 0) status = RemoteActionStatus.Success;
+      if (other > 0) return RemoteActionResult.warning(filtered);
+      if (security > 0) return RemoteActionResult.error(filtered);
+      if (lines.length == 0) return RemoteActionResult.success(filtered);
 
-      return status;
+      return RemoteActionResult.unknown();
     };
   }
   RemoteAction.getLsbDescriptionAction() {
@@ -183,20 +214,16 @@ class RemoteAction {
     commands.add("lsb_release -d");
     filter = (lines) {
       // must be one line
-      if (lines.length != 1) return status;
+      if (lines.length != 1) return RemoteActionResult.unknown();
 
       String line = lines.first;
       String search = "Description:\t";
 
       if (line.startsWith(search)) {
-        filtered = line.substring(search.length);
-        status = RemoteActionStatus.Success;
+        return RemoteActionResult.success(line.substring(search.length));
       } else {
-        filtered = "Invalid description";
-        status = RemoteActionStatus.Warning;
+        return RemoteActionResult.warning("Invalid description");
       }
-
-      return status;
     };
   }
   RemoteAction.getUnameAction() {
@@ -205,12 +232,8 @@ class RemoteAction {
     commands.add("uname -r");
     filter = (lines) {
       // must be one line
-      if (lines.length != 1) return status;
-
-      filtered = lines.first;
-      status = RemoteActionStatus.Success;
-
-      return status;
+      if (lines.length != 1) return RemoteActionResult.unknown();
+      return RemoteActionResult.success(lines.first);
     };
   }
 }

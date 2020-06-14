@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'clusters_view.dart';
+import 'views/clusters_view.dart';
 
 void main() => runApp(MyApp());
 

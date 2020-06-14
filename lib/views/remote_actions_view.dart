@@ -6,16 +6,16 @@ class ActionsViewState extends State<ActionsView> {
 
   Widget _buildRow(RemoteAction action) {
     final bool marked = widget._saved.contains(action);
-    IconButton leading = widget._selectable
-        ? IconButton(
-            icon:
-                Icon(marked ? Icons.check_box : Icons.check_box_outline_blank),
-            onPressed: () {
+    Widget leading = widget._selectable
+        ? Checkbox(
+            activeColor: Colors.grey,
+            value: marked,
+            onChanged: (bool checked) {
               setState(() {
-                if (marked) {
-                  widget._saved.remove(action);
-                } else {
+                if (checked) {
                   widget._saved.add(action);
+                } else {
+                  widget._saved.remove(action);
                 }
               });
             })

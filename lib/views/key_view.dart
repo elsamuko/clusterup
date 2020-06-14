@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as dev;
-import 'ssh_key.dart';
+import '../ssh_key.dart';
 
 // helper function for compute
 SSHKey generateSSHKey(int) {
@@ -47,7 +47,7 @@ class KeyViewState extends State<KeyView> {
                   SizedBox(height: 10),
                   FlatButton(
                       color: Colors.black87,
-                      textColor: Colors.lightGreenAccent,
+                      textColor: Colors.amberAccent,
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
                         final snackBar = SnackBar(content: Text("Copied ssh key into clipboard"));

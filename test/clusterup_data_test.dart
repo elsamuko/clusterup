@@ -34,12 +34,15 @@ s/NAKRvWDv52+0iZRWxTRie1/DQ/4dfKo2R07uctJcdnbw==
       )
     ];
 
+    clusters.first.addChild(host: "host2");
+
     ClusterUpData data = ClusterUpData(clusters: clusters, sshKey: key);
     String json = data.toJSON(true);
     expect(json.isNotEmpty, true);
 
     ClusterUpData rv = ClusterUpData.fromJSON(json);
     expect(rv.clusters.isNotEmpty, true);
+    expect(rv.clusters.first.children.first.host, "host2");
 
     expect(rv.clusters, clusters);
     expect(rv.sshKey, key);

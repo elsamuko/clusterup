@@ -1,15 +1,13 @@
-import 'package:clusterup/remote_action_results_view.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
-import 'remote_actions_view.dart';
-import 'ssh_connection.dart';
-import 'cluster.dart';
-import 'remote_action.dart';
+import '../cluster.dart';
+import '../ssh_connection.dart';
+import '../cluster_child.dart';
 
-class ClusterViewState extends State<ClusterView> {
-  ClusterViewState();
+class ClusterChildViewState extends State<ClusterChildView> {
+  ClusterChildViewState();
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -22,12 +20,12 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void _testSSH() async {
-    dev.log("Testing ${widget._cluster}");
+    dev.log("Testing ${widget._child}");
     setState(() {
       testingConnection = true;
     });
 
-    SSHConnectionResult result = await SSHConnection.test(widget._cluster, widget._key);
+    SSHConnectionResult result = await SSHConnection.test(widget._child.creds(), widget._key);
 
     String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
     final snackBar = SnackBar(content: Text(text));
@@ -40,19 +38,19 @@ class ClusterViewState extends State<ClusterView> {
 
   @override
   Widget build(BuildContext context) {
-    dev.log("NewClusterState");
-    String title = "Edit cluster";
+    dev.log("NewClusterChildState");
+    String title = "Edit child";
     List<Widget> checkButton = [];
 
     if (widget._new) {
-      title = "Add new cluster";
+      title = "Add new child";
       checkButton.add(IconButton(
-        icon: Icon(Icons.check_circle, size: 35, color: Color(0xff50da47)),
+        icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
-            dev.log("Saving new cluster ${widget._cluster}");
-            Navigator.pop(context, widget._cluster);
+            dev.log("Saving new ClusterChild ${widget._child}");
+            Navigator.pop(context, widget._child);
           }
         },
       ));
@@ -65,17 +63,17 @@ class ClusterViewState extends State<ClusterView> {
             width: 15.0,
           )
         : Text(
-            "Test connection",
+            "Test",
           );
 
     return WillPopScope(
         onWillPop: () async {
           if (!widget._new && _formKey.currentState.validate()) {
             _formKey.currentState.save();
-            Navigator.pop(context, widget._cluster);
+            Navigator.pop(context, widget._child);
             return false;
           } else {
-            dev.log("Abort new cluster");
+            dev.log("Abort new child");
             return true;
           }
         },
@@ -85,6 +83,18 @@ class ClusterViewState extends State<ClusterView> {
               title: Text(title),
               actions: checkButton,
             ),
+            bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+              FlatButton(
+                  color: Colors.grey[700],
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    if (_formKey.currentState.validate() && !testingConnection) {
+                      _formKey.currentState.save();
+                      _testSSH();
+                    }
+                  },
+                  child: indicator),
+            ]),
             body: ListView(children: <Widget>[
               Padding(
                   padding: EdgeInsets.all(6.0),
@@ -97,42 +107,36 @@ class ClusterViewState extends State<ClusterView> {
                               child: Column(
                                 children: <Widget>[
                                   TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.label),
-                                      labelText: 'name',
-                                    ),
-                                    onSaved: (String value) {
-                                      widget._cluster.name = value;
-                                    },
-                                    initialValue: widget._cluster?.name,
-                                  ),
-                                  TextFormField(
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       icon: Icon(Icons.person),
-                                      hintText: 'username',
+                                      hintText: widget._child.parent.user,
                                       labelText: 'username',
                                     ),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
-                                      widget._cluster.user = value;
+                                      if (value.isNotEmpty) {
+                                        widget._child.user = value;
+                                      }
                                     },
-                                    initialValue: widget._cluster?.user,
+                                    initialValue: widget._child?.user,
                                     validator: (String value) {
                                       return value.contains('@') ? 'Do not use the @ char.' : null;
                                     },
                                     onEditingComplete: validate,
                                   ),
                                   TextFormField(
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       icon: Icon(Icons.computer),
-                                      hintText: 'Server domain',
+                                      hintText: widget._child.parent.host,
                                       labelText: 'server',
                                     ),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
-                                      widget._cluster.host = value;
+                                      if (value.isNotEmpty) {
+                                        widget._child.host = value;
+                                      }
                                     },
-                                    initialValue: widget._cluster?.host,
+                                    initialValue: widget._child?.host,
                                     validator: (String value) {
                                       return value.contains('@') ? 'Do not use the @ char.' : null;
                                     },
@@ -140,16 +144,17 @@ class ClusterViewState extends State<ClusterView> {
                                   ),
                                   TextFormField(
                                     keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       icon: Icon(Icons.local_airport),
-                                      hintText: 'SSH server port',
+                                      hintText: widget._child.parent.port.toString(),
                                       labelText: 'port',
                                     ),
                                     onSaved: (String value) {
-                                      widget._cluster.port = int.parse(value);
+                                      widget._child.port = int.tryParse(value);
                                     },
-                                    initialValue: (widget._cluster?.port ?? 22).toString(),
+                                    initialValue: widget._child?.port ?? "",
                                     validator: (String value) {
+                                      if (value.isEmpty) return null;
                                       int port = int.tryParse(value);
                                       if (port == null || port > 65535) {
                                         return "Invalid port number";
@@ -161,72 +166,24 @@ class ClusterViewState extends State<ClusterView> {
                                   ),
                                 ],
                               ))))),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.blue[800],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate() && !testingConnection) {
-                          _formKey.currentState.save();
-                          _testSSH();
-                        }
-                      },
-                      child: indicator)),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.orange[900],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        dev.log("Configure Actions");
-                        Set<RemoteAction> selected = await Navigator.of(context).push(
-                          MaterialPageRoute<Set<RemoteAction>>(
-                            builder: (BuildContext context) {
-                              return ActionsView(saved: widget._cluster.actions);
-                            },
-                          ),
-                        );
-
-                        widget._cluster.actions = selected;
-                      },
-                      child: Text(
-                        "Actions",
-                      ))),
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: FlatButton(
-                      color: Colors.green[600],
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate() && !testingConnection) {
-                          _formKey.currentState.save();
-                          Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-                            return ResultsView(widget._key, widget._cluster, true);
-                          }));
-                        }
-                      },
-                      child: Text(
-                        "Run",
-                      ))),
             ])));
   }
 }
 
-class ClusterView extends StatefulWidget {
-  Cluster _cluster;
+class ClusterChildView extends StatefulWidget {
+  ClusterChild _child;
   SSHKey _key;
   bool _new = false;
 
-  ClusterView(this._key, this._cluster);
+  ClusterChildView(this._key, this._child);
 
-  ClusterView.newCluster(this._key, int id) {
-    if (this._cluster == null) {
-      _cluster = Cluster(id: id);
+  ClusterChildView.newClusterChild(this._key, Cluster cluster) {
+    if (this._child == null) {
+      _child = ClusterChild(cluster);
       _new = true;
     }
   }
 
   @override
-  ClusterViewState createState() => ClusterViewState();
+  ClusterChildViewState createState() => ClusterChildViewState();
 }

@@ -1,15 +1,16 @@
-import 'package:clusterup/load_save_view.dart';
-import 'package:clusterup/remote_action_results_view.dart';
-import 'package:clusterup/remote_actions_view.dart';
-import 'package:clusterup/db_persistence.dart';
 import 'package:flutter/material.dart';
-import 'remote_actions_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as dev;
-import 'cluster.dart';
+import 'cluster_children_results_view.dart';
+import 'load_save_view.dart';
+import 'cluster_results_view.dart';
+import 'remote_actions_view.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
-import 'ssh_key.dart';
-import 'clusterup_data.dart';
+import '../db_persistence.dart';
+import '../cluster.dart';
+import '../ssh_key.dart';
+import '../clusterup_data.dart';
 
 class ClustersViewState extends State<ClustersView> {
   DBPersistence _db = DBPersistence();
@@ -32,39 +33,52 @@ class ClustersViewState extends State<ClustersView> {
   Widget _buildClustersOverview() {
     return ListView.builder(
         itemCount: _data.clusters.length,
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         itemBuilder: (context, i) {
           return _buildRow(_data.clusters[i]);
         });
   }
 
   Widget _buildRow(Cluster cluster) {
+    Widget trailing = cluster.running
+        ? Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+              height: 15.0,
+              width: 15.0,
+            ),
+          )
+        : IconButton(
+            icon: Icon(
+              cluster.running ? Icons.pause : Icons.play_arrow,
+              color: cluster.statusColor(),
+              size: 30,
+            ),
+            onPressed: () {
+              if (cluster.running) return;
+              dev.log("Play : $cluster");
+              cluster.run(_data.sshKey).then((v) {
+                setState(() {});
+              });
+              setState(() {});
+            },
+          );
+
     return GestureDetector(
       child: ListTile(
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: FaIcon(
+            FontAwesomeIcons.networkWired,
+            size: 15,
+            color: cluster.statusColor(),
+          ),
+        ),
         title: Text(
           cluster.name,
         ),
-        leading: IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () {
-            _showCluster(cluster);
-          },
-        ),
-        trailing: IconButton(
-          icon: Icon(
-            cluster.running ? Icons.pause : Icons.play_arrow,
-            color: cluster.statusColor(),
-            size: 30,
-          ),
-          onPressed: () {
-            if (cluster.running) return;
-            dev.log("Play : $cluster");
-            cluster.run(_data.sshKey).then((v) {
-              setState(() {});
-            });
-            setState(() {});
-          },
-        ),
+        trailing: trailing,
         onTap: () {
           _showCluster(cluster);
         },
@@ -167,6 +181,7 @@ class ClustersViewState extends State<ClustersView> {
     var itemLastRun = PopupMenuItem(
       child: Text("Show last run"),
       value: ClusterOpts.LastRun,
+      enabled: cluster.results.isNotEmpty,
     );
 
     var selected = await showMenu(
@@ -185,7 +200,11 @@ class ClustersViewState extends State<ClustersView> {
         break;
       case ClusterOpts.LastRun:
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return ResultsView(null, cluster, false);
+          if (cluster.children.isNotEmpty) {
+            return ClusterChildrenResultsView(null, cluster, false);
+          } else {
+            return ClusterResultsView(null, cluster, false);
+          }
         }));
         break;
     }
@@ -196,12 +215,6 @@ class ClustersViewState extends State<ClustersView> {
     return PopupMenuButton<ClustersOpts>(
       onSelected: (ClustersOpts result) {
         switch (result) {
-          case ClustersOpts.NewCluster:
-            {
-              dev.log("NewCluster");
-              _clustersMenu();
-            }
-            break;
           case ClustersOpts.Key:
             {
               dev.log("Key");
@@ -229,10 +242,6 @@ class ClustersViewState extends State<ClustersView> {
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<ClustersOpts>>[
-        const PopupMenuItem<ClustersOpts>(
-          value: ClustersOpts.NewCluster,
-          child: Text('Add new cluster'),
-        ),
         PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.Key,
           child: Text(keyText),
@@ -262,12 +271,19 @@ class ClustersViewState extends State<ClustersView> {
           _buildClustersPopUpButton(),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xff565656),
+        onPressed: () {
+          _clustersMenu();
+        },
+        child: const Icon(Icons.add),
+      ),
       body: _buildClustersOverview(),
     );
   }
 }
 
-enum ClustersOpts { NewCluster, Key, Actions, LoadSave, About }
+enum ClustersOpts { Key, Actions, LoadSave, About }
 enum ClusterOpts { Remove, LastRun }
 
 class ClustersView extends StatefulWidget {

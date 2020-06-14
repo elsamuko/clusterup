@@ -1,54 +1,51 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import 'ssh_connection.dart';
-import 'cluster.dart';
+import '../ssh_connection.dart';
+import '../cluster.dart';
 
-class ResultsViewState extends State<ResultsView> {
+class ClusterResultsViewState extends State<ClusterResultsView> {
   SSHKey _key;
   bool _run = false;
   Cluster _cluster;
-  List<RemoteAction> actions; // finished actions
   RemoteAction current;
 
-  ResultsViewState(this._key, this._cluster, this._run);
+  ClusterResultsViewState(this._key, this._cluster, this._run);
 
   @override
   void initState() {
     if (_run) {
-      actions = [RemoteAction.getHostUpAction()];
-      current = actions.first;
+      _cluster.results = [RemoteActionPair(RemoteAction.getHostUpAction())];
+      current = _cluster.results.first.action;
 
       // set callback for results
-      _cluster.onActionStarted = (RemoteAction action) {
+      _cluster.onActionStarted = (RemoteActionPair pair) {
         setState(() {
-          current = action;
-          actions.add(action);
+          current = pair.action;
         });
       };
 
       // set callback for results
-      _cluster.onActionFinished = (RemoteAction action) {
+      _cluster.onActionFinished = (RemoteActionPair action) {
         setState(() {
           current = null;
         });
       };
 
       // run
-      SSHConnection.test(_cluster, _key).then((SSHConnectionResult result) {
+      SSHConnection.test(_cluster.creds(), _key).then((SSHConnectionResult result) {
         current = null;
         setState(() {
           if (result.success) {
-            actions.first.status = RemoteActionStatus.Success;
+            _cluster.results.first.results.add(RemoteActionResult.success());
+            _cluster.lastStatus = RemoteActionStatus.Success;
             _cluster.run(_key);
           } else {
-            actions.first.status = RemoteActionStatus.Error;
-            actions.first.filtered = result.error;
+            _cluster.results.first.results.add(RemoteActionResult.error(result.error));
+            _cluster.lastStatus = RemoteActionStatus.Error;
           }
         });
       });
-    } else {
-      actions = this._cluster.actions.toList();
     }
 
     super.initState();
@@ -56,13 +53,14 @@ class ResultsViewState extends State<ResultsView> {
 
   @override
   void dispose() {
-    _cluster.onActionStarted = (RemoteAction action) {};
-    _cluster.onActionFinished = (RemoteAction action) {};
+    _cluster.onActionStarted = (_) {};
+    _cluster.onActionFinished = (_) {};
     super.dispose();
   }
 
-  Widget _buildRow(RemoteAction action) {
-    bool running = action == current;
+  Widget _buildRow(RemoteActionPair pair) {
+    RemoteActionResult result = pair.results.isNotEmpty ? pair.results.first : RemoteActionResult.unknown();
+    bool running = pair.action == current;
     var indicator = running
         ? SizedBox(
             child: CircularProgressIndicator(),
@@ -72,9 +70,9 @@ class ResultsViewState extends State<ResultsView> {
         : Icon(Icons.done);
 
     if (!running) {
-      switch (action.status) {
+      switch (result.status) {
         case RemoteActionStatus.Unknown:
-          indicator = Icon(Icons.done, color: Colors.white);
+          indicator = Text("-");
           break;
         case RemoteActionStatus.Success:
           indicator = Icon(Icons.check_circle, color: Colors.green[300]);
@@ -88,8 +86,8 @@ class ResultsViewState extends State<ResultsView> {
       }
     }
     return ListTile(
-      title: Text(action.name),
-      subtitle: Text(action.filtered),
+      title: Text(pair.action.name),
+      subtitle: Text(result.filtered),
       trailing: indicator,
     );
   }
@@ -107,21 +105,21 @@ class ResultsViewState extends State<ResultsView> {
           title: Text(_run ? "Running on ${_cluster.name}" : "Last run on ${_cluster.name}"),
         ),
         body: ListView.builder(
-            itemCount: actions.length,
+            itemCount: _cluster.results.length,
             padding: const EdgeInsets.all(16.0),
             itemBuilder: (context, i) {
-              return _buildRow(actions.elementAt(i));
+              return _buildRow(_cluster.results.elementAt(i));
             }));
   }
 }
 
-class ResultsView extends StatefulWidget {
+class ClusterResultsView extends StatefulWidget {
   SSHKey _key;
   Cluster _cluster;
   bool _run = false;
 
-  ResultsView(this._key, this._cluster, this._run);
+  ClusterResultsView(this._key, this._cluster, this._run);
 
   @override
-  ResultsViewState createState() => ResultsViewState(this._key, this._cluster, this._run);
+  ClusterResultsViewState createState() => ClusterResultsViewState(this._key, this._cluster, this._run);
 }
