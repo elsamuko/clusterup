@@ -211,7 +211,7 @@ class ClusterViewState extends State<ClusterView> {
           color: Color(0xffcc8d00),
           textColor: Colors.white,
           onPressed: () async {
-            if (_formKey.currentState.validate() && !testingConnection) {
+            if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
               _formKey.currentState.save();
               Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
                 if (widget._cluster.hasEnabledChildren()) {
