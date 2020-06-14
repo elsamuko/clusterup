@@ -70,22 +70,22 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
       indicator = Row(children: <Widget>[
         Text(
           unknowns.toString(),
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: unknowns > 0 ? Colors.white : Colors.grey, fontWeight: unknowns > 0 ? FontWeight.bold : FontWeight.normal),
         ),
         SizedBox(width: 10),
         Text(
           successes.toString(),
-          style: TextStyle(color: Colors.green),
+          style: TextStyle(color: successes > 0 ? Colors.greenAccent : Colors.green, fontWeight: successes > 0 ? FontWeight.bold : FontWeight.normal),
         ),
         SizedBox(width: 10),
         Text(
           warnings.toString(),
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(color: warnings > 0 ? Colors.orangeAccent : Colors.orange, fontWeight: warnings > 0 ? FontWeight.bold : FontWeight.normal),
         ),
         SizedBox(width: 10),
         Text(
           errors.toString(),
-          style: TextStyle(color: Colors.red),
+          style: TextStyle(color: errors > 0 ? Colors.redAccent : Colors.red, fontWeight: errors > 0 ? FontWeight.bold : FontWeight.normal),
         ),
       ]);
     }
