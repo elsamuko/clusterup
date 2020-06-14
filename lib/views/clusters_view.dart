@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as dev;
 import 'cluster_children_results_view.dart';
 import 'load_save_view.dart';
@@ -39,32 +40,45 @@ class ClustersViewState extends State<ClustersView> {
   }
 
   Widget _buildRow(Cluster cluster) {
+    Widget trailing = cluster.running
+        ? Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+              height: 15.0,
+              width: 15.0,
+            ),
+          )
+        : IconButton(
+            icon: Icon(
+              cluster.running ? Icons.pause : Icons.play_arrow,
+              color: cluster.statusColor(),
+              size: 30,
+            ),
+            onPressed: () {
+              if (cluster.running) return;
+              dev.log("Play : $cluster");
+              cluster.run(_data.sshKey).then((v) {
+                setState(() {});
+              });
+              setState(() {});
+            },
+          );
+
     return GestureDetector(
       child: ListTile(
-        title: Row(
-          children: <Widget>[
-            SizedBox(width: 20, child: Text(cluster.id.toString(), style: TextStyle(color: Colors.grey), textAlign: TextAlign.right)),
-            SizedBox(width: 20),
-            Text(
-              cluster.name,
-            )
-          ],
-        ),
-        trailing: IconButton(
-          icon: Icon(
-            cluster.running ? Icons.pause : Icons.play_arrow,
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: FaIcon(
+            FontAwesomeIcons.networkWired,
+            size: 15,
             color: cluster.statusColor(),
-            size: 30,
           ),
-          onPressed: () {
-            if (cluster.running) return;
-            dev.log("Play : $cluster");
-            cluster.run(_data.sshKey).then((v) {
-              setState(() {});
-            });
-            setState(() {});
-          },
         ),
+        title: Text(
+          cluster.name,
+        ),
+        trailing: trailing,
         onTap: () {
           _showCluster(cluster);
         },
