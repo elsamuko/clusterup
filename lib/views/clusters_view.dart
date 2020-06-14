@@ -200,7 +200,7 @@ class ClustersViewState extends State<ClustersView> {
         break;
       case ClusterOpts.LastRun:
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          if (cluster.children.isNotEmpty) {
+          if (cluster.hasEnabledChildren()) {
             return ClusterChildrenResultsView(null, cluster, false);
           } else {
             return ClusterResultsView(null, cluster, false);
