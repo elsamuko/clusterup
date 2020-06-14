@@ -108,6 +108,14 @@ class ClusterViewState extends State<ClusterView> {
       child: ListTile(
         contentPadding: EdgeInsets.only(left: 8),
         title: row,
+        trailing: Checkbox(
+            activeColor: Colors.grey,
+            value: child.enabled,
+            onChanged: (bool enabled) {
+              setState(() {
+                child.enabled = enabled;
+              });
+            }),
         onTap: () {
           _showClusterChild(child);
         },
