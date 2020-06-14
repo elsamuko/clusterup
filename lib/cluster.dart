@@ -153,16 +153,19 @@ class Cluster {
   }
 
   Future<void> run(SSHKey key) async {
+    running = true;
+    lastStatus = RemoteActionStatus.Unknown;
+
     if (hasEnabledChildren()) {
-      return runChildren(key);
+      runChildren(key);
     } else {
-      return runSolo(key);
+      runSolo(key);
     }
+
+    running = false;
   }
 
   Future<void> runSolo(SSHKey key) async {
-    running = true;
-
     // check if host is up
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
     this.onActionStarted(results.first);
@@ -170,6 +173,7 @@ class Cluster {
     RemoteActionRunner runner = RemoteActionRunner(this.creds(), results.first.action, key);
     results.first.results.add(await runner.run());
     up = results.first.results.first.success();
+    lastStatus = results.first.results.first.status;
 
     this.onActionFinished(results.first);
 
@@ -189,13 +193,9 @@ class Cluster {
         }
       }
     }
-
-    running = false;
   }
 
   Future<void> runChildren(SSHKey key) async {
-    running = true;
-
     // check if host is up
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
     this.onActionStarted(results.first);
@@ -205,11 +205,15 @@ class Cluster {
         RemoteActionRunner runner = RemoteActionRunner(child.creds(), results.first.action, key);
         results.first.results.add(await runner.run());
         child.up = results.first.results.last.success();
+        if (results.first.results.last.status.index > lastStatus.index) {
+          lastStatus = results.first.results.last.status;
+        }
       }
     }
 
     this.onActionFinished(results.first);
 
+    // run actions
     for (RemoteAction action in actions) {
       results.add(RemoteActionPair(action));
       this.onActionStarted(results.last);
@@ -229,7 +233,6 @@ class Cluster {
         }
       }
     }
-    running = false;
   }
 
   Color statusColor() {
