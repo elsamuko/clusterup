@@ -49,7 +49,7 @@ class ResultDetailsViewState extends State<ResultDetailsView> {
               Navigator.pop(context);
             },
           ),
-          title: Text("Details for action ${pair.action.name}"),
+          title: Text("Details for ${pair.action.name}"),
         ),
         body: ListView.builder(
             itemCount: pair.results.length,
