@@ -215,9 +215,9 @@ class ClusterViewState extends State<ClusterView> {
               _formKey.currentState.save();
               Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
                 if (widget._cluster.hasEnabledChildren()) {
-                  return ClusterResultsView(widget._key, widget._cluster, true);
-                } else {
                   return ClusterChildrenResultsView(widget._key, widget._cluster, true);
+                } else {
+                  return ClusterResultsView(widget._key, widget._cluster, true);
                 }
               }));
             }
