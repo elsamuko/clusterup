@@ -157,7 +157,7 @@ class ClusterViewState extends State<ClusterView> {
     if (widget._new) {
       title = "Add new cluster";
       checkButton.add(IconButton(
-        icon: Icon(Icons.check_circle, size: 35, color: Color(0xff50da47)),
+        icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
@@ -180,7 +180,7 @@ class ClusterViewState extends State<ClusterView> {
 
     Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
       FlatButton(
-          color: Colors.blue[800],
+          color: Colors.grey[700],
           textColor: Colors.white,
           onPressed: () async {
             if (_formKey.currentState.validate() && !testingConnection) {
@@ -190,7 +190,7 @@ class ClusterViewState extends State<ClusterView> {
           },
           child: indicator),
       FlatButton(
-          color: Colors.orange[900],
+          color: Colors.grey[700],
           textColor: Colors.white,
           onPressed: () async {
             dev.log("Configure Actions");
@@ -208,7 +208,7 @@ class ClusterViewState extends State<ClusterView> {
             "Actions",
           )),
       FlatButton(
-          color: Colors.green[600],
+          color: Color(0xffcc8d00),
           textColor: Colors.white,
           onPressed: () async {
             if (_formKey.currentState.validate() && !testingConnection) {

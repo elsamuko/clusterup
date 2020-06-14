@@ -45,7 +45,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
     if (widget._new) {
       title = "Add new child";
       checkButton.add(IconButton(
-        icon: Icon(Icons.check_circle, size: 35, color: Color(0xff50da47)),
+        icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
@@ -85,7 +85,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
             ),
             bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
               FlatButton(
-                  color: Colors.blue[800],
+                  color: Colors.grey[700],
                   textColor: Colors.white,
                   onPressed: () async {
                     if (_formKey.currentState.validate() && !testingConnection) {

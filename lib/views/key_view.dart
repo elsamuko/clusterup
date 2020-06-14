@@ -47,7 +47,7 @@ class KeyViewState extends State<KeyView> {
                   SizedBox(height: 10),
                   FlatButton(
                       color: Colors.black87,
-                      textColor: Colors.lightGreenAccent,
+                      textColor: Colors.amberAccent,
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
                         final snackBar = SnackBar(content: Text("Copied ssh key into clipboard"));

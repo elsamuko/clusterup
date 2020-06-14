@@ -78,7 +78,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ),
       Divider(),
       FlatButton(
-          color: _server.isRunning() ? Colors.red[800] : Colors.blue[800],
+          color: _server.isRunning() ? Colors.red[800] : Color(0xffcc8d00),
           textColor: Colors.white,
           onPressed: () {
             setState(() {
@@ -101,7 +101,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
         SizedBox(height: 10),
         FlatButton(
             color: Colors.black87,
-            textColor: Colors.lightGreenAccent,
+            textColor: Colors.amberAccent,
             onPressed: () {},
             child: Padding(
                 padding: EdgeInsets.all(8),
