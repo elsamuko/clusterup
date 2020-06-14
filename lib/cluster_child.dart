@@ -8,7 +8,8 @@ class ClusterChild {
   String host;
   int port;
   bool up; // true, if valid and reachable
-  ClusterChild(this.parent, {this.user, this.host, this.port}) {
+  bool enabled;
+  ClusterChild(this.parent, {this.user, this.host, this.port, this.enabled = true}) {
     id = parent.children.length;
   }
 
@@ -35,6 +36,7 @@ class ClusterChild {
       'user': user,
       'host': host,
       'port': port,
+      'enabled': enabled,
     };
   }
 
@@ -46,6 +48,7 @@ class ClusterChild {
       user: data['user'],
       host: data['host'],
       port: data['port'],
+      enabled: (data['enabled'] ?? 1) == 1,
     );
   }
 

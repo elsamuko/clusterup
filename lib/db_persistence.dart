@@ -20,13 +20,13 @@ class DBPersistence {
     [getDatabasesPath(), 'cluster_up.db'].join('/'),
     onCreate: (db, version) {
       db.execute(
-        "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, actions TEXT)",
+        "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, enabled INTEGER, actions TEXT)",
       );
       db.execute(
         "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
       );
       db.execute(
-        "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, PRIMARY KEY(parent,id))",
+        "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, enabled INTEGER, PRIMARY KEY(parent,id))",
       );
     },
     version: 1,

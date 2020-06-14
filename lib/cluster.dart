@@ -17,6 +17,7 @@ class Cluster {
   String user;
   String host;
   int port;
+  bool enabled;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
   List<RemoteActionPair> results = [];
@@ -27,7 +28,7 @@ class Cluster {
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
 
-  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.actions, this.children}) {
+  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.enabled = true, this.actions, this.children}) {
     actions ??= Set<RemoteAction>();
     children ??= [];
     onActionStarted = (RemoteActionPair action) {};
@@ -80,6 +81,7 @@ class Cluster {
       'user': user,
       'host': host,
       'port': port,
+      'enabled': enabled,
       'actions': json,
     };
   }
@@ -131,6 +133,7 @@ class Cluster {
       user: data['user'] ?? "",
       host: data['host'] ?? "",
       port: data['port'] ?? 22,
+      enabled: (data['enabled'] ?? 1) == 1,
       actions: actionsFromBlob(data['actions']),
     );
 
