@@ -148,8 +148,12 @@ class Cluster {
     return lastStatus == RemoteActionStatus.Success;
   }
 
+  bool hasEnabledChildren() {
+    return children.any((ClusterChild child) => child.enabled);
+  }
+
   Future<void> run(SSHKey key) async {
-    if (children.any((ClusterChild child) => child.enabled)) {
+    if (hasEnabledChildren()) {
       return runChildren(key);
     } else {
       return runSolo(key);
