@@ -161,19 +161,13 @@ class Cluster {
 
     // check if host is up
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
-    this.onActionStarted(results.last);
-    SSHConnectionResult result = await SSHConnection.test(creds(), key);
-    if (result.success) {
-      results.first.results.add(RemoteActionResult.success());
-      lastStatus = RemoteActionStatus.Success;
-      up = true;
-    } else {
-      results.first.results.add(RemoteActionResult.error(result.error));
-      lastStatus = RemoteActionStatus.Error;
-      up = false;
-    }
-    results.first.results.first.from = creds().toString();
-    this.onActionFinished(results.last);
+    this.onActionStarted(results.first);
+
+    RemoteActionRunner runner = RemoteActionRunner(this.creds(), results.first.action, key);
+    results.first.results.add(await runner.run());
+    up = results.first.results.first.success();
+
+    this.onActionFinished(results.first);
 
     if (!up) {
       return;
