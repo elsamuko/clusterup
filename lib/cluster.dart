@@ -157,9 +157,9 @@ class Cluster {
     lastStatus = RemoteActionStatus.Unknown;
 
     if (hasEnabledChildren()) {
-      _runChildren(key);
+      await _runChildren(key);
     } else {
-      _runSolo(key);
+      await _runSolo(key);
     }
 
     running = false;
