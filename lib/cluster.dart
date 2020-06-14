@@ -181,7 +181,6 @@ class Cluster {
 
         RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
         results.last.results.add(await runner.run());
-        results.last.results.last.from = creds().toString();
 
         this.onActionFinished(results.last);
 
@@ -205,7 +204,6 @@ class Cluster {
       if (child.enabled) {
         RemoteActionRunner runner = RemoteActionRunner(child.creds(), results.first.action, key);
         results.first.results.add(await runner.run());
-        results.first.results.last.from = child.toString();
         child.up = results.first.results.last.success();
       }
     }
@@ -220,7 +218,6 @@ class Cluster {
         if (child.enabled && child.up) {
           RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
           results.last.results.add(await runner.run());
-          results.last.results.last.from = child.toString();
         }
       }
 
