@@ -252,6 +252,9 @@ class ClusterViewState extends State<ClusterView> {
             floatingActionButton: FloatingActionButton(
               backgroundColor: Color(0xff565656),
               onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                }
                 addChild();
               },
               child: const Icon(Icons.add),
