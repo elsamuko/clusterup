@@ -36,7 +36,7 @@ class ClusterChild {
       'user': user,
       'host': host,
       'port': port,
-      'enabled': enabled,
+      'enabled': enabled ? 1 : 0,
     };
   }
 
