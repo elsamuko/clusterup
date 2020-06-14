@@ -169,23 +169,21 @@ class Cluster {
 
     this.onActionFinished(results.first);
 
-    if (!up) {
-      return;
-    }
-
     // run actions
-    for (RemoteAction action in actions) {
-      results.add(RemoteActionPair(action));
-      this.onActionStarted(results.last);
+    if (up) {
+      for (RemoteAction action in actions) {
+        results.add(RemoteActionPair(action));
+        this.onActionStarted(results.last);
 
-      RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
-      results.last.results.add(await runner.run());
-      results.last.results.last.from = creds().toString();
+        RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
+        results.last.results.add(await runner.run());
+        results.last.results.last.from = creds().toString();
 
-      this.onActionFinished(results.last);
+        this.onActionFinished(results.last);
 
-      if (results.last.results.first.status.index > lastStatus.index) {
-        lastStatus = results.last.results.first.status;
+        if (results.last.results.first.status.index > lastStatus.index) {
+          lastStatus = results.last.results.first.status;
+        }
       }
     }
 
