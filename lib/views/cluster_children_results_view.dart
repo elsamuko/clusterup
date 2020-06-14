@@ -18,9 +18,11 @@ class ClusterChildrenResultsViewState extends State<ClusterChildrenResultsView> 
   Future<List<SSHConnectionResult>> testSSH() async {
     List<SSHConnectionResult> results = [];
     for (ClusterChild child in _cluster.children) {
-      SSHConnectionResult result = await SSHConnection.test(child.creds(), _key);
-      child.up = result.success;
-      results.add(result);
+      if (child.enabled) {
+        SSHConnectionResult result = await SSHConnection.test(child.creds(), _key);
+        child.up = result.success;
+        results.add(result);
+      }
     }
     return results;
   }

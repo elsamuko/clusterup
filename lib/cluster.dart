@@ -173,7 +173,7 @@ class Cluster {
       this.onActionStarted(results.last);
 
       for (ClusterChild child in children) {
-        if (child.up) {
+        if (child.enabled && child.up) {
           RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
           results.last.results.add(await runner.run());
           results.last.results.last.from = child.toString();
