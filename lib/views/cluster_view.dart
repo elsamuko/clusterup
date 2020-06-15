@@ -43,7 +43,8 @@ class ClusterViewState extends State<ClusterView> {
 
   void _showClusterChild(ClusterChild child) async {
     dev.log("_showClusterChild : $child");
-    final ClusterChild result = await Navigator.of(context).push(MaterialPageRoute<ClusterChild>(builder: (BuildContext context) {
+    final ClusterChild result =
+        await Navigator.of(context).push(MaterialPageRoute<ClusterChild>(builder: (BuildContext context) {
       return ClusterChildView(widget._key, child);
     }));
     if (result != null) {

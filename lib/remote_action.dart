@@ -132,7 +132,7 @@ class RemoteAction {
         return RemoteActionResult.unknown();
       }
 
-      RegExp regExp = new RegExp("(\\d+)%");
+      RegExp regExp = RegExp("(\\d+)%");
       RegExpMatch match = regExp.firstMatch(lines[1]);
 
       if (match == null) {

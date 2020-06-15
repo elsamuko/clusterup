@@ -30,7 +30,15 @@ class Cluster {
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
 
-  Cluster({@required this.id, this.name = "", this.user = "", this.host = "", this.port = 22, this.enabled = true, this.actions, this.children}) {
+  Cluster(
+      {@required this.id,
+      this.name = "",
+      this.user = "",
+      this.host = "",
+      this.port = 22,
+      this.enabled = true,
+      this.actions,
+      this.children}) {
     actions ??= Set<RemoteAction>();
     children ??= [];
     onActionStarted = (RemoteActionPair action) {};
@@ -54,7 +62,14 @@ class Cluster {
   }
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ user.hashCode ^ host.hashCode ^ port.hashCode ^ children.hashCode ^ actions.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      name.hashCode ^
+      user.hashCode ^
+      host.hashCode ^
+      port.hashCode ^
+      children.hashCode ^
+      actions.hashCode;
 
   String toString() {
     return "$id : $name";

@@ -114,7 +114,8 @@ class RsaKeyHelper {
       ASN1Integer privateExponent = sequence.elements[3];
       ASN1Integer p = sequence.elements[4];
       ASN1Integer q = sequence.elements[5];
-      privKey = RSAPrivateKey(modulus.valueAsBigInteger, privateExponent.valueAsBigInteger, p.valueAsBigInteger, q.valueAsBigInteger);
+      privKey = RSAPrivateKey(
+          modulus.valueAsBigInteger, privateExponent.valueAsBigInteger, p.valueAsBigInteger, q.valueAsBigInteger);
     }
     // PKCS8 -> get PKCS1 part and reenter
     else {
