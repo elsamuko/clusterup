@@ -66,6 +66,7 @@ class RemoteAction {
       RemoteAction.getAptUpdatesAvailableAction(),
       RemoteAction.getLsbDescriptionAction(),
       RemoteAction.getUnameAction(),
+      RemoteAction.getCPULoadAction(),
     ]);
   }
 
@@ -108,6 +109,9 @@ class RemoteAction {
         break;
       case "uname":
         return RemoteAction.getUnameAction();
+        break;
+      case "CPU.load":
+        return RemoteAction.getCPULoadAction();
         break;
       default:
         return null;
@@ -234,6 +238,51 @@ class RemoteAction {
       // must be one line
       if (lines.length != 1) return RemoteActionResult.unknown();
       return RemoteActionResult.success(lines.first);
+    };
+  }
+
+  RemoteAction.getCPULoadAction() {
+    name = "CPU.load";
+    description = "query CPU load";
+    // parse and calculate the difference between two cpu lines in /proc/stat
+    // https://rosettacode.org/wiki/Linux_CPU_utilization#Dart
+    commands.add("cat /proc/stat && sleep 1 && cat /proc/stat");
+    filter = (lines) {
+      List<String> cpu = lines.where((String line) => line.startsWith("cpu  ")).toList();
+      List<List<int>> loads = cpu
+          .map((String line) =>
+              line.substring("cpu  ".length).split(" ").map((String token) => int.tryParse(token) ?? 0).toList())
+          .toList();
+
+      // must be two lines with at least 4 tokens
+      if (loads.length != 2) return RemoteActionResult.unknown();
+      for (List<int> load in loads) {
+        if (load.length < 4) return RemoteActionResult.unknown();
+      }
+
+      List<List<int>> idleTotals = //    [idle,     sum]
+          loads.map((List<int> times) => [times[3], times.reduce((int a, int b) => a + b)]).toList();
+
+      // must be two idles and two sums
+      if (idleTotals.length != 2) return RemoteActionResult.unknown();
+      for (List<int> idleTotal in idleTotals) {
+        if (idleTotal.length != 2) return RemoteActionResult.unknown();
+      }
+
+      int dTotal = idleTotals[0][0] - idleTotals[1][0];
+      int dLoad = idleTotals[0][1] - idleTotals[1][1];
+
+      double percent = 100.0 * (1.0 - dTotal / dLoad);
+
+      String filtered = "${percent.toStringAsFixed(2)}%";
+
+      if (percent < 50.0)
+        return RemoteActionResult.success(filtered);
+      else if (percent < 80.0)
+        return RemoteActionResult.warning(filtered);
+      else if (percent >= 80.0) return RemoteActionResult.error(filtered);
+
+      return RemoteActionResult.unknown();
     };
   }
 }
