@@ -199,15 +199,19 @@ class ClustersViewState extends State<ClustersView> {
         });
         break;
       case ClusterOpts.LastRun:
-        Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          if (cluster.hasEnabledChildren()) {
-            return ClusterChildrenResultsView(null, cluster, false);
-          } else {
-            return ClusterResultsView(null, cluster, false);
-          }
-        }));
+        _showLastRun(cluster);
         break;
     }
+  }
+
+  void _showLastRun(Cluster cluster) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      if (cluster.hasEnabledChildren()) {
+        return ClusterChildrenResultsView(null, cluster, false);
+      } else {
+        return ClusterResultsView(null, cluster, false);
+      }
+    }));
   }
 
   PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
