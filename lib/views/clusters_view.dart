@@ -69,11 +69,18 @@ class ClustersViewState extends State<ClustersView> {
       child: ListTile(
         leading: Padding(
           padding: const EdgeInsets.only(top: 3.0),
-          child: FaIcon(
-            FontAwesomeIcons.networkWired,
-            size: 15,
-            color: cluster.statusColor(),
-          ),
+          child: IconButton(
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              onPressed: () {
+                _showLastRun(cluster);
+              },
+              iconSize: 20,
+              icon: FaIcon(
+                FontAwesomeIcons.networkWired,
+                size: 20,
+                color: cluster.statusColor(),
+              )),
         ),
         title: Text(
           cluster.name,
