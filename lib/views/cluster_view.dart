@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as dev;
 import 'cluster_child_view.dart';
-import 'cluster_children_results_view.dart';
 import 'cluster_results_view.dart';
 import 'remote_actions_view.dart';
 import '../ssh_key.dart';
@@ -200,22 +199,14 @@ class ClusterViewState extends State<ClusterView> {
     if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
       _formKey.currentState.save();
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-        if (widget._cluster.hasEnabledChildren()) {
-          return ClusterChildrenResultsView(widget._key, widget._cluster, true);
-        } else {
-          return ClusterResultsView(widget._key, widget._cluster, true);
-        }
+        return ClusterResultsView(widget._key, widget._cluster, true);
       }));
     }
   }
 
   void _showLastRun() {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      if (widget._cluster.hasEnabledChildren()) {
-        return ClusterChildrenResultsView(null, widget._cluster, false);
-      } else {
-        return ClusterResultsView(null, widget._cluster, false);
-      }
+      return ClusterResultsView(null, widget._cluster, false);
     }));
   }
 

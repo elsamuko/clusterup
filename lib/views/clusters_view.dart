@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:developer' as dev;
-import 'cluster_children_results_view.dart';
 import 'load_save_view.dart';
 import 'cluster_results_view.dart';
 import 'remote_actions_view.dart';
@@ -213,11 +212,7 @@ class ClustersViewState extends State<ClustersView> {
 
   void _showLastRun(Cluster cluster) {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      if (cluster.hasEnabledChildren()) {
-        return ClusterChildrenResultsView(null, cluster, false);
-      } else {
-        return ClusterResultsView(null, cluster, false);
-      }
+      return ClusterResultsView(null, cluster, false);
     }));
   }
 
