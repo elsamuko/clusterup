@@ -25,6 +25,11 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void _testSSH() async {
+    if (testingConnection) {
+      dev.log("Already running");
+      return;
+    }
+
     dev.log("Testing ${widget._cluster}");
     setState(() {
       testingConnection = true;
@@ -149,11 +154,76 @@ class ClusterViewState extends State<ClusterView> {
     }
   }
 
+  PopupMenuButton<ClusterOpts> _buildClusterPopUpButton() {
+    return PopupMenuButton<ClusterOpts>(
+      onSelected: (ClusterOpts result) {
+        switch (result) {
+          case ClusterOpts.Actions:
+            _showActions();
+            break;
+          case ClusterOpts.Test:
+            if (_formKey.currentState.validate()) {
+              _formKey.currentState.save();
+              _testSSH();
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ClusterOpts>>[
+        const PopupMenuItem<ClusterOpts>(
+          value: ClusterOpts.Actions,
+          child: Text("Actions"),
+        ),
+        PopupMenuItem<ClusterOpts>(
+          value: ClusterOpts.Test,
+          child: Text("Test"),
+          enabled: !testingConnection,
+        ),
+      ],
+    );
+  }
+
+  void _showActions() async {
+    dev.log("Configure Actions");
+    Set<RemoteAction> selected = await Navigator.of(context).push(
+      MaterialPageRoute<Set<RemoteAction>>(
+        builder: (BuildContext context) {
+          return ActionsView(saved: widget._cluster.actions);
+        },
+      ),
+    );
+
+    widget._cluster.actions = selected;
+  }
+
+  void _run() {
+    if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
+      _formKey.currentState.save();
+      Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+        if (widget._cluster.hasEnabledChildren()) {
+          return ClusterChildrenResultsView(widget._key, widget._cluster, true);
+        } else {
+          return ClusterResultsView(widget._key, widget._cluster, true);
+        }
+      }));
+    }
+  }
+
+  void _showLastRun() {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      if (widget._cluster.hasEnabledChildren()) {
+        return ClusterChildrenResultsView(null, widget._cluster, false);
+      } else {
+        return ClusterResultsView(null, widget._cluster, false);
+      }
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     dev.log("NewClusterState");
     String title = "Edit cluster";
-    List<Widget> checkButton = [];
+    List<Widget> checkButton = [_buildClusterPopUpButton()];
 
     if (widget._new) {
       title = "Add new cluster";
@@ -169,60 +239,18 @@ class ClusterViewState extends State<ClusterView> {
       ));
     }
 
-    var indicator = testingConnection
-        ? SizedBox(
-            child: CircularProgressIndicator(),
-            height: 15.0,
-            width: 15.0,
-          )
-        : Text(
-            "Test",
-          );
-
     Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
       FlatButton(
           color: Colors.grey[700],
           textColor: Colors.white,
-          onPressed: () async {
-            if (_formKey.currentState.validate() && !testingConnection) {
-              _formKey.currentState.save();
-              _testSSH();
-            }
-          },
-          child: indicator),
-      FlatButton(
-          color: Colors.grey[700],
-          textColor: Colors.white,
-          onPressed: () async {
-            dev.log("Configure Actions");
-            Set<RemoteAction> selected = await Navigator.of(context).push(
-              MaterialPageRoute<Set<RemoteAction>>(
-                builder: (BuildContext context) {
-                  return ActionsView(saved: widget._cluster.actions);
-                },
-              ),
-            );
-
-            widget._cluster.actions = selected;
-          },
+          onPressed: () async => _showLastRun(),
           child: Text(
-            "Actions",
+            "Last run",
           )),
       FlatButton(
           color: Color(0xffcc8d00),
           textColor: Colors.white,
-          onPressed: () async {
-            if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
-              _formKey.currentState.save();
-              Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-                if (widget._cluster.hasEnabledChildren()) {
-                  return ClusterChildrenResultsView(widget._key, widget._cluster, true);
-                } else {
-                  return ClusterResultsView(widget._key, widget._cluster, true);
-                }
-              }));
-            }
-          },
+          onPressed: () async => _run(),
           child: Text(
             "Run",
           ))
@@ -341,6 +369,7 @@ class ClusterViewState extends State<ClusterView> {
   }
 }
 
+enum ClusterOpts { Actions, Test }
 enum ClusterChildOpts { Remove }
 
 class ClusterView extends StatefulWidget {
