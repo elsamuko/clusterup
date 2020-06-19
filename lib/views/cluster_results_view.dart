@@ -1,6 +1,7 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
+import 'package:flutter/widgets.dart';
 import '../cluster.dart';
 
 class ClusterResultsViewState extends State<ClusterResultsView> {
@@ -42,37 +43,121 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     super.dispose();
   }
 
-  Widget _buildRow(RemoteActionPair pair) {
-    RemoteActionResult result = pair.results.isNotEmpty ? pair.results.first : RemoteActionResult.unknown();
-    bool running = pair.action == current;
-    var indicator = running
-        ? SizedBox(
-            child: CircularProgressIndicator(),
-            height: 15.0,
-            width: 15.0,
-          )
-        : Icon(Icons.done);
-
-    if (!running) {
-      switch (result.status) {
-        case RemoteActionStatus.Unknown:
-          indicator = Text("-");
-          break;
-        case RemoteActionStatus.Success:
-          indicator = Icon(Icons.check_circle, color: Colors.green[300]);
-          break;
-        case RemoteActionStatus.Warning:
-          indicator = Icon(Icons.warning, color: Colors.orange[300]);
-          break;
-        case RemoteActionStatus.Error:
-          indicator = Icon(Icons.error, color: Colors.red[300]);
-          break;
-      }
+  Widget _buildResult(RemoteActionResult result) {
+    TextStyle style;
+    switch (result.status) {
+      case RemoteActionStatus.Unknown:
+        style = TextStyle(color: Colors.white);
+        break;
+      case RemoteActionStatus.Success:
+        style = TextStyle(color: Colors.greenAccent);
+        break;
+      case RemoteActionStatus.Warning:
+        style = TextStyle(color: Colors.orangeAccent);
+        break;
+      case RemoteActionStatus.Error:
+        style = TextStyle(color: Colors.redAccent);
+        break;
+      default:
+        style = TextStyle(color: Colors.white);
     }
-    return ListTile(
-      title: Text(pair.action.name),
-      subtitle: Text(result.filtered),
-      trailing: indicator,
+
+    List<Widget> children = [
+      Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Text(
+          result.from,
+          style: style,
+        ),
+      )
+    ];
+    if (result.filtered.isNotEmpty) {
+      children.add(SizedBox(height: 2));
+      children.add(Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Text(result.filtered),
+      ));
+    }
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  Widget indicator(RemoteActionPair pair) {
+    Widget indicator;
+    bool running = pair.action == current;
+
+    if (running) {
+      indicator = SizedBox(
+        child: CircularProgressIndicator(),
+        height: 15.0,
+        width: 15.0,
+      );
+    } else {
+      int unknowns = pair.results.where((RemoteActionResult result) => result.unknown()).length;
+      int successes = pair.results.where((RemoteActionResult result) => result.success()).length;
+      int warnings = pair.results.where((RemoteActionResult result) => result.warning()).length;
+      int errors = pair.results.where((RemoteActionResult result) => result.error()).length;
+
+      indicator = Row(children: <Widget>[
+        Text(
+          unknowns.toString(),
+          style: TextStyle(
+              color: unknowns > 0 ? Colors.white : Colors.grey,
+              fontWeight: unknowns > 0 ? FontWeight.bold : FontWeight.normal),
+        ),
+        SizedBox(width: 10),
+        Text(
+          successes.toString(),
+          style: TextStyle(
+              color: successes > 0 ? Colors.greenAccent : Colors.green,
+              fontWeight: successes > 0 ? FontWeight.bold : FontWeight.normal),
+        ),
+        SizedBox(width: 10),
+        Text(
+          warnings.toString(),
+          style: TextStyle(
+              color: warnings > 0 ? Colors.orangeAccent : Colors.orange,
+              fontWeight: warnings > 0 ? FontWeight.bold : FontWeight.normal),
+        ),
+        SizedBox(width: 10),
+        Text(
+          errors.toString(),
+          style: TextStyle(
+              color: errors > 0 ? Colors.redAccent : Colors.red,
+              fontWeight: errors > 0 ? FontWeight.bold : FontWeight.normal),
+        ),
+      ]);
+    }
+    return indicator;
+  }
+
+  Widget _buildRow(RemoteActionPair pair) {
+    List<Widget> children = <Widget>[
+      ListTile(
+        title: Row(children: <Widget>[
+          Expanded(child: Text(pair.action.name)),
+          indicator(pair),
+        ]),
+      ),
+      ListView.separated(
+          separatorBuilder: (context, index) => Divider(height: 5),
+          itemCount: pair.results.length,
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemBuilder: (context, i) {
+            return _buildResult(pair.results.elementAt(i));
+          }),
+      SizedBox(height: 4),
+    ];
+
+    return Card(
+      elevation: 6,
+      child: Column(children: children),
     );
   }
 
@@ -88,12 +173,12 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
           ),
           title: Text(_run ? "Running on ${_cluster.name}" : "Last run on ${_cluster.name}"),
         ),
-        body: ListView.builder(
-            itemCount: _cluster.results.length,
-            padding: const EdgeInsets.all(16.0),
-            itemBuilder: (context, i) {
-              return _buildRow(_cluster.results.elementAt(i));
-            }));
+        body: Scrollbar(
+            child: ListView.builder(
+                itemCount: _cluster.results.length,
+                itemBuilder: (context, i) {
+                  return _buildRow(_cluster.results.elementAt(i));
+                })));
   }
 }
 
