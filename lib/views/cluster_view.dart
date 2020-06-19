@@ -259,6 +259,7 @@ class ClusterViewState extends State<ClusterView> {
     List<Widget> widgets = [_buildClusterCard()];
     if (widget._cluster.children.isNotEmpty) {
       widgets.add(_buildClusterChildren());
+      widgets.add(SizedBox(height: 80));
     }
 
     return WillPopScope(
