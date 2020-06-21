@@ -278,7 +278,8 @@ class ClustersViewState extends State<ClustersView> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xff565656),
+        backgroundColor: Color(0xff616161),
+        foregroundColor: Color(0xffc7c7c7),
         onPressed: () {
           _clustersMenu();
         },

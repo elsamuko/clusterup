@@ -271,7 +271,8 @@ class ClusterViewState extends State<ClusterView> {
               actions: checkButton,
             ),
             floatingActionButton: FloatingActionButton(
-              backgroundColor: Color(0xff565656),
+              backgroundColor: Color(0xff616161),
+              foregroundColor: Color(0xffc7c7c7),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
