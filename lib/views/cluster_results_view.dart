@@ -9,6 +9,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
   bool _run = false;
   Cluster _cluster;
   RemoteAction current;
+  ScrollController _scrollController = ScrollController();
 
   ClusterResultsViewState(this._key, this._cluster, this._run);
 
@@ -163,6 +164,22 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
 
   @override
   Widget build(BuildContext context) {
+    Scrollbar body = Scrollbar(
+        child: ListView.builder(
+            controller: _scrollController,
+            itemCount: _cluster.results.length,
+            itemBuilder: (context, i) {
+              return _buildRow(_cluster.results.elementAt(i));
+            }));
+
+    // scroll to bottom when running live
+    if (_run) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+      });
+    }
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -173,12 +190,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
           ),
           title: Text(_run ? "Running on ${_cluster.name}" : "Last run on ${_cluster.name}"),
         ),
-        body: Scrollbar(
-            child: ListView.builder(
-                itemCount: _cluster.results.length,
-                itemBuilder: (context, i) {
-                  return _buildRow(_cluster.results.elementAt(i));
-                })));
+        body: body);
   }
 }
 
