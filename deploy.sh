@@ -21,5 +21,5 @@ function createAPKs {
 }
 
 doPrepare
-# createBundle
+createBundle
 createAPKs
