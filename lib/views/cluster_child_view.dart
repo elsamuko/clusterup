@@ -152,7 +152,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     onSaved: (String value) {
                                       widget._child.port = int.tryParse(value);
                                     },
-                                    initialValue: widget._child?.port ?? "",
+                                    initialValue: widget._child?.port?.toString() ?? "",
                                     validator: (String value) {
                                       if (value.isEmpty) return null;
                                       int port = int.tryParse(value);
