@@ -7,8 +7,9 @@ Based on the [first app tutorial](https://flutter.dev/docs/get-started/codelab) 
 You can try out Cluster Up here:  
 https://play.google.com/store/apps/details?id=com.devsamuko.clusterup
 
-# Screenshot
-![](res/screenshot.png)
+# Screenshots
+![](res/screenshot_edit.png)
+![](res/screenshot_running.png)
 
 # Architecture
 
