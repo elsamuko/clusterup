@@ -92,6 +92,16 @@ class ClusterViewState extends State<ClusterView> {
       return TextStyle(color: cond ? Color(0xffa1a1a1) : Colors.amberAccent);
     };
 
+    Row creds = Row(
+      children: <Widget>[
+        Text(child.user ?? child.parent.user, style: amberIf(child.user == null)),
+        Text("@", style: TextStyle(color: Color(0xffa1a1a1))),
+        Text(child.host ?? child.parent.host, style: amberIf(child.host == null)),
+        Text(":", style: TextStyle(color: Color(0xffa1a1a1))),
+        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port == null)),
+      ],
+    );
+
     Row row = Row(
       children: <Widget>[
         SizedBox(width: 4),
@@ -101,11 +111,12 @@ class ClusterViewState extends State<ClusterView> {
           color: Color(0xffc7c7c7),
         ),
         SizedBox(width: 18),
-        Text(child.user ?? child.parent.user, style: amberIf(child.user == null)),
-        Text("@", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text(child.host ?? child.parent.host, style: amberIf(child.host == null)),
-        Text(":", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port == null)),
+        Expanded(
+          child: SingleChildScrollView(
+            child: creds,
+            scrollDirection: Axis.horizontal,
+          ),
+        ),
       ],
     );
 
