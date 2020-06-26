@@ -73,5 +73,43 @@ void main() {
       // return
       await driver.tap(find.pageBack());
     });
+
+    test('load from json', () async {
+      // load json configuration
+      String json = File("/home/samuel/Downloads/clusterup.json").readAsStringSync();
+      String boundary = "---------------------------337435678212716184261252619964";
+      String multipart = """
+--$boundary
+Content-Disposition: form-data; name="jsonFile"; filename="clusterup.json"
+Content-Type: application/json
+
+$json
+--$boundary--
+"""
+          .splitMapJoin("\n", onMatch: (m) => "\r\n");
+
+      // go to load/save view
+      await driver.tap(find.byValueKey('optionsMenu'));
+      await driver.tap(find.text('Load/Save'));
+
+      // start server
+      await driver.tap(find.text('Start server'));
+
+      // screenshot
+      await takeScreenshot(driver, 'load_save.png');
+
+      // upload json configuration
+      // adb forward tcp:3001 tcp:3001
+      HttpClientRequest request = await HttpClient().postUrl(Uri.parse("http://localhost:3001/upload"));
+      request.headers.add("Content-Type", "multipart/form-data; boundary=$boundary");
+      request.headers.add("Content-Length", multipart.length);
+      request.write(multipart);
+      /* HttpClientResponse response = */ await request.close();
+
+      // return
+      await driver.tap(find.text('Stop server'));
+      await driver.tap(find.pageBack());
+    });
+
   }, timeout: Timeout(Duration(minutes: 5)));
 }
