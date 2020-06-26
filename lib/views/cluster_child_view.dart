@@ -46,6 +46,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
       title = "Add new child";
       checkButton.add(IconButton(
         icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
+        key: Key("saveChild"),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
@@ -112,6 +113,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                       hintText: widget._child.parent.user,
                                       labelText: 'username',
                                     ),
+                                    key: Key("username"),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
                                       if (value.isNotEmpty) {
@@ -130,6 +132,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                       hintText: widget._child.parent.host,
                                       labelText: 'server',
                                     ),
+                                    key: Key("server"),
                                     inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                                     onSaved: (String value) {
                                       if (value.isNotEmpty) {
@@ -149,6 +152,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                       hintText: widget._child.parent.port.toString(),
                                       labelText: 'port',
                                     ),
+                                    key: Key("port"),
                                     onSaved: (String value) {
                                       widget._child.port = int.tryParse(value);
                                     },
