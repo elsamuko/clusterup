@@ -50,5 +50,28 @@ void main() {
       // save and return
       await driver.tap(find.byValueKey("saveCluster"));
     });
+
+    test('screenshot edit cluster', () async {
+      // go to cluster 'Server'
+      await driver.tap(find.text('Server'));
+
+      // add cluster child
+      await driver.tap(find.byValueKey('addChild'));
+      await driver.tap(find.byValueKey("server"));
+      await driver.enterText("server2");
+      await driver.tap(find.byValueKey("saveChild"));
+
+      // add another cluster child
+      await driver.tap(find.byValueKey('addChild'));
+      await driver.tap(find.byValueKey("server"));
+      await driver.enterText("server3");
+      await driver.tap(find.byValueKey("saveChild"));
+
+      // screenshot
+      await takeScreenshot(driver, 'edit_server.png');
+
+      // return
+      await driver.tap(find.pageBack());
+    });
   });
 }
