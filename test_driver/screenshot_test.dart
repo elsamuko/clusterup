@@ -123,5 +123,21 @@ $json
       await driver.tap(find.byValueKey('back'));
     });
 
+    test('screenshot run actions', () async {
+      // go to cluster 'Server'
+      await driver.tap(find.text('Raspi'));
+
+      // run
+      await driver.tap(find.byValueKey('run'));
+
+      sleep(Duration(seconds: 10));
+
+      // screenshot
+      await takeScreenshot(driver, 'run.png');
+
+      // return
+      await driver.tap(find.byValueKey('back'));
+      await driver.tap(find.pageBack());
+    });
   }, timeout: Timeout(Duration(minutes: 5)));
 }
