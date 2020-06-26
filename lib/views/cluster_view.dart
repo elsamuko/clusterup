@@ -230,6 +230,7 @@ class ClusterViewState extends State<ClusterView> {
     if (widget._new) {
       title = "Add new cluster";
       checkButton.add(IconButton(
+        key: Key("saveCluster"),
         icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         onPressed: () {
           if (_formKey.currentState.validate()) {
@@ -282,6 +283,7 @@ class ClusterViewState extends State<ClusterView> {
               actions: checkButton,
             ),
             floatingActionButton: FloatingActionButton(
+              key: Key("addChild"),
               backgroundColor: Color(0xff616161),
               foregroundColor: Color(0xffc7c7c7),
               onPressed: () {
@@ -310,6 +312,7 @@ class ClusterViewState extends State<ClusterView> {
                         icon: Icon(Icons.label),
                         labelText: 'name',
                       ),
+                      key: Key("name"),
                       onSaved: (String value) {
                         widget._cluster.name = value;
                       },
@@ -321,6 +324,7 @@ class ClusterViewState extends State<ClusterView> {
                         hintText: 'username',
                         labelText: 'username',
                       ),
+                      key: Key("username"),
                       inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
                       onSaved: (String value) {
                         widget._cluster.user = value;
@@ -338,6 +342,7 @@ class ClusterViewState extends State<ClusterView> {
                         labelText: 'server',
                       ),
                       inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+                      key: Key("server"),
                       onSaved: (String value) {
                         widget._cluster.host = value;
                       },
@@ -354,6 +359,7 @@ class ClusterViewState extends State<ClusterView> {
                         hintText: 'SSH server port',
                         labelText: 'port',
                       ),
+                      key: Key("port"),
                       onSaved: (String value) {
                         widget._cluster.port = int.parse(value);
                       },
