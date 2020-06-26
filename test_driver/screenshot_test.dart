@@ -73,5 +73,5 @@ void main() {
       // return
       await driver.tap(find.pageBack());
     });
-  });
+  }, timeout: Timeout(Duration(minutes: 5)));
 }
