@@ -184,6 +184,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
+            key: Key("back"),
             onPressed: () {
               Navigator.pop(context);
             },

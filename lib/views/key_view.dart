@@ -82,6 +82,7 @@ class KeyViewState extends State<KeyView> {
                   appBar: AppBar(
                     leading: IconButton(
                       icon: Icon(Icons.arrow_back),
+                      key: Key("back"),
                       onPressed: () {
                         Navigator.pop(context, widget._key);
                       },

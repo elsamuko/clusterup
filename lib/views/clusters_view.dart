@@ -219,6 +219,7 @@ class ClustersViewState extends State<ClustersView> {
   PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
     String keyText = (_data.sshKey != null) ? "View SSH Key" : "Generate SSH Key";
     return PopupMenuButton<ClustersOpts>(
+      key: Key("optionsMenu"),
       onSelected: (ClustersOpts result) {
         switch (result) {
           case ClustersOpts.Key:

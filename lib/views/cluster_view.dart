@@ -254,6 +254,7 @@ class ClusterViewState extends State<ClusterView> {
           color: Color(0xffcc8d00),
           textColor: Colors.white,
           onPressed: () async => _run(),
+          key: Key("run"),
           child: Text(
             "Run",
           ))
