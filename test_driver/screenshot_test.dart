@@ -111,5 +111,17 @@ $json
       await driver.tap(find.pageBack());
     });
 
+    test('screenshot view ssh key', () async {
+      // go to key
+      await driver.tap(find.byValueKey('optionsMenu'));
+      await driver.tap(find.text('View SSH Key'));
+
+      // screenshot
+      await takeScreenshot(driver, 'view_key.png');
+
+      // return
+      await driver.tap(find.byValueKey('back'));
+    });
+
   }, timeout: Timeout(Duration(minutes: 5)));
 }
