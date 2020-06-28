@@ -29,6 +29,7 @@ class Cluster {
   RemoteActionStatus lastStatus = RemoteActionStatus.Unknown;
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
+  Function onRunningFinished;
 
   Cluster(
       {@required this.id,
@@ -43,6 +44,7 @@ class Cluster {
     children ??= [];
     onActionStarted = (RemoteActionPair action) {};
     onActionFinished = (RemoteActionPair action) {};
+    onRunningFinished = () {};
   }
 
   void addChild({String user, String host, int port}) {
@@ -177,6 +179,7 @@ class Cluster {
       await _runSolo(key);
     }
 
+    onRunningFinished();
     running = false;
   }
 
