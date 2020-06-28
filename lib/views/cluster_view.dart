@@ -225,7 +225,9 @@ class ClusterViewState extends State<ClusterView> {
       _formKey.currentState.save();
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
         return ClusterResultsView(widget._key, widget._cluster, true);
-      }));
+      })).then((_) {
+        setState(() {});
+      });
     }
   }
 
