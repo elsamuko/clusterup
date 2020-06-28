@@ -17,6 +17,20 @@ class ClusterViewState extends State<ClusterView> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool testingConnection = false;
 
+  @override
+  void initState() {
+    widget._cluster.onRunningFinished = () {
+      setState(() {});
+    };
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget._cluster.onRunningFinished = () {};
+    super.dispose();
+  }
+
   void validate() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
