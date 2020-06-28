@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'cluster_child_view.dart';
 import 'cluster_results_view.dart';
 import 'remote_actions_view.dart';
@@ -39,11 +39,11 @@ class ClusterViewState extends State<ClusterView> {
 
   void _testSSH() async {
     if (testingConnection) {
-      dev.log("Already running");
+      log("Already running");
       return;
     }
 
-    dev.log("Testing ${widget._cluster}");
+    log("Testing ${widget._cluster}");
     setState(() {
       testingConnection = true;
     });
@@ -60,13 +60,13 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void _showClusterChild(ClusterChild child) async {
-    dev.log("_showClusterChild : $child");
+    log("_showClusterChild : $child");
     final ClusterChild result =
         await Navigator.of(context).push(MaterialPageRoute<ClusterChild>(builder: (BuildContext context) {
       return ClusterChildView(widget._key, child);
     }));
     if (result != null) {
-      dev.log("_showCluster : Updating $child");
+      log("_showCluster : Updating $child");
       setState(() {});
     }
   }
@@ -82,7 +82,7 @@ class ClusterViewState extends State<ClusterView> {
 
     setState(() {
       if (result != null) {
-        dev.log("Adding $result");
+        log("Adding $result");
         widget._cluster.children.add(result);
       }
     });
@@ -171,7 +171,7 @@ class ClusterViewState extends State<ClusterView> {
     switch (selected) {
       case ClusterChildOpts.Remove:
         setState(() {
-          dev.log("Removing $child");
+          log("Removing $child");
           widget._cluster.children.remove(child);
         });
         break;
@@ -208,7 +208,7 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void _showActions() async {
-    dev.log("Configure Actions");
+    log("Configure Actions");
     Set<RemoteAction> selected = await Navigator.of(context).push(
       MaterialPageRoute<Set<RemoteAction>>(
         builder: (BuildContext context) {
@@ -239,7 +239,7 @@ class ClusterViewState extends State<ClusterView> {
 
   @override
   Widget build(BuildContext context) {
-    dev.log("NewClusterState");
+    log("NewClusterState");
     String title = "Edit cluster";
     List<Widget> checkButton = [_buildClusterPopUpButton()];
 
@@ -251,7 +251,7 @@ class ClusterViewState extends State<ClusterView> {
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
-            dev.log("Saving new cluster ${widget._cluster}");
+            log("Saving new cluster ${widget._cluster}");
             Navigator.pop(context, widget._cluster);
           }
         },
@@ -298,7 +298,7 @@ class ClusterViewState extends State<ClusterView> {
             Navigator.pop(context, widget._cluster);
             return false;
           } else {
-            dev.log("Abort new cluster");
+            log("Abort new cluster");
             return true;
           }
         },

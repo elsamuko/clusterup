@@ -1,7 +1,7 @@
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import '../cluster.dart';
 import '../ssh_connection.dart';
 import '../cluster_child.dart';
@@ -20,7 +20,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
   }
 
   void _testSSH() async {
-    dev.log("Testing ${widget._child}");
+    log("Testing ${widget._child}");
     setState(() {
       testingConnection = true;
     });
@@ -38,7 +38,6 @@ class ClusterChildViewState extends State<ClusterChildView> {
 
   @override
   Widget build(BuildContext context) {
-    dev.log("NewClusterChildState");
     String title = "Edit child";
     List<Widget> checkButton = [];
 
@@ -50,7 +49,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
-            dev.log("Saving new ClusterChild ${widget._child}");
+            log("Saving new ClusterChild ${widget._child}");
             Navigator.pop(context, widget._child);
           }
         },
@@ -74,7 +73,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
             Navigator.pop(context, widget._child);
             return false;
           } else {
-            dev.log("Abort new child");
+            log("Abort new child");
             return true;
           }
         },

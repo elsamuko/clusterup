@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +30,7 @@ class KeyViewState extends State<KeyView> {
 
   @override
   Widget build(BuildContext context) {
-    dev.log("key view");
+    log("key view");
 
     return FutureBuilder<SSHKey>(
         future: _getKey,
