@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:clusterup/clusterup_data.dart';
 import 'package:clusterup/server.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get_ip/get_ip.dart';
@@ -62,7 +62,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
 
   @override
   Widget build(BuildContext context) {
-    dev.log("load/save view");
+    log("load/save view");
 
     List<Widget> children = <Widget>[
       SwitchListTile(

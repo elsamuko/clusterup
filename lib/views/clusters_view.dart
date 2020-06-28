@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'load_save_view.dart';
 import 'cluster_results_view.dart';
+import 'log_view.dart';
 import 'remote_actions_view.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
@@ -19,10 +20,12 @@ class ClustersViewState extends State<ClustersView> {
   void initState() {
     _db.getSSHKey().then((sshKey) {
       _data.sshKey = sshKey;
+      log("Loaded ssh key");
       setState(() {});
     });
 
     _db.readClusters().then((clusters) {
+      log("Loaded ${clusters.length} clusters");
       _data.clusters = clusters;
       setState(() {});
     });
@@ -56,7 +59,7 @@ class ClustersViewState extends State<ClustersView> {
             ),
             onPressed: () {
               if (cluster.running) return;
-              dev.log("Play : $cluster");
+              log("Play : $cluster");
               cluster.run(_data.sshKey).then((v) {
                 setState(() {});
               });
@@ -96,12 +99,12 @@ class ClustersViewState extends State<ClustersView> {
   }
 
   void _showCluster(Cluster cluster) async {
-    dev.log("_showCluster : $cluster");
+    log("_showCluster : $cluster");
     final Cluster result = await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_data.sshKey, cluster);
     }));
     if (result != null) {
-      dev.log("_showCluster : Updating $cluster");
+      log("_showCluster : Updating $cluster");
       _db.addCluster(result);
       setState(() {});
     }
@@ -119,7 +122,7 @@ class ClustersViewState extends State<ClustersView> {
 
     setState(() {
       if (result != null) {
-        dev.log("Adding $result");
+        log("Adding $result");
         _data.clusters.add(result);
         _db.addCluster(result);
       }
@@ -167,6 +170,16 @@ class ClustersViewState extends State<ClustersView> {
     }
   }
 
+  void _viewLog() async {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return LogView();
+        },
+      ),
+    );
+  }
+
   void _aboutMenu() async {
     showDialog(
         context: context,
@@ -199,7 +212,7 @@ class ClustersViewState extends State<ClustersView> {
     switch (selected) {
       case ClusterOpts.Remove:
         setState(() {
-          dev.log("Removing $cluster");
+          log("Removing $cluster");
           _data.clusters.remove(cluster);
           _db.removeCluster(cluster);
         });
@@ -224,25 +237,31 @@ class ClustersViewState extends State<ClustersView> {
         switch (result) {
           case ClustersOpts.Key:
             {
-              dev.log("Key");
+              log("Key");
               _keyMenu();
             }
             break;
           case ClustersOpts.Actions:
             {
-              dev.log("Key");
+              log("Key");
               _actionsMenu();
             }
             break;
           case ClustersOpts.LoadSave:
             {
-              dev.log("Load/Save");
+              log("Load/Save");
               _loadSaveMenu();
+            }
+            break;
+          case ClustersOpts.ViewLog:
+            {
+              log("View Log");
+              _viewLog();
             }
             break;
           case ClustersOpts.About:
             {
-              dev.log("About");
+              log("About");
               _aboutMenu();
             }
             break;
@@ -260,6 +279,10 @@ class ClustersViewState extends State<ClustersView> {
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.LoadSave,
           child: Text('Load/Save'),
+        ),
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.ViewLog,
+          child: Text('View Log'),
         ),
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.About,
@@ -292,7 +315,7 @@ class ClustersViewState extends State<ClustersView> {
   }
 }
 
-enum ClustersOpts { Key, Actions, LoadSave, About }
+enum ClustersOpts { Key, Actions, LoadSave, ViewLog, About }
 enum ClusterOpts { Remove, LastRun }
 
 class ClustersView extends StatefulWidget {

@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'dart:convert';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'package:mime/mime.dart';
 import 'package:http_server/http_server.dart';
 
@@ -27,13 +27,13 @@ class Server {
   }
 
   void serveForever(String folder) async {
-    dev.log("Running server on http://localhost:$socket, to access emulator, run");
-    dev.log("adb forward tcp:$socket tcp:$socket");
+    log("Running server on http://localhost:$socket, to access emulator, run");
+    log("adb forward tcp:$socket tcp:$socket");
 
     this.server = await HttpServer.bind(InternetAddress.anyIPv4, socket);
 
     if (this.server == null) {
-      dev.log("Could not start server");
+      log("Could not start server");
       return;
     }
 
@@ -70,7 +70,7 @@ class Server {
       }
     }
 
-    dev.log("Server stopped");
+    log("Server stopped");
   }
 
   void start(String folder) {
@@ -79,7 +79,7 @@ class Server {
 
   void stop() async {
     if (this.server != null) {
-      dev.log("Stopping server");
+      log("Stopping server");
       await this.server.close(force: true);
       this.server = null;
     }

@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'dart:developer' as dev;
-
+import 'package:clusterup/log.dart';
 import 'cluster.dart';
 import 'ssh_key.dart';
 
@@ -39,7 +38,7 @@ class ClusterUpData {
     try {
       data = jsonDecode(input);
     } on FormatException catch (e) {
-      dev.log("json parse error ${e.toString()}");
+      log("json parse error ${e.toString()}");
     }
 
     if (data != null) {

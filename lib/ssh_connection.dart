@@ -1,5 +1,5 @@
 import 'dart:core';
-import 'dart:developer' as dev;
+import 'package:clusterup/log.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:ssh/ssh.dart';
 import 'package:flutter/services.dart';
@@ -37,16 +37,16 @@ class SSHConnection {
       passwordOrKey: {"privateKey": key?.privString() ?? ""},
     );
     if (client != null) {
-      dev.log("trying to connect to $creds");
+      log("trying to connect to $creds");
       try {
         String result = await client.connect();
         if (result == "session_connected") {
-          dev.log("connected to $creds");
+          log("connected to $creds");
           for (String command in commands) {
-            dev.log("Running $command");
+            log("Running $command");
             String out = await client.execute(command);
             if (out.isNotEmpty) {
-              dev.log("Got $out");
+              log("Got $out");
               rv.output += out.split("\r\n");
               if (rv.output.last.isEmpty) {
                 rv.output.removeLast();
@@ -55,7 +55,7 @@ class SSHConnection {
           }
         }
         client.disconnect();
-        dev.log("disconnected from $creds");
+        log("disconnected from $creds");
         rv.success = true;
       } on PlatformException catch (e) {
         print('Error: ${e.code}\nError Message: ${e.message}');
