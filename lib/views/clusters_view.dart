@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:clusterup/log.dart';
 import 'load_save_view.dart';
 import 'cluster_results_view.dart';
+import 'log_view.dart';
 import 'remote_actions_view.dart';
 import 'cluster_view.dart';
 import 'key_view.dart';
@@ -169,6 +170,16 @@ class ClustersViewState extends State<ClustersView> {
     }
   }
 
+  void _viewLog() async {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return LogView();
+        },
+      ),
+    );
+  }
+
   void _aboutMenu() async {
     showDialog(
         context: context,
@@ -242,6 +253,12 @@ class ClustersViewState extends State<ClustersView> {
               _loadSaveMenu();
             }
             break;
+          case ClustersOpts.ViewLog:
+            {
+              log("View Log");
+              _viewLog();
+            }
+            break;
           case ClustersOpts.About:
             {
               log("About");
@@ -262,6 +279,10 @@ class ClustersViewState extends State<ClustersView> {
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.LoadSave,
           child: Text('Load/Save'),
+        ),
+        const PopupMenuItem<ClustersOpts>(
+          value: ClustersOpts.ViewLog,
+          child: Text('View Log'),
         ),
         const PopupMenuItem<ClustersOpts>(
           value: ClustersOpts.About,
@@ -294,7 +315,7 @@ class ClustersViewState extends State<ClustersView> {
   }
 }
 
-enum ClustersOpts { Key, Actions, LoadSave, About }
+enum ClustersOpts { Key, Actions, LoadSave, ViewLog, About }
 enum ClusterOpts { Remove, LastRun }
 
 class ClustersView extends StatefulWidget {
