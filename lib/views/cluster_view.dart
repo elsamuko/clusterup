@@ -258,6 +258,16 @@ class ClusterViewState extends State<ClusterView> {
       ));
     }
 
+    var indicator = widget._cluster.running
+        ? SizedBox(
+            child: CircularProgressIndicator(),
+            height: 15.0,
+            width: 15.0,
+          )
+        : Text(
+            "Run",
+          );
+
     Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
       FlatButton(
           color: Colors.grey[700],
@@ -269,11 +279,10 @@ class ClusterViewState extends State<ClusterView> {
       FlatButton(
           color: Color(0xffcc8d00),
           textColor: Colors.white,
-          onPressed: () async => _run(),
+          disabledColor: Color(0xff4d4d4d),
+          onPressed: widget._cluster.running ? null : () async => _run(),
           key: Key("run"),
-          child: Text(
-            "Run",
-          ))
+          child: indicator)
     ]);
 
     List<Widget> widgets = [_buildClusterCard()];
