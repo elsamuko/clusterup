@@ -84,13 +84,11 @@ class ClustersViewState extends State<ClustersView> {
                 color: cluster.statusColor(),
               )),
         ),
-        title: Expanded(
-          child: SingleChildScrollView(
-            child: Text(
-              cluster.name,
-            ),
-            scrollDirection: Axis.horizontal,
+        title: SingleChildScrollView(
+          child: Text(
+            cluster.name,
           ),
+          scrollDirection: Axis.horizontal,
         ),
         trailing: trailing,
         onTap: () {
