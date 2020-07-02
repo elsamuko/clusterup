@@ -99,40 +99,30 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         width: 15.0,
       );
     } else {
-      int unknowns = pair.results.where((RemoteActionResult result) => result.unknown()).length;
-      int successes = pair.results.where((RemoteActionResult result) => result.success()).length;
-      int warnings = pair.results.where((RemoteActionResult result) => result.warning()).length;
-      int errors = pair.results.where((RemoteActionResult result) => result.error()).length;
+      RemoteActionStatus worst = pair.results.fold(RemoteActionStatus.Unknown, (value, element) {
+        if (value.index < element.status.index) {
+          return element.status;
+        } else {
+          return value;
+        }
+      });
 
-      indicator = Row(children: <Widget>[
-        Text(
-          unknowns.toString(),
-          style: TextStyle(
-              color: unknowns > 0 ? Colors.white : Colors.grey,
-              fontWeight: unknowns > 0 ? FontWeight.bold : FontWeight.normal),
-        ),
-        SizedBox(width: 10),
-        Text(
-          successes.toString(),
-          style: TextStyle(
-              color: successes > 0 ? Colors.greenAccent : Colors.green,
-              fontWeight: successes > 0 ? FontWeight.bold : FontWeight.normal),
-        ),
-        SizedBox(width: 10),
-        Text(
-          warnings.toString(),
-          style: TextStyle(
-              color: warnings > 0 ? Colors.orangeAccent : Colors.orange,
-              fontWeight: warnings > 0 ? FontWeight.bold : FontWeight.normal),
-        ),
-        SizedBox(width: 10),
-        Text(
-          errors.toString(),
-          style: TextStyle(
-              color: errors > 0 ? Colors.redAccent : Colors.red,
-              fontWeight: errors > 0 ? FontWeight.bold : FontWeight.normal),
-        ),
-      ]);
+      switch (worst) {
+        case RemoteActionStatus.Unknown:
+          indicator = Text("-");
+          break;
+        case RemoteActionStatus.Success:
+          indicator = Icon(Icons.check_circle, color: Colors.green[300], size: 20);
+          break;
+        case RemoteActionStatus.Warning:
+          indicator = Icon(Icons.warning, color: Colors.orange[300], size: 20);
+          break;
+        case RemoteActionStatus.Error:
+          indicator = Icon(Icons.error, color: Colors.red[300], size: 20);
+          break;
+        default:
+          indicator = Text("-");
+      }
     }
     return indicator;
   }
