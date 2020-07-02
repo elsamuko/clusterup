@@ -54,7 +54,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         style = TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.w600);
         break;
       case RemoteActionStatus.Warning:
-        style = TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w600);
+        style = TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w500);
         break;
       case RemoteActionStatus.Error:
         style = TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600);
