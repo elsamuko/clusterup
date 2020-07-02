@@ -48,28 +48,31 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     TextStyle style;
     switch (result.status) {
       case RemoteActionStatus.Unknown:
-        style = TextStyle(color: Colors.white);
+        style = TextStyle(color: Colors.white, fontWeight: FontWeight.w600);
         break;
       case RemoteActionStatus.Success:
-        style = TextStyle(color: Colors.greenAccent);
+        style = TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.w600);
         break;
       case RemoteActionStatus.Warning:
-        style = TextStyle(color: Colors.orangeAccent);
+        style = TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w600);
         break;
       case RemoteActionStatus.Error:
-        style = TextStyle(color: Colors.redAccent);
+        style = TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600);
         break;
-      default:
-        style = TextStyle(color: Colors.white);
     }
+
+    Row creds = Row(
+      children: <Widget>[
+        Text("${result.from.user}@", style: TextStyle(color: Color(0xffa1a1a1))),
+        Text(result.from.host, style: style),
+        Text(":${result.from.port}", style: TextStyle(color: Color(0xffa1a1a1))),
+      ],
+    );
 
     List<Widget> children = [
       Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Text(
-          result.from,
-          style: style,
-        ),
+        padding: const EdgeInsets.fromLTRB(6, 2, 2, 2),
+        child: creds,
       )
     ];
     if (result.filtered.isNotEmpty) {

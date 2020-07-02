@@ -17,7 +17,7 @@ class RemoteActionRunner {
     } else {
       result = RemoteActionResult.error(sshConnectionResult.error);
     }
-    result.from = _creds.toString();
+    result.from = _creds;
     return result;
   }
 }

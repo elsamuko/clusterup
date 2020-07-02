@@ -1,3 +1,4 @@
+import 'package:clusterup/ssh_connection.dart';
 import 'package:intl/intl.dart';
 
 typedef Filter = RemoteActionResult Function(List<String> lines);
@@ -13,7 +14,7 @@ class RemoteActionPair {
 class RemoteActionResult {
   RemoteActionStatus status = RemoteActionStatus.Unknown;
   String filtered = "";
-  String from = "";
+  SSHCredentials from;
   RemoteActionResult(this.status, {this.filtered = ""});
 
   bool unknown() {
