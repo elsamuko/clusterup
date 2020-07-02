@@ -78,9 +78,25 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     if (result.filtered.isNotEmpty) {
       children.add(SizedBox(height: 2));
       children.add(Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Text(result.filtered),
-      ));
+          padding: const EdgeInsets.all(2.0),
+          child: Row(children: <Widget>[
+            SizedBox(width: 4),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(8, 2, 4, 2),
+                color: Color(0xff393939),
+                child: Text(
+                  result.filtered,
+                  style: TextStyle(
+                    color: Colors.amberAccent,
+                    fontFamily: "monospace",
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 6)
+          ])));
     }
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
@@ -123,8 +139,6 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         case RemoteActionStatus.Error:
           indicator = Icon(Icons.error, color: Colors.red[300], size: 20);
           break;
-        default:
-          indicator = Text("-");
       }
     }
     return indicator;
@@ -132,10 +146,18 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
 
   Widget _buildRow(RemoteActionPair pair) {
     List<Widget> children = <Widget>[
-      ListTile(
-        title: Row(children: <Widget>[
-          Expanded(child: Text(pair.action.name)),
-          indicator(pair),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(14, 6, 10, 8),
+        child: Row(children: <Widget>[
+          Expanded(
+              child: Text(
+            pair.action.name,
+            style: TextStyle(fontSize: 14),
+          )),
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: indicator(pair),
+          ),
         ]),
       ),
       ListView.separated(
