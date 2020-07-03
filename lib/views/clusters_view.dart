@@ -182,6 +182,7 @@ class ClustersViewState extends State<ClustersView> {
         },
       ),
     );
+    setState(() {});
   }
 
   void _aboutMenu() async {
