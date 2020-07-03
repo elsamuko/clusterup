@@ -103,6 +103,7 @@ class ClustersViewState extends State<ClustersView> {
 
   void _showCluster(Cluster cluster) async {
     log("_showCluster : $cluster");
+    cluster.persist = () => _db.addCluster(cluster);
     final Cluster result = await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_data.sshKey, cluster);
     }));

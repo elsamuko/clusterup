@@ -34,6 +34,7 @@ class ClusterViewState extends State<ClusterView> {
   void validate() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
+      widget._cluster.persist();
     }
   }
 
@@ -67,7 +68,9 @@ class ClusterViewState extends State<ClusterView> {
     }));
     if (result != null) {
       log("_showCluster : Updating $child");
-      setState(() {});
+      setState(() {
+        widget._cluster.persist();
+      });
     }
   }
 
@@ -84,6 +87,7 @@ class ClusterViewState extends State<ClusterView> {
       if (result != null) {
         log("Adding $result");
         widget._cluster.children.add(result);
+        widget._cluster.persist();
       }
     });
   }
@@ -144,6 +148,7 @@ class ClusterViewState extends State<ClusterView> {
             onChanged: (bool enabled) {
               setState(() {
                 child.enabled = enabled;
+                widget._cluster.persist();
               });
             }),
         onTap: () {
@@ -173,6 +178,7 @@ class ClusterViewState extends State<ClusterView> {
         setState(() {
           log("Removing $child");
           widget._cluster.children.remove(child);
+          widget._cluster.persist();
         });
         break;
     }
@@ -218,6 +224,7 @@ class ClusterViewState extends State<ClusterView> {
     );
 
     widget._cluster.actions = selected;
+    widget._cluster.persist();
   }
 
   void _run() {

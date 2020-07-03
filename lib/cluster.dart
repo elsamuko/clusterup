@@ -30,6 +30,7 @@ class Cluster {
   OnActionCallback onActionStarted;
   OnActionCallback onActionFinished;
   Function onRunningFinished;
+  Function persist;
 
   Cluster(
       {@required this.id,
@@ -45,6 +46,7 @@ class Cluster {
     onActionStarted = (RemoteActionPair action) {};
     onActionFinished = (RemoteActionPair action) {};
     onRunningFinished = () {};
+    persist = () {};
   }
 
   void addChild({String user, String host, int port}) {
