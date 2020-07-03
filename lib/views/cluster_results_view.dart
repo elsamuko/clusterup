@@ -48,16 +48,28 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
     TextStyle style;
     switch (result.status) {
       case RemoteActionStatus.Unknown:
-        style = TextStyle(color: Colors.white, fontWeight: FontWeight.w600);
+        style = TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        );
         break;
       case RemoteActionStatus.Success:
-        style = TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.w600);
+        style = TextStyle(
+          color: Colors.greenAccent,
+          fontWeight: FontWeight.w600,
+        );
         break;
       case RemoteActionStatus.Warning:
-        style = TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w500);
+        style = TextStyle(
+          color: Colors.orangeAccent,
+          fontWeight: FontWeight.w500,
+        );
         break;
       case RemoteActionStatus.Error:
-        style = TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600);
+        style = TextStyle(
+          color: Colors.redAccent,
+          fontWeight: FontWeight.w600,
+        );
         break;
     }
 
@@ -90,7 +102,7 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
                   style: TextStyle(
                     color: Colors.amberAccent,
                     fontFamily: "monospace",
-                    fontSize: 12,
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -131,13 +143,13 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
           indicator = Text("-");
           break;
         case RemoteActionStatus.Success:
-          indicator = Icon(Icons.check_circle, color: Colors.green[300], size: 20);
+          indicator = Icon(Icons.check_circle, color: Colors.green[300], size: 24);
           break;
         case RemoteActionStatus.Warning:
-          indicator = Icon(Icons.warning, color: Colors.orange[300], size: 20);
+          indicator = Icon(Icons.warning, color: Colors.orange[300], size: 24);
           break;
         case RemoteActionStatus.Error:
-          indicator = Icon(Icons.error, color: Colors.red[300], size: 20);
+          indicator = Icon(Icons.error, color: Colors.red[300], size: 24);
           break;
       }
     }
@@ -147,12 +159,12 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
   Widget _buildRow(RemoteActionPair pair) {
     List<Widget> children = <Widget>[
       Padding(
-        padding: const EdgeInsets.fromLTRB(14, 6, 10, 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 12, 12),
         child: Row(children: <Widget>[
           Expanded(
               child: Text(
             pair.action.name,
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 16),
           )),
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
@@ -161,14 +173,14 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
         ]),
       ),
       ListView.separated(
-          separatorBuilder: (context, index) => Divider(height: 5),
+          separatorBuilder: (context, index) => Divider(height: 12),
           itemCount: pair.results.length,
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
           itemBuilder: (context, i) {
             return _buildResult(pair.results.elementAt(i));
           }),
-      SizedBox(height: 4),
+      SizedBox(height: 8),
     ];
 
     return Card(
