@@ -11,7 +11,7 @@ description: Display cluster health
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.4.0+5
+version: 1.4.1+6
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -26,7 +26,7 @@ dependencies:
   http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
   path_provider:        # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   get_ip: ^0.4.0        # MIT https://github.com/lotrofans/get_ip_flutter/blob/master/LICENSE
-  font_awesome_flutter: # https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
+  font_awesome_flutter: # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
   flutter:
     sdk: flutter
 
