@@ -191,7 +191,7 @@ class ClustersViewState extends State<ClustersView> {
         builder: (context) {
           return AlertDialog(
             title: Text("Cluster up"),
-            content: Text("Control health of your servers"),
+            content: Text("Monitor health of your servers"),
           );
         });
   }
