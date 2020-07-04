@@ -17,7 +17,7 @@ class Http {
 class Server {
   int socket;
   String json = "";
-  void Function(String) onJson;
+  void Function(String) onJsonOrKey;
   HttpServer server;
 
   Server(this.socket);
@@ -56,8 +56,8 @@ class Server {
         String boundary = request.headers.contentType.parameters['boundary'];
         MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
         String json = await utf8.decoder.bind(part).join();
-        if (this.onJson != null) {
-          this.onJson(json);
+        if (this.onJsonOrKey != null) {
+          this.onJsonOrKey(json);
         }
 
         request.response.redirect(Uri.parse('/'));

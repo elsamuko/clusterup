@@ -37,10 +37,10 @@ class LoadSaveViewState extends State<LoadSaveView> {
       _server.json = widget._data.toJSON(_withPrivateKey);
 
       // configure callback when server gets a new json string
-      _server.onJson = (String json) {
+      _server.onJsonOrKey = (String json) {
         // parse json
         ClusterUpData data = ClusterUpData.fromJSON(json);
-        if (data.clusters != null) {
+        if (data.clusters != null && data.clusters.isNotEmpty) {
           widget._data.clusters = data.clusters;
         }
         if (data.sshKey != null) {
