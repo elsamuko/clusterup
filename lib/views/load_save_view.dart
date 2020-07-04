@@ -111,8 +111,8 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ];
     }
 
-    // warn, if we are not in intranet
-    if (!_ip.startsWith("192.168.")) {
+    // warn, if we are not emulator or in intranet
+    if (!(_ip == "10.0.2.15" || _ip.startsWith("192.168."))) {
       children += <Widget>[
         Divider(),
         Row(
