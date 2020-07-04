@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:clusterup/clusterup_data.dart';
 import 'package:clusterup/server.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/log.dart';
 import 'package:flutter/services.dart';
@@ -111,8 +112,10 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ];
     }
 
+    bool isEmulator = !kReleaseMode && _ip == "10.0.2.15";
+
     // warn, if we are not emulator or in intranet
-    if (!(_ip == "10.0.2.15" || _ip.startsWith("192.168."))) {
+    if (!(isEmulator || _ip.startsWith("192.168."))) {
       children += <Widget>[
         Divider(),
         Row(
