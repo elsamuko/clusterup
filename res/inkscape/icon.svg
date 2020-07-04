@@ -15,7 +15,7 @@
    viewBox="0 0 256 256"
    version="1.1"
    id="SVGRoot"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
    sodipodi:docname="icon.svg"
    inkscape:export-filename="/home/samuel/projects/flutter/clusterup/res/icon.png"
    inkscape:export-xdpi="192.00002"
@@ -28,13 +28,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2"
-     inkscape:cx="101.01307"
-     inkscape:cy="130.23628"
+     inkscape:cx="10.26307"
+     inkscape:cy="128.23628"
      inkscape:document-units="px"
-     inkscape:current-layer="g1419"
+     inkscape:current-layer="layer3"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1151"
+     inkscape:window-width="2560"
+     inkscape:window-height="1393"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -86,7 +86,8 @@
        height="256"
        width="256"
        id="rect1439"
-       style="fill:url(#linearGradient1526);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.08382487;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#linearGradient1526);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.08382487;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       ry="56.5" />
   </g>
   <g
      style="display:inline"
