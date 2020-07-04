@@ -23,7 +23,7 @@ class ClusterUpData {
         data["key"] = sshKey;
       } else {
         // only ssh public key
-        data["key"] = {"ssh": sshKey.pubForSSH()};
+        data["key"] = {"ssh": sshKey.pubForSSH() + " clusterup"};
       }
     }
 

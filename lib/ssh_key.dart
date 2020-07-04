@@ -32,7 +32,7 @@ class SSHKey {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> m = toMap();
-    m["ssh"] = pubForSSH();
+    m["ssh"] = pubForSSH() + " clusterup";
     return m;
   }
 
