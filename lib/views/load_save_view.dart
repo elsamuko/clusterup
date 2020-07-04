@@ -97,7 +97,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
     if (_server.isRunning()) {
       children += <Widget>[
         Divider(),
-        Text("Server running on"),
+        Center(child: Text("Server running on")),
         SizedBox(height: 10),
         FlatButton(
             color: Colors.black87,
@@ -140,7 +140,12 @@ class LoadSaveViewState extends State<LoadSaveView> {
         },
         child: Scaffold(
           appBar: AppBar(title: Text("Load/Save configuration")),
-          body: Padding(padding: EdgeInsets.all(20), child: Column(children: children)),
+          body: Scrollbar(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: ListView(children: children),
+            ),
+          ),
         ));
   }
 }
