@@ -112,7 +112,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
     }
 
     // warn, if we are not in intranet
-    if (!(_ip.startsWith("10.") || _ip.startsWith("192.168."))) {
+    if (!_ip.startsWith("192.168.")) {
       children += <Widget>[
         Divider(),
         Row(
