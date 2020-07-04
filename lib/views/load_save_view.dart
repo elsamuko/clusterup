@@ -111,6 +111,28 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ];
     }
 
+    // warn, if we are not in intranet
+    if (!(_ip.startsWith("10.") || _ip.startsWith("192.168."))) {
+      children += <Widget>[
+        Divider(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.warning,
+              color: Colors.amberAccent,
+              size: 14,
+            ),
+            SizedBox(width: 4),
+            Text(
+              "Device is not in intranet, IP is $_ip",
+              style: TextStyle(color: Colors.amberAccent),
+            ),
+          ],
+        ),
+      ];
+    }
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context, widget._data);
