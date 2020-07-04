@@ -11,7 +11,7 @@ class SSHKey {
 
   SSHKey(this._privateKey) {
     BigInt publicExponent = RsaKeyHelper.getPublicExponent(_privateKey);
-    assert(publicExponent == BigInt.from(65537)); // usually it's 65537
+    // assert(publicExponent == BigInt.from(65537)); // usually it's 65537
     _publicKey = RSAPublicKey(_privateKey.modulus, publicExponent);
   }
 
