@@ -11,6 +11,10 @@ import "package:pointycastle/export.dart";
 class RsaKeyHelper {
   /// convert PEM to DER
   static Uint8List _fromPEMToDER(String pem) {
+    pem = pem.trim();
+    pem = pem.replaceAll('\n', '');
+    pem = pem.replaceAll('\r', '');
+
     List<String> headers = [
       "-----BEGIN PUBLIC KEY-----",
       "-----BEGIN PRIVATE KEY-----",
@@ -40,9 +44,6 @@ class RsaKeyHelper {
     }
 
     pem = pem.replaceAll(' ', '');
-    pem = pem.replaceAll('\n', '');
-    pem = pem.replaceAll('\r', '');
-
     return base64.decode(pem);
   }
 
