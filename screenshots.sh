@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# forward emulator server
+# start and forward emulator
+flutter emulators --launch Nexus_5_API_24
 adb forward tcp:3001 tcp:3001
 
 # take screenshots
@@ -19,3 +20,6 @@ for SHOT in "${SHOTS[@]}"; do
   echo "Adding title to $SHOT"
   convert "$SHOT" -page +0+0 ../res/title.png -flatten "$SHOT"
 done
+
+echo "Screenshots done :)"
+zenity --info --no-wrap --title "Cluster Up" --text "Screenshots done :)"
