@@ -8,7 +8,7 @@ You can try out Cluster Up here:
 https://play.google.com/store/apps/details?id=com.devsamuko.clusterup
 
 # Screenshots
-![](res/screenshot_edit.png)
+![](res/screenshot_edit_server.png)
 ![](res/screenshot_running.png)
 
 # Architecture
