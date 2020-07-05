@@ -9,7 +9,7 @@ function doPrepare {
 
 function createBundle {
   echo "Create bundle"
-  flutter build appbundle
+  flutter build appbundle --no-shrink
   cp "build/app/outputs/bundle/release/app-release.aab" "tmp/clusterup-$GIT_TAG.aab"
 }
 
