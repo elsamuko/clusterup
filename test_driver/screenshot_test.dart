@@ -4,8 +4,8 @@ import 'package:test/test.dart';
 
 takeScreenshot(FlutterDriver driver, String path) async {
   List<int> pixels = await driver.screenshot();
-  File("screenshots/$path").writeAsBytesSync(pixels);
-  print("Screenshot saved to screenshots/$path");
+  File("screenshots/screenshot_$path.png").writeAsBytesSync(pixels);
+  print("Screenshot saved to screenshots/screenshot_$path.png");
 }
 
 // https://medium.com/flutter-community/testing-flutter-ui-with-flutter-driver-c1583681e337
@@ -45,7 +45,7 @@ void main() {
       await driver.enterText("22");
 
       // screenshot
-      await takeScreenshot(driver, 'add_server.png');
+      await takeScreenshot(driver, 'add_server');
 
       // save and return
       await driver.tap(find.byValueKey("saveCluster"));
@@ -68,7 +68,7 @@ void main() {
       await driver.tap(find.byValueKey("saveChild"));
 
       // screenshot
-      await takeScreenshot(driver, 'edit_server.png');
+      await takeScreenshot(driver, 'edit_server');
 
       // return
       await driver.tap(find.pageBack());
@@ -96,7 +96,7 @@ $json
       await driver.tap(find.text('Start server'));
 
       // screenshot
-      await takeScreenshot(driver, 'load_save.png');
+      await takeScreenshot(driver, 'load_save');
 
       // upload json configuration
       // adb forward tcp:3001 tcp:3001
@@ -117,7 +117,7 @@ $json
       await driver.tap(find.text('View SSH Key'));
 
       // screenshot
-      await takeScreenshot(driver, 'view_key.png');
+      await takeScreenshot(driver, 'view_key');
 
       // return
       await driver.tap(find.byValueKey('back'));
@@ -133,7 +133,7 @@ $json
       sleep(Duration(seconds: 10));
 
       // screenshot
-      await takeScreenshot(driver, 'run.png');
+      await takeScreenshot(driver, 'running');
 
       // return
       await driver.tap(find.byValueKey('back'));
