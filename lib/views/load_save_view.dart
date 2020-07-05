@@ -70,12 +70,14 @@ class LoadSaveViewState extends State<LoadSaveView> {
         secondary: Icon(Icons.lock_outline),
         title: Text("Include private key"),
         value: _withPrivateKey,
-        onChanged: (v) {
-          setState(() {
-            _withPrivateKey = v;
-            _server.json = widget._data.toJSON(_withPrivateKey);
-          });
-        },
+        onChanged: widget._data.sshKey != null
+            ? (v) {
+                setState(() {
+                  _withPrivateKey = v;
+                  _server.json = widget._data.toJSON(_withPrivateKey);
+                });
+              }
+            : null,
       ),
       Divider(),
       FlatButton(
