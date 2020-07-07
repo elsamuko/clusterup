@@ -206,9 +206,9 @@ class RemoteAction {
 
       String filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
 
-      if (other > 0) return RemoteActionResult.warning(filtered);
       if (security > 0) return RemoteActionResult.error(filtered);
-      if (lines.length == 0) return RemoteActionResult.success(filtered);
+      if (other > 0) return RemoteActionResult.warning(filtered);
+      if (lines.isEmpty) return RemoteActionResult.success(filtered);
 
       return RemoteActionResult.unknown();
     };

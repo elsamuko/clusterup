@@ -32,6 +32,7 @@ void main() {
 
     RemoteActionResult result2 = action.filter([
       "Listing... Done",
+      "qemu-system-x86/focal-updates 1:4.2-3ubuntu6.3 amd64 [upgradable from: 1:4.2-3ubuntu6.2]",
       "libopenexr-dev/focal-updates,focal-security 2.3.0-6ubuntu0.1 amd64 [upgradable from: 2.3.0-6build1]",
       "libopenexr24/focal-updates,focal-security 2.3.0-6ubuntu0.1 amd64 [upgradable from: 2.3.0-6build1]"
     ]);
