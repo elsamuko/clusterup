@@ -27,6 +27,7 @@ dependencies:
   path_provider:        # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   get_ip: ^0.4.0        # MIT https://github.com/lotrofans/get_ip_flutter/blob/master/LICENSE
   font_awesome_flutter: # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
+  url_launcher:         # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
   flutter:
     sdk: flutter
 

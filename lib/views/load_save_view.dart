@@ -7,6 +7,7 @@ import 'package:clusterup/log.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:get_ip/get_ip.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoadSaveViewState extends State<LoadSaveView> {
   LoadSaveViewState();
@@ -100,6 +101,8 @@ class LoadSaveViewState extends State<LoadSaveView> {
     ];
 
     if (_server.isRunning()) {
+      String url = "http://$_ip:${_server.socket}";
+
       children += <Widget>[
         Divider(),
         Center(child: Text("Server running on")),
@@ -107,11 +110,13 @@ class LoadSaveViewState extends State<LoadSaveView> {
         FlatButton(
             color: Colors.black87,
             textColor: Colors.amberAccent,
-            onPressed: () {},
+            onPressed: () {
+              launch(url);
+            },
             child: Padding(
                 padding: EdgeInsets.all(8),
                 child: Center(
-                  child: Text("http://$_ip:${_server.socket}", style: TextStyle(fontFamily: "monospace")),
+                  child: Text(url, style: TextStyle(fontFamily: "monospace")),
                 )))
       ];
     }
