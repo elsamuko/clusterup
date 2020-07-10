@@ -45,36 +45,44 @@
 
 <body>
 
-    <div class="d-flex align-items-center vh-100">
-        <div class="container">
-            <div class="d-flex">
+    <div class="d-flex align-items-center vh-75">
+        <div class="card mx-auto bg-light">
+            <div class="card-header text-center">
+                Cluster Up Configuration
+              </div>
+            <div class="card-body p-2">
+                <div class="container p-0">
+                    <div class="d-flex flex-column">
 
-                <!--upload-->
-                <div class="p-2">
-                    <form method="post" action="upload" enctype="multipart/form-data">
-                        <div class="input-group">
-                            <div class="input-group-prepend ">
-                                <button class="btn btn-primary" type="submit">Upload configuration</button>
-                            </div>
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile"
-                                    accept="application/json,text/plain,application/x-pem-file">
-                                <label class="custom-file-label" for="jsonFile">Select json or key file...</label>
-                            </div>
+                        <!--upload-->
+                        <div class="py-1">
+                            <form method="post" action="upload" enctype="multipart/form-data">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-primary" type="submit"><b>↥</b> Upload</button>
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile"
+                                            accept="application/json,text/plain,application/x-pem-file">
+                                        <label class="custom-file-label" for="jsonFile">Select json or key
+                                            file...</label>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
 
-                <!--download-->
-                <div class="ml-auto p-2">
-                    <a class="btn btn-success" href="/clusterup.json" download>Download configuration</a>
-                </div>
-            </div>
+                        <!--download-->
+                        <div class="py-1">
+                            <a class="btn btn-success" href="/clusterup.json" download><b>⭳</b> Download</a>
+                        </div>
+                    </div>
 
-            <!--json preview-->
-            <div class="card mt-3 bg-dark text-light">
-                <div class="card-body">
-                    <p id="jsonPreview" class="card-text text-monospace"></p>
+                    <!--json preview-->
+                    <div class="card mt-2 bg-dark text-light">
+                        <div class="card-body p-1">
+                            <p id="jsonPreview" class="card-text text-monospace"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
