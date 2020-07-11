@@ -36,16 +36,13 @@ class LogViewState extends State<LogView> {
         ),
         body: SingleChildScrollView(
           controller: _scrollController,
-          child: FlatButton(
-              color: Colors.black87,
-              textColor: Colors.amberAccent,
-              onPressed: () {},
-              child: Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: Text(
-                    log,
-                    style: TextStyle(fontFamily: "monospace"),
-                  ))),
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Text(
+              log,
+              style: TextStyle(color: Colors.amberAccent, fontFamily: "monospace"),
+            ),
+          ),
         ));
   }
 }
