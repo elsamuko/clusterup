@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:package_info/package_info.dart';
 import 'package:clusterup/log.dart';
 import 'load_save_view.dart';
 import 'cluster_results_view.dart';
@@ -186,11 +187,12 @@ class ClustersViewState extends State<ClustersView> {
   }
 
   void _aboutMenu() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Cluster up"),
+            title: Text("Cluster Up v${packageInfo.version}"),
             content: Text("Monitor health of your servers"),
           );
         });
