@@ -18,9 +18,9 @@ environment:
 
 dependencies:
   ssh: ^0.0.7           # MIT https://github.com/shaqian/flutter_ssh/blob/master/LICENSE
-  pointycastle: ^1.0.2  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
-  asn1lib: ^0.6.4       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
-  sqflite: ^1.3.0       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
+  pointycastle: ^2.0.0  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
+  asn1lib: ^0.8.1       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
+  sqflite: ^1.3.1+2     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   path:                 # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl:                 # BSD https://github.com/dart-lang/intl/blob/master/LICENSE
   http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
@@ -34,7 +34,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.3 # MIT https://github.com/flutter/cupertino_icons/blob/master/LICENSE
+  cupertino_icons: ^1.0.0 # MIT https://github.com/flutter/cupertino_icons/blob/master/LICENSE
 
 dev_dependencies:
   flutter_launcher_icons:
