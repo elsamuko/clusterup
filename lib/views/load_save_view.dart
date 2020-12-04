@@ -121,7 +121,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ];
     }
 
-    bool isEmulator = !kReleaseMode && _ip == "10.0.2.15";
+    bool isEmulator = !kReleaseMode && _ip == "10.0.2.16";
 
     // warn, if we are not emulator or in intranet
     if (!(isEmulator || _ip.startsWith("192.168."))) {
