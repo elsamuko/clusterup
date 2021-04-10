@@ -356,7 +356,7 @@ class ClusterViewState extends State<ClusterView> {
                         labelText: 'username',
                       ),
                       key: Key("username"),
-                      inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+                      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                       onSaved: (String value) {
                         widget._cluster.user = value;
                       },
@@ -372,7 +372,7 @@ class ClusterViewState extends State<ClusterView> {
                         hintText: 'Server domain',
                         labelText: 'server',
                       ),
-                      inputFormatters: [BlacklistingTextInputFormatter(RegExp("[ ]"))],
+                      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                       key: Key("server"),
                       onSaved: (String value) {
                         widget._cluster.host = value;
