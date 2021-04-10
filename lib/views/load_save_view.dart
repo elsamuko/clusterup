@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:clusterup/log.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:get_ip/get_ip.dart';
+import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoadSaveViewState extends State<LoadSaveView> {
@@ -18,7 +18,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
 
   @override
   void initState() {
-    GetIp.ipAddress.then((String ip) {
+    WifiInfo().getWifiIP().then((String ip) {
       setState(() {
         _ip = ip;
       });
