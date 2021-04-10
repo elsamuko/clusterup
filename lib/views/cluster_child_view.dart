@@ -82,9 +82,11 @@ class ClusterChildViewState extends State<ClusterChildView> {
               actions: checkButton,
             ),
             bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
-              FlatButton(
-                  color: Colors.grey[700],
-                  textColor: Colors.white,
+              TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.grey[700],
+                    primary: Colors.white,
+                  ),
                   onPressed: () async {
                     if (_formKey.currentState.validate() && !testingConnection) {
                       _formKey.currentState.save();

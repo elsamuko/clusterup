@@ -44,9 +44,11 @@ class KeyViewState extends State<KeyView> {
                 child: Column(children: <Widget>[
                   Text("Copy this SSH key into your '.ssh/authorized_keys' file:"),
                   SizedBox(height: 10),
-                  FlatButton(
-                      color: Colors.black87,
-                      textColor: Colors.amberAccent,
+                  TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black87,
+                        primary: Colors.amberAccent,
+                      ),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
                         final snackBar = SnackBar(content: Text("Copied ssh key into clipboard"));

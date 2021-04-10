@@ -84,9 +84,11 @@ class LoadSaveViewState extends State<LoadSaveView> {
             : null,
       ),
       Divider(),
-      FlatButton(
-          color: _server.isRunning() ? Colors.red[800] : Color(0xffcc8d00),
-          textColor: Colors.white,
+      TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: _server.isRunning() ? Colors.red[800] : Color(0xffcc8d00),
+            primary: Colors.white,
+          ),
           onPressed: () {
             setState(() {
               if (_server.isRunning()) {
@@ -108,9 +110,11 @@ class LoadSaveViewState extends State<LoadSaveView> {
         Divider(),
         Center(child: Text("Server running on")),
         SizedBox(height: 10),
-        FlatButton(
-            color: Colors.black87,
-            textColor: Colors.amberAccent,
+        TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.black87,
+              primary: Colors.amberAccent,
+            ),
             onPressed: () {
               launch(url);
             },

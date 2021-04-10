@@ -275,17 +275,20 @@ class ClusterViewState extends State<ClusterView> {
           );
 
     Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
-      FlatButton(
-          color: Colors.grey[700],
-          textColor: Colors.white,
+      TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.grey[700],
+            primary: Colors.white,
+          ),
           onPressed: () async => _showLastRun(),
           child: Text(
             "Last run",
           )),
-      FlatButton(
-          color: Color(0xffcc8d00),
-          textColor: Colors.white,
-          disabledColor: Color(0xff4d4d4d),
+      TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: widget._cluster.running ? Color(0xff4d4d4d) : Color(0xffcc8d00),
+            primary: Colors.white,
+          ),
           onPressed: widget._cluster.running ? null : () async => _run(),
           key: Key("run"),
           child: indicator)
