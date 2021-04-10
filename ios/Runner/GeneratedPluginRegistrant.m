@@ -34,12 +34,6 @@
 @import url_launcher;
 #endif
 
-#if __has_include(<wifi_info_flutter/WifiInfoFlutterPlugin.h>)
-#import <wifi_info_flutter/WifiInfoFlutterPlugin.h>
-#else
-@import wifi_info_flutter;
-#endif
-
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
@@ -48,7 +42,6 @@
   [SqflitePlugin registerWithRegistrar:[registry registrarForPlugin:@"SqflitePlugin"]];
   [SshPlugin registerWithRegistrar:[registry registrarForPlugin:@"SshPlugin"]];
   [FLTURLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTURLLauncherPlugin"]];
-  [WifiInfoFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"WifiInfoFlutterPlugin"]];
 }
 
 @end

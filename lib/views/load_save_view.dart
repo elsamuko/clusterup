@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:clusterup/log.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoadSaveViewState extends State<LoadSaveView> {
@@ -18,10 +17,12 @@ class LoadSaveViewState extends State<LoadSaveView> {
 
   @override
   void initState() {
-    WifiInfo().getWifiIP().then((String ip) {
-      setState(() {
-        _ip = ip;
-      });
+    NetworkInterface.list().then((list) {
+      if (list.isNotEmpty && list.first.addresses.isNotEmpty) {
+        setState(() {
+          _ip = list.first.addresses.first.address;
+        });
+      }
     });
 
     List<String> artifacts = ["index.html", "favicon.ico", "bootstrap.css"];
