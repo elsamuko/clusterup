@@ -145,8 +145,8 @@ class RsaKeyHelper {
     ASN1Integer privateExponent = ASN1Integer(privateKey.exponent);
     ASN1Integer p = ASN1Integer(privateKey.p);
     ASN1Integer q = ASN1Integer(privateKey.q);
-    ASN1Integer exp1 = ASN1Integer(privateKey.d % (privateKey.p - BigInt.from(1)));
-    ASN1Integer exp2 = ASN1Integer(privateKey.d % (privateKey.q - BigInt.from(1)));
+    ASN1Integer exp1 = ASN1Integer(privateKey.privateExponent % (privateKey.p - BigInt.from(1)));
+    ASN1Integer exp2 = ASN1Integer(privateKey.privateExponent % (privateKey.q - BigInt.from(1)));
     ASN1Integer co = ASN1Integer(privateKey.q.modInverse(privateKey.p));
 
     sequence.add(version);

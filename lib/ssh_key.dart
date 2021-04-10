@@ -55,7 +55,7 @@ class SSHKey {
     // Not handling negative numbers. Decide how you want to do that.
     int bytes = size ?? 1 + (number.bitLength + 7) >> 3;
     BigInt b256 = BigInt.from(256);
-    List<int> result = List<int>(bytes);
+    List<int> result = [bytes];
 
     int pos = bytes - 1;
 
