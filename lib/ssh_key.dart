@@ -69,7 +69,7 @@ class SSHKey {
 
   String pubForSSH() {
     List<int> head = utf8.encode("ssh-rsa");
-    List<int> e = _writeBigInt(_publicKey.e);
+    List<int> e = _writeBigInt(_publicKey.publicExponent);
     List<int> n = _writeBigInt(_publicKey.n);
     List<int> szHead = _writeBigInt(BigInt.from(head.length), 4);
     List<int> szE = _writeBigInt(BigInt.from(e.length), 4);
