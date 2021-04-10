@@ -10,7 +10,6 @@ class ClusterChildViewState extends State<ClusterChildView> {
   ClusterChildViewState();
 
   final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool testingConnection = false;
 
   void validate() {
@@ -29,7 +28,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
 
     String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
     final snackBar = SnackBar(content: Text(text));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     setState(() {
       testingConnection = false;
@@ -78,7 +77,6 @@ class ClusterChildViewState extends State<ClusterChildView> {
           }
         },
         child: Scaffold(
-            key: _scaffoldKey,
             appBar: AppBar(
               title: Text(title),
               actions: checkButton,

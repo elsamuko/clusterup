@@ -14,7 +14,6 @@ class KeyViewState extends State<KeyView> {
   KeyViewState();
 
   Future<SSHKey> _getKey;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class KeyViewState extends State<KeyView> {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
                         final snackBar = SnackBar(content: Text("Copied ssh key into clipboard"));
-                        _scaffoldKey.currentState.showSnackBar(snackBar);
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
                       child: Padding(
                           padding: EdgeInsets.all(8),
@@ -78,7 +77,6 @@ class KeyViewState extends State<KeyView> {
                 return false;
               },
               child: Scaffold(
-                  key: _scaffoldKey,
                   appBar: AppBar(
                     leading: IconButton(
                       icon: Icon(Icons.arrow_back),
