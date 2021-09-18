@@ -2,6 +2,8 @@
 //  Generated file. Do not edit.
 //
 
+// clang-format off
+
 #import "GeneratedPluginRegistrant.h"
 
 #if __has_include(<package_info/FLTPackageInfoPlugin.h>)
@@ -22,10 +24,10 @@
 @import sqflite;
 #endif
 
-#if __has_include(<ssh/SshPlugin.h>)
-#import <ssh/SshPlugin.h>
+#if __has_include(<ssh2/SshPlugin.h>)
+#import <ssh2/SshPlugin.h>
 #else
-@import ssh;
+@import ssh2;
 #endif
 
 #if __has_include(<url_launcher/FLTURLLauncherPlugin.h>)
