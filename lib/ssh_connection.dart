@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'package:clusterup/log.dart';
 import 'package:clusterup/ssh_key.dart';
-import 'package:ssh/ssh.dart';
+import 'package:ssh2/ssh2.dart';
 import 'package:flutter/services.dart';
 
 class SSHConnectionResult {
