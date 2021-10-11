@@ -17,7 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  ssh2: ^2.2.2          # MIT https://pub.dev/packages/ssh2/license
+  ssh2: ^2.2.3          # MIT https://pub.dev/packages/ssh2/license
   pointycastle: ^3.0.1  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
   asn1lib: ^1.0.2       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
   sqflite: ^2.0.0+4     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
