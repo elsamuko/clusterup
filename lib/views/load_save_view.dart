@@ -116,7 +116,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
               primary: Colors.amberAccent,
             ),
             onPressed: () {
-              launch(url);
+              launchUrl(Uri.parse(url));
             },
             child: Padding(
                 padding: EdgeInsets.all(8),
