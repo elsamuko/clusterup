@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:pointycastle/export.dart';
-import 'package:pointycastle/pointycastle.dart';
 import 'rsa_key_helper.dart';
 
 class SSHKey {

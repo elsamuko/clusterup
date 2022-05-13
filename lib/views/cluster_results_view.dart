@@ -1,7 +1,6 @@
 import 'package:clusterup/remote_action.dart';
 import 'package:flutter/material.dart';
 import 'package:clusterup/ssh_key.dart';
-import 'package:flutter/widgets.dart';
 import '../cluster.dart';
 import '../widgets/result_card.dart';
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import '../remote_action.dart';
 
 class ResultCard extends StatelessWidget {
