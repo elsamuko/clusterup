@@ -168,7 +168,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
 }
 
 class LoadSaveView extends StatefulWidget {
-  ClusterUpData _data;
+  final ClusterUpData _data;
   LoadSaveView(this._data);
 
   @override
