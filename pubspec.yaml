@@ -21,7 +21,7 @@ dependencies:
   pointycastle: ^3.6.0  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
   asn1lib: ^1.1.0       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
   sqflite: ^2.0.2+1     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
-  path: ^1.8.0          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
+  path: ^1.8.1          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl:                 # BSD https://pub.dev/packages/intl/license
   http_server:          # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
   path_provider: ^2.0.10 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
