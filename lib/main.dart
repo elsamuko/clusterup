@@ -14,7 +14,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cluster Up',
-      theme: ThemeData(primaryColor: Color(0xff575757), brightness: Brightness.dark),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Color(0xff282828),
+        primaryColor: Color(0xff575757),
+      ),
       home: ClustersView(),
       debugShowCheckedModeBanner: false,
     );
