@@ -227,10 +227,12 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void _run() {
-    if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
+    if (_formKey.currentState.validate() && !testingConnection) {
       _formKey.currentState.save();
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-        widget._cluster.run(widget._key);
+        if (!widget._cluster.running) {
+          widget._cluster.run(widget._key);
+        }
         return ClusterResultsView(widget._cluster);
       })).then((_) {
         setState(() {});
@@ -290,7 +292,7 @@ class ClusterViewState extends State<ClusterView> {
             backgroundColor: widget._cluster.running ? Color(0xff4d4d4d) : Color(0xffcc8d00),
             primary: Colors.white,
           ),
-          onPressed: widget._cluster.running ? null : () async => _run(),
+          onPressed: () async => _run(),
           key: Key("run"),
           child: indicator)
     ]);
