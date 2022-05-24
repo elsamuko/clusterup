@@ -12,6 +12,8 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
 
   @override
   void initState() {
+    current = widget._cluster.lastAction();
+
     // set callback for results
     _cluster.onActionStarted = (RemoteActionPair pair) {
       setState(() {
@@ -49,10 +51,12 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
             }));
 
     // scroll to bottom when running live
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
-    });
+    if (widget._cluster.running) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+      });
+    }
 
     return Scaffold(
         appBar: AppBar(
