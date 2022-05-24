@@ -230,7 +230,8 @@ class ClusterViewState extends State<ClusterView> {
     if (!widget._cluster.running && _formKey.currentState.validate() && !testingConnection) {
       _formKey.currentState.save();
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-        return ClusterResultsView(widget._key, widget._cluster, true);
+        widget._cluster.run(widget._key);
+        return ClusterResultsView(widget._cluster);
       })).then((_) {
         setState(() {});
       });
@@ -239,7 +240,7 @@ class ClusterViewState extends State<ClusterView> {
 
   void _showLastRun() {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      return ClusterResultsView(null, widget._cluster, false);
+      return ClusterResultsView(widget._cluster);
     }));
   }
 
@@ -414,6 +415,7 @@ class ClusterViewState extends State<ClusterView> {
 }
 
 enum ClusterOpts { Actions, Test }
+
 enum ClusterChildOpts { Remove }
 
 class ClusterView extends StatefulWidget {

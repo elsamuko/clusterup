@@ -232,7 +232,7 @@ class ClustersViewState extends State<ClustersView> {
 
   void _showLastRun(Cluster cluster) {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      return ClusterResultsView(null, cluster, false);
+      return ClusterResultsView(cluster);
     }));
   }
 
@@ -323,6 +323,7 @@ class ClustersViewState extends State<ClustersView> {
 }
 
 enum ClustersOpts { Key, Actions, LoadSave, ViewLog, About }
+
 enum ClusterOpts { Remove, LastRun }
 
 class ClustersView extends StatefulWidget {
