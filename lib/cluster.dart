@@ -49,6 +49,11 @@ class Cluster {
     persist = () {};
   }
 
+  RemoteAction lastAction() {
+    if (results.isEmpty) return RemoteAction.none();
+    return results.last.action;
+  }
+
   void addChild({String user, String host, int port}) {
     children.add(ClusterChild(this, user: user, host: host, port: port));
   }
