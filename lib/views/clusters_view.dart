@@ -234,6 +234,7 @@ class ClustersViewState extends State<ClustersView> {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return ClusterResultsView(cluster);
     }));
+    setState(() {});
   }
 
   PopupMenuButton<ClustersOpts> _buildClustersPopUpButton() {
