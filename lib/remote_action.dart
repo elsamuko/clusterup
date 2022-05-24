@@ -119,6 +119,14 @@ class RemoteAction {
     }
   }
 
+  RemoteAction.none() {
+    name = "";
+    description = "";
+    filter = (lines) {
+      return RemoteActionResult.success();
+    };
+  }
+
   RemoteAction.getHostUpAction() {
     name = "up";
     description = "checks if host is up";
