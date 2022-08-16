@@ -20,7 +20,7 @@ dependencies:
   ssh2: ^2.2.3          # MIT https://pub.dev/packages/ssh2/license
   pointycastle: ^3.6.1  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
   asn1lib: ^1.1.0       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
-  sqflite: ^2.0.3       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
+  sqflite: ^2.0.3+1     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   path: ^1.8.1          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl: ^0.17.0         # BSD https://pub.dev/packages/intl/license
   http_server: ^1.0.0   # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
@@ -36,12 +36,12 @@ dependencies:
   cupertino_icons: ^1.0.5 # MIT https://github.com/flutter/cupertino_icons/blob/master/LICENSE
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.3
+  flutter_launcher_icons: ^0.10.0
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: any
+  test: ^1.21.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
