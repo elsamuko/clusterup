@@ -14,18 +14,18 @@ description: Display cluster health
 version: 1.6.0+9
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.18.0 <3.0.0"
 
 dependencies:
   ssh2: ^2.2.3          # MIT https://pub.dev/packages/ssh2/license
-  pointycastle: ^3.6.1  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
-  asn1lib: ^1.1.0       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
-  sqflite: ^2.0.3+1     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
-  path: ^1.8.1          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
+  pointycastle: ^3.6.2  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
+  asn1lib: ^1.1.1       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
+  sqflite: ^2.1.0       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
+  path: ^1.8.2          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl: ^0.17.0         # BSD https://pub.dev/packages/intl/license
   http_server: ^1.0.0   # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
   path_provider: ^2.0.11 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
-  font_awesome_flutter: ^10.1.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
+  font_awesome_flutter: ^10.2.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
   url_launcher: ^6.1.5  # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
   package_info: ^2.0.2  # BSD https://github.com/flutter/plugins/blob/master/packages/package_info/LICENSE
   flutter:
