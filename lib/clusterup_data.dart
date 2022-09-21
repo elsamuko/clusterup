@@ -5,10 +5,8 @@ import 'ssh_key.dart';
 
 class ClusterUpData {
   List<Cluster> clusters;
-  SSHKey sshKey;
-  ClusterUpData({this.clusters, this.sshKey}) {
-    clusters ??= [];
-  }
+  SSHKey? sshKey;
+  ClusterUpData({clusters, this.sshKey}) : clusters = clusters ?? [];
 
   String toJSON(bool withPrivateKey) {
     Map<String, dynamic> data = {};
@@ -23,7 +21,7 @@ class ClusterUpData {
         data["key"] = sshKey;
       } else {
         // only ssh public key
-        data["key"] = {"ssh": sshKey.pubForSSH() + " clusterup"};
+        data["key"] = {"ssh": sshKey?.pubForSSH() ?? "[?]" + " clusterup"};
       }
     }
 
@@ -35,7 +33,7 @@ class ClusterUpData {
   static ClusterUpData fromJSON(String input) {
     ClusterUpData output = ClusterUpData();
 
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
 
     try {
       data = jsonDecode(input);
@@ -61,7 +59,7 @@ class ClusterUpData {
     // parse as private key
     else if (input.startsWith("-----BEGIN PRIVATE KEY-----") || input.startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
       log("upload is private key");
-      SSHKey key = SSHKey.fromPEM(input);
+      SSHKey? key = SSHKey.fromPEM(input);
       if (key != null) {
         output.sshKey = key;
       }

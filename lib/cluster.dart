@@ -33,28 +33,27 @@ class Cluster {
   Function persist;
 
   Cluster(
-      {@required this.id,
+      {required this.id,
       this.name = "",
       this.user = "",
       this.host = "",
       this.port = 22,
       this.enabled = true,
-      this.actions,
-      this.children}) {
-    actions ??= Set<RemoteAction>();
-    children ??= [];
-    onActionStarted = (RemoteActionPair action) {};
-    onActionFinished = (RemoteActionPair action) {};
-    onRunningFinished = () {};
-    persist = () {};
-  }
+      Set<RemoteAction>? actions,
+      List<ClusterChild>? children})
+      : children = children ?? [],
+        actions = actions ?? Set<RemoteAction>(),
+        persist = (() {}),
+        onRunningFinished = (() {}),
+        onActionStarted = ((RemoteActionPair action) {}),
+        onActionFinished = ((RemoteActionPair action) {});
 
   RemoteAction lastAction() {
     if (results.isEmpty) return RemoteAction.none();
     return results.last.action;
   }
 
-  void addChild({String user, String host, int port}) {
+  void addChild({String? user, String? host, int? port}) {
     children.add(ClusterChild(this, user: user, host: host, port: port));
   }
 
@@ -129,7 +128,7 @@ class Cluster {
         actions = RemoteAction.getActionsFor(names);
       } else {
         blob.cast<String>().forEach((String name) {
-          RemoteAction action = RemoteAction.getActionFor(name);
+          RemoteAction? action = RemoteAction.getActionFor(name);
           if (action != null) {
             actions.add(action);
           }
@@ -139,14 +138,12 @@ class Cluster {
     return actions;
   }
 
-  static List<ClusterChild> childrenFromData(Cluster parent, List<dynamic> data) {
+  static List<ClusterChild> childrenFromData(Cluster parent, List<dynamic>? data) {
     List<ClusterChild> children = [];
     if (data != null) {
       data.forEach((dynamic one) {
         ClusterChild child = ClusterChild.fromMap(parent, one);
-        if (child != null) {
-          children.add(child);
-        }
+        children.add(child);
       });
     }
     return children;
@@ -265,12 +262,11 @@ class Cluster {
       case RemoteActionStatus.Unknown:
         return Colors.white;
       case RemoteActionStatus.Success:
-        return Colors.green[300];
+        return Colors.green[300] ?? Colors.green;
       case RemoteActionStatus.Warning:
-        return Colors.orange[300];
+        return Colors.orange[300] ?? Colors.orange;
       case RemoteActionStatus.Error:
-        return Colors.red[300];
+        return Colors.red[300] ?? Colors.red;
     }
-    return Colors.white;
   }
 }

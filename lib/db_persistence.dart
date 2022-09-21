@@ -74,7 +74,7 @@ class DBPersistence {
     });
   }
 
-  Future<void> setSSHKey(SSHKey key) async {
+  Future<void> setSSHKey(SSHKey? key) async {
     if (key == null) return;
 
     final Database db = await database;
@@ -85,7 +85,7 @@ class DBPersistence {
     );
   }
 
-  Future<SSHKey> getSSHKey() async {
+  Future<SSHKey?> getSSHKey() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('ssh_keys');
     var keys = List.generate(maps.length, (i) {

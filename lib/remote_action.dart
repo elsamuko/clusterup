@@ -14,7 +14,7 @@ class RemoteActionPair {
 class RemoteActionResult {
   RemoteActionStatus status = RemoteActionStatus.Unknown;
   String filtered = "";
-  SSHCredentials from;
+  SSHCredentials? from;
   RemoteActionResult(this.status, {this.filtered = ""});
 
   bool unknown() {
@@ -74,7 +74,7 @@ class RemoteAction {
   static Set<RemoteAction> getActionsFor(List<String> names) {
     Set<RemoteAction> actions = Set<RemoteAction>();
     names.forEach((String name) {
-      RemoteAction action = RemoteAction.getActionFor(name);
+      RemoteAction? action = RemoteAction.getActionFor(name);
       if (action != null) {
         actions.add(action);
       }
@@ -94,46 +94,38 @@ class RemoteAction {
     return name;
   }
 
-  factory RemoteAction.getActionFor(String name) {
+  static RemoteAction? getActionFor(String name) {
     switch (name) {
       case "df":
         return RemoteAction.getDiskFreeAction();
-        break;
       case "uptime":
         return RemoteAction.getUptimeAction();
-        break;
       case "apt.updates":
         return RemoteAction.getAptUpdatesAvailableAction();
-        break;
       case "lsb_release":
         return RemoteAction.getLsbDescriptionAction();
-        break;
       case "uname":
         return RemoteAction.getUnameAction();
-        break;
       case "CPU.load":
         return RemoteAction.getCPULoadAction();
-        break;
       default:
         return null;
     }
   }
 
-  RemoteAction.none() {
-    name = "";
-    description = "";
-    filter = (lines) {
-      return RemoteActionResult.success();
-    };
-  }
+  RemoteAction.none()
+      : name = "",
+        description = "",
+        filter = ((lines) {
+          return RemoteActionResult.success();
+        });
 
-  RemoteAction.getHostUpAction() {
-    name = "up";
-    description = "checks if host is up";
-    filter = (lines) {
-      return RemoteActionResult.success();
-    };
-  }
+  RemoteAction.getHostUpAction()
+      : name = "up",
+        description = "checks if host is up",
+        filter = ((lines) {
+          return RemoteActionResult.success();
+        });
 
   RemoteAction.getDiskFreeAction() {
     name = "df";
@@ -146,7 +138,7 @@ class RemoteAction {
       }
 
       RegExp regExp = RegExp("(\\d+)%");
-      RegExpMatch match = regExp.firstMatch(lines[1]);
+      RegExpMatch? match = regExp.firstMatch(lines[1]);
 
       if (match == null) {
         return RemoteActionResult.unknown();
@@ -156,7 +148,7 @@ class RemoteAction {
         return RemoteActionResult.unknown();
       }
 
-      int percent = int.tryParse(match[1]);
+      int? percent = int.tryParse(match[1] ?? "");
 
       if (percent == null) {
         return RemoteActionResult.unknown();

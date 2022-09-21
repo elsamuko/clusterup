@@ -102,7 +102,7 @@ class SSHKey {
     return SSHKey(privateKey);
   }
 
-  static SSHKey fromPEM(String pem) {
+  static SSHKey? fromPEM(String pem) {
     if (pem.isEmpty) return null;
     RSAPrivateKey privateKey = RsaKeyHelper.fromPEMToPrivateKey(pem);
     return SSHKey(privateKey);

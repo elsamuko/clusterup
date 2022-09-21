@@ -4,10 +4,10 @@ import 'ssh_connection.dart';
 class ClusterChild {
   // persisted
   Cluster parent;
-  int id;
-  String user;
-  String host;
-  int port;
+  int? id;
+  String? user;
+  String? host;
+  int? port;
   bool enabled;
 
   // runtime only
