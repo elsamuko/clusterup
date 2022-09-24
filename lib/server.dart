@@ -17,8 +17,8 @@ class Http {
 class Server {
   int socket;
   String json = "";
-  void Function(String) onJsonOrKey;
-  HttpServer server;
+  Function? onJsonOrKey;
+  HttpServer? server;
 
   Server(this.socket);
 
@@ -44,7 +44,7 @@ class Server {
       staticFiles.serveFile(File(indexUri.toFilePath()), request);
     };
 
-    await for (HttpRequest request in this.server) {
+    await for (HttpRequest request in this.server!) {
       if (request.uri.path == "/clusterup.json") {
         request.response.write(this.json);
         request.response.close();
@@ -53,11 +53,13 @@ class Server {
 
       if (request.method == "POST" && request.uri.path.startsWith("/upload")) {
         // parse multipart request
-        String boundary = request.headers.contentType.parameters['boundary'];
-        MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
-        String json = await utf8.decoder.bind(part).join();
-        if (this.onJsonOrKey != null) {
-          this.onJsonOrKey(json);
+        String? boundary = request.headers.contentType?.parameters['boundary'];
+        if (boundary != null) {
+          MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
+          String json = await utf8.decoder.bind(part).join();
+          if (this.onJsonOrKey != null) {
+            this.onJsonOrKey!(json);
+          }
         }
 
         request.response.redirect(Uri.parse('/'));
@@ -80,7 +82,7 @@ class Server {
   void stop() async {
     if (this.server != null) {
       log("Stopping server");
-      await this.server.close(force: true);
+      await this.server!.close(force: true);
       this.server = null;
     }
   }

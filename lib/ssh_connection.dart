@@ -9,7 +9,7 @@ class SSHConnectionResult {
   String error;
   List<String> output = [];
   SSHCredentials creds;
-  SSHConnectionResult(this.success, this.creds, [this.error]);
+  SSHConnectionResult(this.success, this.creds, [this.error = ""]);
 }
 
 class SSHCredentials {
@@ -39,13 +39,13 @@ class SSHConnection {
     if (client != null) {
       log("trying to connect to $creds");
       try {
-        String result = await client.connect();
+        String? result = await client.connect();
         if (result == "session_connected") {
           log("connected to $creds");
           for (String command in commands) {
             log("Running $command");
-            String out = await client.execute(command);
-            if (out.isNotEmpty) {
+            String? out = await client.execute(command);
+            if (out != null && out.isNotEmpty) {
               log("Got $out");
               rv.output += out.split("\r\n");
               if (rv.output.last.isEmpty) {
@@ -59,7 +59,7 @@ class SSHConnection {
         rv.success = true;
       } on PlatformException catch (e) {
         print('Error: ${e.code}\nError Message: ${e.message}');
-        rv.error = e.message;
+        rv.error = e.message ?? "SSHConnection.run()";
       }
     }
     return rv;

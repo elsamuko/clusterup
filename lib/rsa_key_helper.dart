@@ -70,10 +70,10 @@ class RsaKeyHelper {
   /// inverse of private exponent -> public exponent
   //! \sa rsa_key_generator.dart
   static BigInt getPublicExponent(RSAPrivateKey privateKey) {
-    BigInt pSub1 = (privateKey.p - BigInt.one);
-    BigInt qSub1 = (privateKey.q - BigInt.one);
+    BigInt pSub1 = (privateKey.p! - BigInt.one);
+    BigInt qSub1 = (privateKey.q! - BigInt.one);
     BigInt phi = (pSub1 * qSub1);
-    BigInt publicExponent = privateKey.exponent.modInverse(phi);
+    BigInt publicExponent = privateKey.exponent!.modInverse(phi);
     return publicExponent;
   }
 
@@ -83,14 +83,14 @@ class RsaKeyHelper {
 
     // PKCS1
     if (sequence.elements.first.runtimeType == ASN1Integer) {
-      ASN1Integer modulus = sequence.elements[0];
-      ASN1Integer exponent = sequence.elements[1];
-      pubKey = RSAPublicKey(modulus.valueAsBigInteger, exponent.valueAsBigInteger);
+      ASN1Integer modulus = sequence.elements[0] as ASN1Integer;
+      ASN1Integer exponent = sequence.elements[1] as ASN1Integer;
+      pubKey = RSAPublicKey(modulus.valueAsBigInteger!, exponent.valueAsBigInteger!);
     }
     // PKCS8 -> get PKCS1 part and reenter
     else {
       ASN1Object sub = sequence.elements[1];
-      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject();
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()!).nextObject() as ASN1Sequence;
       pubKey = _fromASN1ToPublicKey(subSequence);
     }
 
@@ -100,7 +100,7 @@ class RsaKeyHelper {
   /// parse rsa public key from PKCS1/PKCS8 PEM
   static RSAPublicKey fromPEMToPublicKey(String pem) {
     Uint8List der = _fromPEMToDER(pem);
-    ASN1Sequence sequence = ASN1Parser(der).nextObject();
+    ASN1Sequence sequence = ASN1Parser(der).nextObject() as ASN1Sequence;
     return _fromASN1ToPublicKey(sequence);
   }
 
@@ -110,18 +110,18 @@ class RsaKeyHelper {
 
     // PKCS1
     if (sequence.elements[1].runtimeType == ASN1Integer) {
-      ASN1Integer modulus = sequence.elements[1];
+      ASN1Integer modulus = sequence.elements[1] as ASN1Integer;
       // ASN1Integer publicExponent = sequence.elements[2];
-      ASN1Integer privateExponent = sequence.elements[3];
-      ASN1Integer p = sequence.elements[4];
-      ASN1Integer q = sequence.elements[5];
+      ASN1Integer privateExponent = sequence.elements[3] as ASN1Integer;
+      ASN1Integer p = sequence.elements[4] as ASN1Integer;
+      ASN1Integer q = sequence.elements[5] as ASN1Integer;
       privKey = RSAPrivateKey(
-          modulus.valueAsBigInteger, privateExponent.valueAsBigInteger, p.valueAsBigInteger, q.valueAsBigInteger);
+          modulus.valueAsBigInteger!, privateExponent.valueAsBigInteger!, p.valueAsBigInteger, q.valueAsBigInteger);
     }
     // PKCS8 -> get PKCS1 part and reenter
     else {
       ASN1Object sub = sequence.elements[2];
-      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject();
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()!).nextObject() as ASN1Sequence;
       privKey = _fromASN1ToPrivateKey(subSequence);
     }
 
@@ -131,7 +131,7 @@ class RsaKeyHelper {
   /// parse rsa public key from PKCS1/PKCS8 PEM
   static RSAPrivateKey fromPEMToPrivateKey(String pem) {
     Uint8List der = _fromPEMToDER(pem);
-    ASN1Sequence sequence = ASN1Parser(der).nextObject();
+    ASN1Sequence sequence = ASN1Parser(der).nextObject() as ASN1Sequence;
     return _fromASN1ToPrivateKey(sequence);
   }
 
@@ -140,14 +140,14 @@ class RsaKeyHelper {
     ASN1Sequence sequence = ASN1Sequence();
 
     ASN1Integer version = ASN1Integer(BigInt.from(0));
-    ASN1Integer modulus = ASN1Integer(privateKey.modulus);
+    ASN1Integer modulus = ASN1Integer(privateKey.modulus!);
     ASN1Integer publicExponent = ASN1Integer(getPublicExponent(privateKey));
-    ASN1Integer privateExponent = ASN1Integer(privateKey.exponent);
-    ASN1Integer p = ASN1Integer(privateKey.p);
-    ASN1Integer q = ASN1Integer(privateKey.q);
-    ASN1Integer exp1 = ASN1Integer(privateKey.privateExponent % (privateKey.p - BigInt.from(1)));
-    ASN1Integer exp2 = ASN1Integer(privateKey.privateExponent % (privateKey.q - BigInt.from(1)));
-    ASN1Integer co = ASN1Integer(privateKey.q.modInverse(privateKey.p));
+    ASN1Integer privateExponent = ASN1Integer(privateKey.exponent!);
+    ASN1Integer p = ASN1Integer(privateKey.p!);
+    ASN1Integer q = ASN1Integer(privateKey.q!);
+    ASN1Integer exp1 = ASN1Integer(privateKey.privateExponent! % (privateKey.p! - BigInt.from(1)));
+    ASN1Integer exp2 = ASN1Integer(privateKey.privateExponent! % (privateKey.q! - BigInt.from(1)));
+    ASN1Integer co = ASN1Integer(privateKey.q!.modInverse(privateKey.p!));
 
     sequence.add(version);
     sequence.add(modulus);
@@ -199,8 +199,8 @@ class RsaKeyHelper {
   /// generate PKCS1 ASN1 from rsa public key
   static ASN1Sequence _fromPublicKeyToASN1PKCS1(RSAPublicKey publicKey) {
     ASN1Sequence sequence = ASN1Sequence();
-    sequence.add(ASN1Integer(publicKey.modulus));
-    sequence.add(ASN1Integer(publicKey.exponent));
+    sequence.add(ASN1Integer(publicKey.modulus!));
+    sequence.add(ASN1Integer(publicKey.exponent!));
     return sequence;
   }
 

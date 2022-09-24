@@ -127,163 +127,161 @@ class RemoteAction {
           return RemoteActionResult.success();
         });
 
-  RemoteAction.getDiskFreeAction() {
-    name = "df";
-    description = "checks free disk space on /";
-    commands.add("df /");
-    filter = (lines) {
-      // sth went wrong
-      if (lines.length < 2) {
-        return RemoteActionResult.unknown();
-      }
+  RemoteAction.getDiskFreeAction()
+      : name = "df",
+        description = "checks free disk space on /",
+        commands = ["df /"],
+        filter = ((lines) {
+          // sth went wrong
+          if (lines.length < 2) {
+            return RemoteActionResult.unknown();
+          }
 
-      RegExp regExp = RegExp("(\\d+)%");
-      RegExpMatch? match = regExp.firstMatch(lines[1]);
+          RegExp regExp = RegExp("(\\d+)%");
+          RegExpMatch? match = regExp.firstMatch(lines[1]);
 
-      if (match == null) {
-        return RemoteActionResult.unknown();
-      }
+          if (match == null) {
+            return RemoteActionResult.unknown();
+          }
 
-      if (match.groupCount != 1) {
-        return RemoteActionResult.unknown();
-      }
+          if (match.groupCount != 1) {
+            return RemoteActionResult.unknown();
+          }
 
-      int? percent = int.tryParse(match[1] ?? "");
+          int? percent = int.tryParse(match[1] ?? "");
 
-      if (percent == null) {
-        return RemoteActionResult.unknown();
-      }
+          if (percent == null) {
+            return RemoteActionResult.unknown();
+          }
 
-      String filtered = "$percent% used space";
+          String filtered = "$percent% used space";
 
-      if (percent < 50)
-        return RemoteActionResult.success(filtered);
-      else if (percent < 80)
-        return RemoteActionResult.warning(filtered);
-      else if (percent >= 80) return RemoteActionResult.error(filtered);
+          if (percent < 50)
+            return RemoteActionResult.success(filtered);
+          else if (percent < 80)
+            return RemoteActionResult.warning(filtered);
+          else if (percent >= 80) return RemoteActionResult.error(filtered);
 
-      return RemoteActionResult.unknown();
-    };
-  }
-  RemoteAction.getUptimeAction() {
-    name = "uptime";
-    description = "checks uptime";
-    commands.add("uptime -s");
-    filter = (lines) {
-      // sth went wrong
-      if (lines.length < 1) return RemoteActionResult.unknown();
+          return RemoteActionResult.unknown();
+        });
 
-      DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
-      DateTime started = format.parse(lines[0]);
-      int days = DateTime.now().difference(started).inDays;
-      String filtered = "$days day${pluralS(days)}";
+  RemoteAction.getUptimeAction()
+      : name = "uptime",
+        description = "checks uptime",
+        commands = ["uptime -s"],
+        filter = ((lines) {
+          // sth went wrong
+          if (lines.length < 1) return RemoteActionResult.unknown();
 
-      return RemoteActionResult.success(filtered);
-    };
-  }
-  RemoteAction.getAptUpdatesAvailableAction() {
-    name = "apt.updates";
-    description = "checks available updates with apt";
-    commands.add("apt list --upgradeable");
-    filter = (lines) {
-      // no updates available -> success
-      if (lines.length < 2) {
-        return RemoteActionResult.success("No updates available");
-      }
+          DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
+          DateTime started = format.parse(lines[0]);
+          int days = DateTime.now().difference(started).inDays;
+          String filtered = "$days day${pluralS(days)}";
 
-      // remove "Listing... Done" message
-      lines.removeAt(0);
+          return RemoteActionResult.success(filtered);
+        });
 
-      int security = 0;
-      int other = 0;
+  RemoteAction.getAptUpdatesAvailableAction()
+      : name = "apt.updates",
+        description = "checks available updates with apt",
+        commands = ["apt list --upgradeable"],
+        filter = ((lines) {
+          // no updates available -> success
+          if (lines.length < 2) {
+            return RemoteActionResult.success("No updates available");
+          }
 
-      lines.forEach((line) {
-        if (line.contains("-security "))
-          security++;
-        else
-          other++;
-      });
+          // remove "Listing... Done" message
+          lines.removeAt(0);
 
-      String filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
+          int security = 0;
+          int other = 0;
 
-      if (security > 0) return RemoteActionResult.error(filtered);
-      if (other > 0) return RemoteActionResult.warning(filtered);
-      if (lines.isEmpty) return RemoteActionResult.success(filtered);
+          lines.forEach((line) {
+            if (line.contains("-security "))
+              security++;
+            else
+              other++;
+          });
 
-      return RemoteActionResult.unknown();
-    };
-  }
-  RemoteAction.getLsbDescriptionAction() {
-    name = "lsb_release";
-    description = "queries distribution information";
-    commands.add("lsb_release -d");
-    filter = (lines) {
-      // must be one line
-      if (lines.length != 1) return RemoteActionResult.unknown();
+          String filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
 
-      String line = lines.first;
-      String search = "Description:\t";
+          if (security > 0) return RemoteActionResult.error(filtered);
+          if (other > 0) return RemoteActionResult.warning(filtered);
+          if (lines.isEmpty) return RemoteActionResult.success(filtered);
 
-      if (line.startsWith(search)) {
-        return RemoteActionResult.success(line.substring(search.length));
-      } else {
-        return RemoteActionResult.warning("Invalid description");
-      }
-    };
-  }
-  RemoteAction.getUnameAction() {
-    name = "uname";
-    description = "queries kernel version";
-    commands.add("uname -r");
-    filter = (lines) {
-      // must be one line
-      if (lines.length != 1) return RemoteActionResult.unknown();
-      return RemoteActionResult.success(lines.first);
-    };
-  }
+          return RemoteActionResult.unknown();
+        });
 
-  RemoteAction.getCPULoadAction() {
-    name = "CPU.load";
-    description = "query CPU load";
-    // parse and calculate the difference between two cpu lines in /proc/stat
-    // https://rosettacode.org/wiki/Linux_CPU_utilization#Dart
-    commands.add("cat /proc/stat && sleep 1 && cat /proc/stat");
-    filter = (lines) {
-      List<String> cpu = lines.where((String line) => line.startsWith("cpu  ")).toList();
-      List<List<int>> loads = cpu
-          .map((String line) =>
-              line.substring("cpu  ".length).split(" ").map((String token) => int.tryParse(token) ?? 0).toList())
-          .toList();
+  RemoteAction.getLsbDescriptionAction()
+      : name = "lsb_release",
+        description = "queries distribution information",
+        commands = ["lsb_release -d"],
+        filter = ((lines) {
+          // must be one line
+          if (lines.length != 1) return RemoteActionResult.unknown();
 
-      // must be two lines with at least 4 tokens
-      if (loads.length != 2) return RemoteActionResult.unknown();
-      for (List<int> load in loads) {
-        if (load.length < 4) return RemoteActionResult.unknown();
-      }
+          String line = lines.first;
+          String search = "Description:\t";
 
-      List<List<int>> idleTotals = //    [idle,     sum]
-          loads.map((List<int> times) => [times[3], times.reduce((int a, int b) => a + b)]).toList();
+          if (line.startsWith(search)) {
+            return RemoteActionResult.success(line.substring(search.length));
+          } else {
+            return RemoteActionResult.warning("Invalid description");
+          }
+        });
 
-      // must be two idles and two sums
-      if (idleTotals.length != 2) return RemoteActionResult.unknown();
-      for (List<int> idleTotal in idleTotals) {
-        if (idleTotal.length != 2) return RemoteActionResult.unknown();
-      }
+  RemoteAction.getUnameAction()
+      : name = "uname",
+        description = "queries kernel version",
+        commands = ["uname -r"],
+        filter = ((lines) {
+          // must be one line
+          if (lines.length != 1) return RemoteActionResult.unknown();
+          return RemoteActionResult.success(lines.first);
+        });
 
-      int dTotal = idleTotals[0][0] - idleTotals[1][0];
-      int dLoad = idleTotals[0][1] - idleTotals[1][1];
+  RemoteAction.getCPULoadAction()
+      : name = "CPU.load",
+        description = "query CPU load",
+        // parse and calculate the difference between two cpu lines in /proc/stat
+        // https://rosettacode.org/wiki/Linux_CPU_utilization#Dart
+        commands = ["cat /proc/stat && sleep 1 && cat /proc/stat"],
+        filter = ((lines) {
+          List<String> cpu = lines.where((String line) => line.startsWith("cpu  ")).toList();
+          List<List<int>> loads = cpu
+              .map((String line) =>
+                  line.substring("cpu  ".length).split(" ").map((String token) => int.tryParse(token) ?? 0).toList())
+              .toList();
 
-      double percent = 100.0 * (1.0 - dTotal / dLoad);
+          // must be two lines with at least 4 tokens
+          if (loads.length != 2) return RemoteActionResult.unknown();
+          for (List<int> load in loads) {
+            if (load.length < 4) return RemoteActionResult.unknown();
+          }
 
-      String filtered = "${percent.toStringAsFixed(2)}%";
+          List<List<int>> idleTotals = //    [idle,     sum]
+              loads.map((List<int> times) => [times[3], times.reduce((int a, int b) => a + b)]).toList();
 
-      if (percent < 50.0)
-        return RemoteActionResult.success(filtered);
-      else if (percent < 80.0)
-        return RemoteActionResult.warning(filtered);
-      else if (percent >= 80.0) return RemoteActionResult.error(filtered);
+          // must be two idles and two sums
+          if (idleTotals.length != 2) return RemoteActionResult.unknown();
+          for (List<int> idleTotal in idleTotals) {
+            if (idleTotal.length != 2) return RemoteActionResult.unknown();
+          }
 
-      return RemoteActionResult.unknown();
-    };
-  }
+          int dTotal = idleTotals[0][0] - idleTotals[1][0];
+          int dLoad = idleTotals[0][1] - idleTotals[1][1];
+
+          double percent = 100.0 * (1.0 - dTotal / dLoad);
+
+          String filtered = "${percent.toStringAsFixed(2)}%";
+
+          if (percent < 50.0)
+            return RemoteActionResult.success(filtered);
+          else if (percent < 80.0)
+            return RemoteActionResult.warning(filtered);
+          else if (percent >= 80.0) return RemoteActionResult.error(filtered);
+
+          return RemoteActionResult.unknown();
+        });
 }
