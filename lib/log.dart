@@ -14,3 +14,7 @@ void log(String arg) {
   final String line = format.format(DateTime.now()) + " : " + arg;
   Log.lines.add(line);
 }
+
+void logError(String arg) {
+  log("Error : " + arg);
+}
