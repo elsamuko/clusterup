@@ -13,7 +13,7 @@ SSHKey generateSSHKey(int) {
 class KeyViewState extends State<KeyView> {
   KeyViewState();
 
-  Future<SSHKey> _getKey;
+  Future<SSHKey>? _getKey;
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class KeyViewState extends State<KeyView> {
       _getKey = compute(generateSSHKey, 1);
     } else {
       _getKey = Future<SSHKey>(() {
-        return widget._key;
+        return widget._key!;
       });
     }
     super.initState();
@@ -38,7 +38,7 @@ class KeyViewState extends State<KeyView> {
 
           if (snapshot.hasData) {
             widget._key = snapshot.data;
-            String key = snapshot.data.pubForSSH() + " clusterup";
+            String key = snapshot.data!.pubForSSH() + " clusterup";
             child = Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(children: <Widget>[
@@ -47,7 +47,7 @@ class KeyViewState extends State<KeyView> {
                   TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.black87,
-                        primary: Colors.amberAccent,
+                        foregroundColor: Colors.amberAccent,
                       ),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: key));
@@ -95,7 +95,7 @@ class KeyViewState extends State<KeyView> {
 }
 
 class KeyView extends StatefulWidget {
-  SSHKey _key;
+  SSHKey? _key;
   KeyView(this._key);
 
   @override

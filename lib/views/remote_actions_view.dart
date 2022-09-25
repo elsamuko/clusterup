@@ -10,9 +10,9 @@ class ActionsViewState extends State<ActionsView> {
         ? Checkbox(
             activeColor: Colors.grey,
             value: marked,
-            onChanged: (bool checked) {
+            onChanged: (bool? checked) {
               setState(() {
-                if (checked) {
+                if (checked != null && checked) {
                   widget._saved.add(action);
                 } else {
                   widget._saved.remove(action);
@@ -68,15 +68,13 @@ class ActionsViewState extends State<ActionsView> {
 
 class ActionsView extends StatefulWidget {
   final Set<RemoteAction> _actions = RemoteAction.allActions();
-  Set<RemoteAction> _saved;
+  Set<RemoteAction> _saved = Set<RemoteAction>();
   bool _selectable = false;
 
-  ActionsView({Set<RemoteAction> saved}) {
+  ActionsView({Set<RemoteAction>? saved}) {
     if (saved != null) {
       _selectable = true;
       _saved = saved;
-    } else {
-      _saved = Set<RemoteAction>();
     }
   }
 

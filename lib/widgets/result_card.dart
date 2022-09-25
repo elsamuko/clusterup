@@ -5,7 +5,7 @@ class ResultCard extends StatelessWidget {
   final bool running;
   final RemoteActionPair pair;
 
-  const ResultCard(this.pair, this.running, {Key key}) : super(key: key);
+  const ResultCard(this.pair, this.running) : super();
 
   Widget indicator(RemoteActionPair pair) {
     Widget indicator;
@@ -74,9 +74,9 @@ class ResultCard extends StatelessWidget {
 
     Row creds = Row(
       children: <Widget>[
-        Text("${result.from.user}@", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text(result.from.host, style: style),
-        Text(":${result.from.port}", style: TextStyle(color: Color(0xffa1a1a1))),
+        Text("${result.from?.user}@", style: TextStyle(color: Color(0xffa1a1a1))),
+        Text("${result.from?.host}", style: style),
+        Text(":${result.from?.port}", style: TextStyle(color: Color(0xffa1a1a1))),
       ],
     );
 

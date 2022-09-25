@@ -13,8 +13,9 @@ class ClusterChildViewState extends State<ClusterChildView> {
   bool testingConnection = false;
 
   void validate() {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    var current = _formKey.currentState;
+    if (current != null && current.validate()) {
+      current.save();
     }
   }
 
@@ -24,11 +25,12 @@ class ClusterChildViewState extends State<ClusterChildView> {
       testingConnection = true;
     });
 
-    SSHConnectionResult result = await SSHConnection.test(widget._child.creds(), widget._key);
-
-    String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
-    final snackBar = SnackBar(content: Text(text));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (widget._key != null) {
+      SSHConnectionResult result = await SSHConnection.test(widget._child.creds(), widget._key!);
+      String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
+      final snackBar = SnackBar(content: Text(text));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
 
     setState(() {
       testingConnection = false;
@@ -46,8 +48,9 @@ class ClusterChildViewState extends State<ClusterChildView> {
         icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         key: Key("saveChild"),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
-            _formKey.currentState.save();
+          var current = _formKey.currentState;
+          if (current != null && current.validate()) {
+            current.save();
             log("Saving new ClusterChild ${widget._child}");
             Navigator.pop(context, widget._child);
           }
@@ -67,8 +70,9 @@ class ClusterChildViewState extends State<ClusterChildView> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!widget._new && _formKey.currentState.validate()) {
-            _formKey.currentState.save();
+          var current = _formKey.currentState;
+          if (!widget._new && current != null && current.validate()) {
+            current.save();
             Navigator.pop(context, widget._child);
             return false;
           } else {
@@ -85,11 +89,12 @@ class ClusterChildViewState extends State<ClusterChildView> {
               TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.grey[700],
-                    primary: Colors.white,
+                    foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
-                    if (_formKey.currentState.validate() && !testingConnection) {
-                      _formKey.currentState.save();
+                    var current = _formKey.currentState;
+                    if (current != null && current.validate() && !testingConnection) {
+                      current.save();
                       _testSSH();
                     }
                   },
@@ -114,14 +119,14 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     ),
                                     key: Key("username"),
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-                                    onSaved: (String value) {
-                                      if (value.isNotEmpty) {
+                                    onSaved: (String? value) {
+                                      if (value?.isNotEmpty ?? false) {
                                         widget._child.user = value;
                                       }
                                     },
-                                    initialValue: widget._child?.user,
-                                    validator: (String value) {
-                                      return value.contains('@') ? 'Do not use the @ char.' : null;
+                                    initialValue: widget._child.user,
+                                    validator: (String? value) {
+                                      return (value ?? "").contains('@') ? 'Do not use the @ char.' : null;
                                     },
                                     onEditingComplete: validate,
                                   ),
@@ -133,14 +138,14 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     ),
                                     key: Key("server"),
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-                                    onSaved: (String value) {
-                                      if (value.isNotEmpty) {
+                                    onSaved: (String? value) {
+                                      if (value?.isNotEmpty ?? false) {
                                         widget._child.host = value;
                                       }
                                     },
-                                    initialValue: widget._child?.host,
-                                    validator: (String value) {
-                                      return value.contains('@') ? 'Do not use the @ char.' : null;
+                                    initialValue: widget._child.host,
+                                    validator: (String? value) {
+                                      return (value ?? "").contains('@') ? 'Do not use the @ char.' : null;
                                     },
                                     onEditingComplete: validate,
                                   ),
@@ -152,13 +157,13 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                       labelText: 'port',
                                     ),
                                     key: Key("port"),
-                                    onSaved: (String value) {
-                                      widget._child.port = int.tryParse(value);
+                                    onSaved: (String? value) {
+                                      widget._child.port = int.tryParse(value ?? "22");
                                     },
-                                    initialValue: widget._child?.port?.toString() ?? "",
-                                    validator: (String value) {
-                                      if (value.isEmpty) return null;
-                                      int port = int.tryParse(value);
+                                    initialValue: widget._child.port?.toString() ?? "",
+                                    validator: (String? value) {
+                                      if ((value ?? "").isEmpty) return null;
+                                      int? port = int.tryParse(value!);
                                       if (port == null || port > 65535) {
                                         return "Invalid port number";
                                       } else {
@@ -175,17 +180,14 @@ class ClusterChildViewState extends State<ClusterChildView> {
 
 class ClusterChildView extends StatefulWidget {
   ClusterChild _child;
-  SSHKey _key;
+  SSHKey? _key;
   bool _new = false;
 
   ClusterChildView(this._key, this._child);
 
-  ClusterChildView.newClusterChild(this._key, Cluster cluster) {
-    if (this._child == null) {
-      _child = ClusterChild(cluster);
-      _new = true;
-    }
-  }
+  ClusterChildView.newClusterChild(this._key, Cluster cluster)
+      : _child = ClusterChild(cluster),
+        _new = true;
 
   @override
   ClusterChildViewState createState() => ClusterChildViewState();

@@ -6,12 +6,12 @@ import 'rsa_key_helper.dart';
 
 class SSHKey {
   RSAPrivateKey _privateKey;
-  RSAPublicKey _publicKey;
+  late RSAPublicKey _publicKey;
 
   SSHKey(this._privateKey) {
     BigInt publicExponent = RsaKeyHelper.getPublicExponent(_privateKey);
     // assert(publicExponent == BigInt.from(65537)); // usually it's 65537
-    _publicKey = RSAPublicKey(_privateKey.modulus, publicExponent);
+    _publicKey = RSAPublicKey(_privateKey.modulus!, publicExponent);
   }
 
   @override
@@ -50,7 +50,7 @@ class SSHKey {
   }
 
   // https://github.com/dart-lang/sdk/issues/32803#issuecomment-387405784
-  List<int> _writeBigInt(BigInt number, [int size]) {
+  List<int> _writeBigInt(BigInt number, [int? size]) {
     // Not handling negative numbers. Decide how you want to do that.
     int bytes = size ?? 1 + (number.bitLength + 7) >> 3;
     BigInt b256 = BigInt.from(256);
@@ -68,8 +68,8 @@ class SSHKey {
 
   String pubForSSH() {
     List<int> head = utf8.encode("ssh-rsa");
-    List<int> e = _writeBigInt(_publicKey.publicExponent);
-    List<int> n = _writeBigInt(_publicKey.n);
+    List<int> e = _writeBigInt(_publicKey.publicExponent!);
+    List<int> n = _writeBigInt(_publicKey.n!);
     List<int> szHead = _writeBigInt(BigInt.from(head.length), 4);
     List<int> szE = _writeBigInt(BigInt.from(e.length), 4);
     List<int> szN = _writeBigInt(BigInt.from(n.length), 4);

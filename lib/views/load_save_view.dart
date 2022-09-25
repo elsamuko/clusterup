@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LoadSaveViewState extends State<LoadSaveView> {
   LoadSaveViewState();
-  String _base;
+  String _base = "";
   String _ip = "";
   Server _server = Server(3001);
   bool _withPrivateKey = false;
@@ -44,7 +44,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
         setState(() {
           // parse json
           ClusterUpData data = ClusterUpData.fromJSON(json);
-          if (data.clusters != null && data.clusters.isNotEmpty) {
+          if (data.clusters.isNotEmpty) {
             widget._data.clusters = data.clusters;
           }
           if (data.sshKey != null) {
@@ -87,7 +87,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
       TextButton(
           style: TextButton.styleFrom(
             backgroundColor: _server.isRunning() ? Colors.red[800] : Color(0xffcc8d00),
-            primary: Colors.white,
+            foregroundColor: Colors.white,
           ),
           onPressed: () {
             setState(() {
@@ -113,7 +113,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
         TextButton(
             style: TextButton.styleFrom(
               backgroundColor: Colors.black87,
-              primary: Colors.amberAccent,
+              foregroundColor: Colors.amberAccent,
             ),
             onPressed: () {
               launchUrl(Uri.parse(url));

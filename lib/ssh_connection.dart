@@ -34,33 +34,31 @@ class SSHConnection {
       host: creds.host,
       port: creds.port,
       username: creds.user,
-      passwordOrKey: {"privateKey": key?.privString() ?? ""},
+      passwordOrKey: {"privateKey": key.privString()},
     );
-    if (client != null) {
-      log("trying to connect to $creds");
-      try {
-        String? result = await client.connect();
-        if (result == "session_connected") {
-          log("connected to $creds");
-          for (String command in commands) {
-            log("Running $command");
-            String? out = await client.execute(command);
-            if (out != null && out.isNotEmpty) {
-              log("Got $out");
-              rv.output += out.split("\r\n");
-              if (rv.output.last.isEmpty) {
-                rv.output.removeLast();
-              }
+    log("trying to connect to $creds");
+    try {
+      String? result = await client.connect();
+      if (result == "session_connected") {
+        log("connected to $creds");
+        for (String command in commands) {
+          log("Running $command");
+          String? out = await client.execute(command);
+          if (out != null && out.isNotEmpty) {
+            log("Got $out");
+            rv.output += out.split("\r\n");
+            if (rv.output.last.isEmpty) {
+              rv.output.removeLast();
             }
           }
         }
-        client.disconnect();
-        log("disconnected from $creds");
-        rv.success = true;
-      } on PlatformException catch (e) {
-        print('Error: ${e.code}\nError Message: ${e.message}');
-        rv.error = e.message ?? "SSHConnection.run()";
       }
+      client.disconnect();
+      log("disconnected from $creds");
+      rv.success = true;
+    } on PlatformException catch (e) {
+      print('Error: ${e.code}\nError Message: ${e.message}');
+      rv.error = e.message ?? "SSHConnection.run()";
     }
     return rv;
   }

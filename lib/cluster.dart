@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:clusterup/cluster_child.dart';
+import 'package:clusterup/log.dart';
 import 'package:clusterup/ssh_connection.dart';
 import 'package:clusterup/ssh_key.dart';
 import 'package:flutter/foundation.dart';
@@ -173,9 +174,14 @@ class Cluster {
     return children.any((ClusterChild child) => child.enabled);
   }
 
-  Future<void> run(SSHKey key) async {
+  Future<void> run(SSHKey? key) async {
     running = true;
     lastStatus = RemoteActionStatus.Unknown;
+
+    if (key == null) {
+      logError("Invalid ssh key");
+      return;
+    }
 
     if (hasEnabledChildren()) {
       await _runChildren(key);

@@ -3,7 +3,7 @@ import 'package:clusterup/log.dart';
 
 class LogViewState extends State<LogView> {
   LogViewState();
-  String log;
+  String log = "";
   ScrollController _scrollController = ScrollController();
 
   @override

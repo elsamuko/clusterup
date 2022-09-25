@@ -5,7 +5,7 @@ import '../widgets/result_card.dart';
 
 class ClusterResultsViewState extends State<ClusterResultsView> {
   Cluster _cluster;
-  RemoteAction current;
+  RemoteAction? current;
   ScrollController _scrollController = ScrollController();
 
   ClusterResultsViewState(this._cluster);

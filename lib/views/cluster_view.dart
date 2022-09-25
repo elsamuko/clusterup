@@ -31,8 +31,9 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void validate() {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    var current = _formKey.currentState;
+    if (current != null && current.validate()) {
+      current.save();
       widget._cluster.persist();
     }
   }
@@ -48,7 +49,11 @@ class ClusterViewState extends State<ClusterView> {
       testingConnection = true;
     });
 
-    SSHConnectionResult result = await SSHConnection.test(widget._cluster.creds(), widget._key);
+    if (widget._key == null) {
+      logError("key is null");
+      return;
+    }
+    SSHConnectionResult result = await SSHConnection.test(widget._cluster.creds(), widget._key!);
 
     String text = result.success ? "SSH connection successful!" : "SSH connection failed : ${result.error}";
     final snackBar = SnackBar(content: Text(text));
@@ -61,7 +66,7 @@ class ClusterViewState extends State<ClusterView> {
 
   void _showClusterChild(ClusterChild child) async {
     log("_showClusterChild : $child");
-    final ClusterChild result =
+    final ClusterChild? result =
         await Navigator.of(context).push(MaterialPageRoute<ClusterChild>(builder: (BuildContext context) {
       return ClusterChildView(widget._key, child);
     }));
@@ -74,7 +79,7 @@ class ClusterViewState extends State<ClusterView> {
   }
 
   void addChild() async {
-    final ClusterChild result = await Navigator.of(context).push(
+    final ClusterChild? result = await Navigator.of(context).push(
       MaterialPageRoute<ClusterChild>(
         builder: (BuildContext context) {
           return ClusterChildView.newClusterChild(widget._key, widget._cluster);
@@ -144,9 +149,9 @@ class ClusterViewState extends State<ClusterView> {
         trailing: Checkbox(
             activeColor: Colors.grey,
             value: child.enabled,
-            onChanged: (bool enabled) {
+            onChanged: (bool? enabled) {
               setState(() {
-                child.enabled = enabled;
+                child.enabled = enabled ?? false;
                 widget._cluster.persist();
               });
             }),
@@ -180,6 +185,8 @@ class ClusterViewState extends State<ClusterView> {
           widget._cluster.persist();
         });
         break;
+      default:
+        log("Bad selection");
     }
   }
 
@@ -191,8 +198,9 @@ class ClusterViewState extends State<ClusterView> {
             _showActions();
             break;
           case ClusterOpts.Test:
-            if (_formKey.currentState.validate()) {
-              _formKey.currentState.save();
+            var current = _formKey.currentState;
+            if (current != null && current.validate()) {
+              current.save();
               _testSSH();
             }
             break;
@@ -214,7 +222,7 @@ class ClusterViewState extends State<ClusterView> {
 
   void _showActions() async {
     log("Configure Actions");
-    Set<RemoteAction> selected = await Navigator.of(context).push(
+    Set<RemoteAction>? selected = await Navigator.of(context).push(
       MaterialPageRoute<Set<RemoteAction>>(
         builder: (BuildContext context) {
           return ActionsView(saved: widget._cluster.actions);
@@ -222,13 +230,16 @@ class ClusterViewState extends State<ClusterView> {
       ),
     );
 
-    widget._cluster.actions = selected;
-    widget._cluster.persist();
+    if (selected != null) {
+      widget._cluster.actions = selected;
+      widget._cluster.persist();
+    }
   }
 
   void _run() {
-    if (_formKey.currentState.validate() && !testingConnection) {
-      _formKey.currentState.save();
+    var current = _formKey.currentState;
+    if (current != null && current.validate() && !testingConnection) {
+      current.save();
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (BuildContext context) {
         if (!widget._cluster.running) {
           widget._cluster.run(widget._key);
@@ -258,8 +269,9 @@ class ClusterViewState extends State<ClusterView> {
         key: Key("saveCluster"),
         icon: Icon(Icons.check_circle, size: 35, color: Colors.white),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
-            _formKey.currentState.save();
+          var current = _formKey.currentState;
+          if (current != null && current.validate()) {
+            current.save();
             log("Saving new cluster ${widget._cluster}");
             Navigator.pop(context, widget._cluster);
           }
@@ -281,7 +293,7 @@ class ClusterViewState extends State<ClusterView> {
       TextButton(
           style: TextButton.styleFrom(
             backgroundColor: Colors.grey[700],
-            primary: Colors.white,
+            foregroundColor: Colors.white,
           ),
           onPressed: () async => _showLastRun(),
           child: Text(
@@ -290,7 +302,7 @@ class ClusterViewState extends State<ClusterView> {
       TextButton(
           style: TextButton.styleFrom(
             backgroundColor: widget._cluster.running ? Color(0xff4d4d4d) : Color(0xffcc8d00),
-            primary: Colors.white,
+            foregroundColor: Colors.white,
           ),
           onPressed: () async => _run(),
           key: Key("run"),
@@ -305,8 +317,9 @@ class ClusterViewState extends State<ClusterView> {
 
     return WillPopScope(
         onWillPop: () async {
-          if (!widget._new && _formKey.currentState.validate()) {
-            _formKey.currentState.save();
+          var current = _formKey.currentState;
+          if (current != null && current.validate() && !widget._new) {
+            current.save();
             Navigator.pop(context, widget._cluster);
             return false;
           } else {
@@ -324,8 +337,9 @@ class ClusterViewState extends State<ClusterView> {
               backgroundColor: Color(0xff616161),
               foregroundColor: Color(0xffc7c7c7),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
+                var current = _formKey.currentState;
+                if (current != null && current.validate()) {
+                  current.save();
                 }
                 addChild();
               },
@@ -350,10 +364,12 @@ class ClusterViewState extends State<ClusterView> {
                         labelText: 'name',
                       ),
                       key: Key("name"),
-                      onSaved: (String value) {
-                        widget._cluster.name = value;
+                      onSaved: (String? value) {
+                        if (value != null) {
+                          widget._cluster.name = value;
+                        }
                       },
-                      initialValue: widget._cluster?.name,
+                      initialValue: widget._cluster.name,
                     ),
                     TextFormField(
                       decoration: const InputDecoration(
@@ -363,12 +379,14 @@ class ClusterViewState extends State<ClusterView> {
                       ),
                       key: Key("username"),
                       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-                      onSaved: (String value) {
-                        widget._cluster.user = value;
+                      onSaved: (String? value) {
+                        if (value != null) {
+                          widget._cluster.user = value;
+                        }
                       },
-                      initialValue: widget._cluster?.user,
-                      validator: (String value) {
-                        return value.contains('@') ? 'Do not use the @ char.' : null;
+                      initialValue: widget._cluster.user,
+                      validator: (String? value) {
+                        return (value ?? "").contains('@') ? 'Do not use the @ char.' : null;
                       },
                       onEditingComplete: validate,
                     ),
@@ -380,12 +398,14 @@ class ClusterViewState extends State<ClusterView> {
                       ),
                       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                       key: Key("server"),
-                      onSaved: (String value) {
-                        widget._cluster.host = value;
+                      onSaved: (String? value) {
+                        if (value != null) {
+                          widget._cluster.host = value;
+                        }
                       },
-                      initialValue: widget._cluster?.host,
-                      validator: (String value) {
-                        return value.contains('@') ? 'Do not use the @ char.' : null;
+                      initialValue: widget._cluster.host,
+                      validator: (String? value) {
+                        return (value ?? "").contains('@') ? 'Do not use the @ char.' : null;
                       },
                       onEditingComplete: validate,
                     ),
@@ -397,12 +417,12 @@ class ClusterViewState extends State<ClusterView> {
                         labelText: 'port',
                       ),
                       key: Key("port"),
-                      onSaved: (String value) {
-                        widget._cluster.port = int.parse(value);
+                      onSaved: (String? value) {
+                        widget._cluster.port = int.parse(value ?? "");
                       },
-                      initialValue: (widget._cluster?.port ?? 22).toString(),
-                      validator: (String value) {
-                        int port = int.tryParse(value);
+                      initialValue: (widget._cluster.port).toString(),
+                      validator: (String? value) {
+                        int? port = int.tryParse(value ?? "");
                         if (port == null || port > 65535) {
                           return "Invalid port number";
                         } else {
@@ -422,17 +442,14 @@ enum ClusterChildOpts { Remove }
 
 class ClusterView extends StatefulWidget {
   Cluster _cluster;
-  SSHKey _key;
+  SSHKey? _key;
   bool _new = false;
 
   ClusterView(this._key, this._cluster);
 
-  ClusterView.newCluster(this._key, int id) {
-    if (this._cluster == null) {
-      _cluster = Cluster(id: id);
-      _new = true;
-    }
-  }
+  ClusterView.newCluster(this._key, int id)
+      : _cluster = Cluster(id: id),
+        _new = true;
 
   @override
   ClusterViewState createState() => ClusterViewState();

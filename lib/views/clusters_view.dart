@@ -60,8 +60,12 @@ class ClustersViewState extends State<ClustersView> {
             ),
             onPressed: () {
               if (cluster.running) return;
+              if (_data.sshKey == null) {
+                log("ssh key is null");
+                return;
+              }
               log("Play : $cluster");
-              cluster.run(_data.sshKey).then((v) {
+              cluster.run(_data.sshKey!).then((v) {
                 setState(() {});
               });
               setState(() {});
@@ -105,7 +109,8 @@ class ClustersViewState extends State<ClustersView> {
   void _showCluster(Cluster cluster) async {
     log("_showCluster : $cluster");
     cluster.persist = () => _db.addCluster(cluster);
-    final Cluster result = await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
+    final Cluster? result =
+        await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_data.sshKey, cluster);
     }));
     if (result != null) {
@@ -117,7 +122,7 @@ class ClustersViewState extends State<ClustersView> {
 
   // https://stackoverflow.com/a/53861303
   void _clustersMenu() async {
-    final Cluster result = await Navigator.of(context).push(
+    final Cluster? result = await Navigator.of(context).push(
       MaterialPageRoute<Cluster>(
         builder: (BuildContext context) {
           return ClusterView.newCluster(_data.sshKey, _data.clusters.length);
@@ -159,7 +164,7 @@ class ClustersViewState extends State<ClustersView> {
   }
 
   void _loadSaveMenu() async {
-    _data = await Navigator.of(context).push(
+    ClusterUpData? data = await Navigator.of(context).push(
       MaterialPageRoute<ClusterUpData>(
         builder: (BuildContext context) {
           return LoadSaveView(_data);
@@ -167,7 +172,8 @@ class ClustersViewState extends State<ClustersView> {
       ),
     );
 
-    if (_data != null) {
+    if (data != null) {
+      _data = data;
       setState(() {
         _db.setClusters(_data.clusters);
         _db.setSSHKey(_data.sshKey);
@@ -226,6 +232,8 @@ class ClustersViewState extends State<ClustersView> {
         break;
       case ClusterOpts.LastRun:
         _showLastRun(cluster);
+        break;
+      default:
         break;
     }
   }
