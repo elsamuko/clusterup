@@ -66,13 +66,13 @@ x+kgolmW9OICS9BoW96K8N8BCKOtRtH5xYGniWgIKItQLrVjnVNDAgMBAAE=
     String expectedSSH =
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCrtwUnVi/NlhO7TvqzJmlVJNAsU20EFmFijeS3QekYOqt+etCD7ZaAX8284orEeDJkxtYMC3NjCM23N/F/qEDE2QC4pdCuJP5+Ov/6mvy+6ZrxgIa1+htTZMfpIKJZlvTiAkvQaFveivDfAQijrUbR+cWBp4loCCiLUC61Y51TQw==";
 
-    SSHKey key = SSHKey.fromPEM(privPKCS1);
+    SSHKey? key = SSHKey.fromPEM(privPKCS1);
     expect(key, SSHKey.fromPEM(privPKCS8));
 
     RSAPrivateKey privKey = RsaKeyHelper.fromPEMToPrivateKey(privPKCS1);
     expect(privPKCS8, RsaKeyHelper.fromPrivateKeyToPEMPKCS8(privKey));
 
-    String ssh = key.pubForSSH();
+    String ssh = key!.pubForSSH();
     expect(ssh, expectedSSH);
 
     String privGen = key.privString();

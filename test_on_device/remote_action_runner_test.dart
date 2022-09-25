@@ -13,11 +13,11 @@ void main() {
   test('RunCommands', () async {
     var db = DBPersistence();
     List<Cluster> read = await db.readClusters();
-    SSHKey key = await db.getSSHKey();
+    SSHKey? key = await db.getSSHKey();
     Cluster cluster = read.first;
     RemoteAction action = RemoteAction.getDiskFreeAction();
 
-    RemoteActionRunner runner = RemoteActionRunner(cluster.creds(), action, key);
+    RemoteActionRunner runner = RemoteActionRunner(cluster.creds(), action, key!);
     RemoteActionResult result = await runner.run();
 
     expect(result.status, RemoteActionStatus.Success);

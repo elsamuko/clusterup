@@ -12,7 +12,7 @@ void main() {
       user: "user",
       host: "host",
       port: 22,
-      actions: Set.of([RemoteAction.getActionFor("df")]),
+      actions: Set.of([RemoteAction.getActionFor("df")!]),
     );
 
     // parse toMap back to cluster

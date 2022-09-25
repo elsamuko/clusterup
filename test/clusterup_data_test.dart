@@ -22,7 +22,7 @@ qPhLWKRtIpDsvaQ12I/5AkEAzoq4e3Hin3hED9jsE7VPWINk/sTreDmMZTEdQyM9
 s/NAKRvWDv52+0iZRWxTRie1/DQ/4dfKo2R07uctJcdnbw==
 -----END RSA PRIVATE KEY-----""";
 
-    SSHKey key = SSHKey.fromPEM(privPEM);
+    SSHKey? key = SSHKey.fromPEM(privPEM);
     List<Cluster> clusters = [
       Cluster(
         id: 0,
@@ -30,7 +30,7 @@ s/NAKRvWDv52+0iZRWxTRie1/DQ/4dfKo2R07uctJcdnbw==
         user: "user",
         host: "host",
         port: 22,
-        actions: Set.of([RemoteAction.getActionFor("df")]),
+        actions: Set.of([RemoteAction.getActionFor("df")!]),
       )
     ];
 

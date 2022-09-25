@@ -12,7 +12,7 @@ takeScreenshot(FlutterDriver driver, String path) async {
 // https://flutter.dev/docs/cookbook/testing/integration/introduction
 void main() {
   group('Cluster Up', () {
-    FlutterDriver driver;
+    late FlutterDriver driver;
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
@@ -20,9 +20,7 @@ void main() {
     });
 
     tearDownAll(() async {
-      if (driver != null) {
-        await driver.close();
-      }
+      await driver.close();
     });
 
     test('check driver health', () async {
