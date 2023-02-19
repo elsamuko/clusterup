@@ -58,6 +58,7 @@ class Server {
           MimeMultipart part = await MimeMultipartTransformer(boundary).bind(request).first;
           String json = await utf8.decoder.bind(part).join();
           if (this.onJsonOrKey != null) {
+            log("Received json");
             this.onJsonOrKey!(json);
           }
         }
