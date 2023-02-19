@@ -46,46 +46,53 @@
 <body>
 
     <div class="d-flex align-items-center vh-75">
-        <div class="card mx-auto bg-light">
+        <div class="card mx-auto bg-light w-50">
             <div class="card-header text-center">
                 Cluster Up Configuration
-              </div>
+            </div>
             <div class="card-body p-2">
                 <div class="container p-0">
                     <div class="d-flex flex-column">
-
-                        <!--upload-->
-                        <div class="py-1">
-                            <form method="post" action="upload" enctype="multipart/form-data">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-primary" type="submit"><b>↥</b> Upload</button>
-                                    </div>
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile"
-                                            accept="application/json,text/plain,application/x-pem-file">
-                                        <label class="custom-file-label" for="jsonFile">Select json or key
-                                            file...</label>
+                        <form method="post" action="upload" enctype="multipart/form-data">
+                            <!--select file-->
+                            <div class="border rounded m-1">
+                                <div class="p-1">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" name="jsonFile" id="jsonFile"
+                                                accept="application/json,text/plain,application/x-pem-file">
+                                            <label class="custom-file-label" for="jsonFile">Select json or key
+                                                file...</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
 
-                        <!--download-->
-                        <div class="py-1">
-                            <a class="btn btn-success" href="/clusterup.json" download><b>⬇</b> Download</a>
-                        </div>
+                                <!--upload-->
+                                <div class="p-1 text-center">
+                                    <button id="buttonUpload" class="btn btn-secondary" disabled type="submit">Upload
+                                        <b>↥</b></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
-                    <!--json preview-->
-                    <div class="card mt-2 bg-dark text-light">
-                        <div class="card-body p-1">
-                            <p id="jsonPreview" class="card-text text-monospace"></p>
+                    <!--download-->
+                    <div class="border rounded m-1">
+                        <div class="p-1 text-center">
+                            <a class="btn btn-success" href="/clusterup.json" download>Download <b>↧</b></a>
                         </div>
+                    </div>
+                </div>
+
+                <!--json preview-->
+                <div class="card mx-1 mt-2 bg-dark text-light">
+                    <div class="card-body p-1">
+                        <p id="jsonPreview" class="card-text text-monospace"></p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -100,6 +107,14 @@
                 nextSibling.innerText = fileName
             });
         })();
+
+        document.getElementById("jsonFile").onchange = function (e) {
+            console.log(this.value);
+            var buttonUpload = document.getElementById('buttonUpload');
+            buttonUpload.disabled = false;
+            buttonUpload.classList.remove('btn-secondary');
+            buttonUpload.classList.add('btn-primary');
+        }
     </script>
 
 </body>
