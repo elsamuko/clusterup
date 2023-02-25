@@ -73,6 +73,7 @@ class ClustersViewState extends State<ClustersView> {
           );
 
     return GestureDetector(
+      key: Key("cluster ${cluster.id}"),
       child: ListTile(
         leading: Padding(
           padding: const EdgeInsets.only(top: 3.0),
