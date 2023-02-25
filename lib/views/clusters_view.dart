@@ -34,9 +34,24 @@ class ClustersViewState extends State<ClustersView> {
   }
 
   Widget _buildClustersOverview() {
-    return ListView.builder(
+    return ReorderableListView.builder(
         itemCount: _data.clusters.length,
         padding: const EdgeInsets.all(8.0),
+        onReorder: (int oldIndex, int newIndex) {
+          // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
+          setState(() {
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            log("Moved $oldIndex to $newIndex");
+            Cluster item = _data.clusters.removeAt(oldIndex);
+            _data.clusters.insert(newIndex, item);
+            for (int i = 0; i < _data.clusters.length; ++i) {
+              _data.clusters[i].id = i;
+              _data.clusters[i].persist();
+            }
+          });
+        },
         itemBuilder: (context, i) {
           return _buildRow(_data.clusters[i]);
         });
