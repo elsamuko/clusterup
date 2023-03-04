@@ -35,8 +35,7 @@ class ClustersViewState extends State<ClustersView> {
 
   Widget _buildClustersOverview() {
     return ReorderableListView.builder(
-        itemCount: _data.clusters.length,
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         onReorder: (int oldIndex, int newIndex) {
           // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
           setState(() {
@@ -52,6 +51,7 @@ class ClustersViewState extends State<ClustersView> {
             }
           });
         },
+        itemCount: _data.clusters.length,
         itemBuilder: (context, i) {
           return _buildRow(_data.clusters[i]);
         });
@@ -87,37 +87,38 @@ class ClustersViewState extends State<ClustersView> {
             },
           );
 
-    return GestureDetector(
+    return ListTile(
       key: Key("cluster ${cluster.id}"),
-      child: ListTile(
-        leading: Padding(
-          padding: const EdgeInsets.only(top: 3.0),
-          child: IconButton(
-              padding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
-              onPressed: () {
-                _showLastRun(cluster);
-              },
-              iconSize: 20,
-              icon: FaIcon(
-                FontAwesomeIcons.networkWired,
-                size: 20,
-                color: cluster.statusColor(),
-              )),
-        ),
-        title: SingleChildScrollView(
-          child: Text(
-            cluster.name,
-          ),
-          scrollDirection: Axis.horizontal,
-        ),
-        trailing: trailing,
-        onTap: () {
-          _showCluster(cluster);
-        },
+      leading: Padding(
+        padding: const EdgeInsets.only(top: 3.0),
+        child: IconButton(
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+            onPressed: () {
+              _showLastRun(cluster);
+            },
+            iconSize: 20,
+            icon: FaIcon(
+              FontAwesomeIcons.networkWired,
+              size: 20,
+              color: cluster.statusColor(),
+            )),
       ),
-      onLongPressStart: (LongPressStartDetails details) {
-        _showClusterMenu(details.globalPosition, cluster);
+      title: SingleChildScrollView(
+        child: Text(
+          cluster.name,
+        ),
+        scrollDirection: Axis.horizontal,
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          trailing,
+          _buildClusterMenuButton(cluster),
+        ],
+      ),
+      onTap: () {
+        _showCluster(cluster);
       },
     );
   }
@@ -220,38 +221,40 @@ class ClustersViewState extends State<ClustersView> {
         });
   }
 
-  void _showClusterMenu(Offset position, Cluster cluster) async {
-    var itemRemove = PopupMenuItem(
-      child: Text("Remove"),
-      value: ClusterOpts.Remove,
+  PopupMenuButton<ClusterOpts> _buildClusterMenuButton(Cluster cluster) {
+    return PopupMenuButton<ClusterOpts>(
+      key: Key("clusterOptionsMenu"),
+      onSelected: (ClusterOpts result) {
+        switch (result) {
+          case ClusterOpts.Remove:
+            {
+              log("Remove");
+              setState(() {
+                log("Removing $cluster");
+                _data.clusters.remove(cluster);
+                _db.removeCluster(cluster);
+              });
+            }
+            break;
+          case ClusterOpts.LastRun:
+            {
+              log("Show last run");
+              _showLastRun(cluster);
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ClusterOpts>>[
+        const PopupMenuItem<ClusterOpts>(
+          value: ClusterOpts.Remove,
+          child: Text("Remove"),
+        ),
+        const PopupMenuItem<ClusterOpts>(
+          value: ClusterOpts.LastRun,
+          child: Text("Last Run"),
+        ),
+      ],
     );
-
-    var itemLastRun = PopupMenuItem(
-      child: Text("Show last run"),
-      value: ClusterOpts.LastRun,
-      enabled: cluster.results.isNotEmpty,
-    );
-
-    var selected = await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
-      items: [itemLastRun, itemRemove],
-    );
-
-    switch (selected) {
-      case ClusterOpts.Remove:
-        setState(() {
-          log("Removing $cluster");
-          _data.clusters.remove(cluster);
-          _db.removeCluster(cluster);
-        });
-        break;
-      case ClusterOpts.LastRun:
-        _showLastRun(cluster);
-        break;
-      default:
-        break;
-    }
   }
 
   void _showLastRun(Cluster cluster) {
