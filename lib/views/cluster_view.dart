@@ -99,9 +99,21 @@ class ClusterViewState extends State<ClusterView> {
   Widget _buildClusterChildren() {
     return Card(
         elevation: 6,
-        child: ListView.builder(
+        child: ReorderableListView.builder(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
+          onReorder: (int oldIndex, int newIndex) {
+            // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
+            setState(() {
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              log("Moved $oldIndex to $newIndex");
+              ClusterChild child = widget._cluster.children.removeAt(oldIndex);
+              widget._cluster.children.insert(newIndex, child);
+              widget._cluster.persist();
+            });
+          },
           itemCount: widget._cluster.children.length,
           itemBuilder: (context, i) {
             return _buildChildRow(widget._cluster.children[i]);
@@ -142,26 +154,25 @@ class ClusterViewState extends State<ClusterView> {
       ],
     );
 
-    return GestureDetector(
-      child: ListTile(
-        contentPadding: EdgeInsets.only(left: 8),
-        title: row,
-        trailing: Checkbox(
-            activeColor: Colors.grey,
-            value: child.enabled,
-            onChanged: (bool? enabled) {
-              setState(() {
-                child.enabled = enabled ?? false;
-                widget._cluster.persist();
-              });
-            }),
-        onTap: () {
-          _showClusterChild(child);
-        },
-      ),
-      onLongPressStart: (LongPressStartDetails details) {
-        _showClusterChildMenu(details.globalPosition, child);
+    return ListTile(
+      contentPadding: EdgeInsets.only(left: 8),
+      key: Key("child $child"),
+      title: row,
+      trailing: Checkbox(
+          activeColor: Colors.grey,
+          value: child.enabled,
+          onChanged: (bool? enabled) {
+            setState(() {
+              child.enabled = enabled ?? false;
+              widget._cluster.persist();
+            });
+          }),
+      onTap: () {
+        _showClusterChild(child);
       },
+      // onLongPressStart: (LongPressStartDetails details) {
+      //   _showClusterChildMenu(details.globalPosition, child);
+      // },
     );
   }
 
