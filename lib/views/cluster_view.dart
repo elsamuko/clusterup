@@ -121,6 +121,32 @@ class ClusterViewState extends State<ClusterView> {
         ));
   }
 
+  PopupMenuButton<ClusterChildOpts> _buildClusterMenuButton(ClusterChild child) {
+    return PopupMenuButton<ClusterChildOpts>(
+      key: Key("clusterOptionsMenu"),
+      onSelected: (ClusterChildOpts result) {
+        switch (result) {
+          case ClusterChildOpts.Remove:
+            {
+              log("Remove");
+              setState(() {
+                log("Removing $child");
+                widget._cluster.children.remove(child);
+                widget._cluster.persist();
+              });
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ClusterChildOpts>>[
+        const PopupMenuItem<ClusterChildOpts>(
+          value: ClusterChildOpts.Remove,
+          child: Text("Remove"),
+        ),
+      ],
+    );
+  }
+
   Widget _buildChildRow(ClusterChild child) {
     Function amberIf = (bool cond) {
       return TextStyle(color: cond ? Color(0xffa1a1a1) : Colors.amberAccent);
@@ -138,13 +164,18 @@ class ClusterViewState extends State<ClusterView> {
 
     Row row = Row(
       children: <Widget>[
-        SizedBox(width: 4),
-        Icon(
-          Icons.child_care,
-          size: 18,
-          color: Color(0xffc7c7c7),
-        ),
-        SizedBox(width: 18),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                child.enabled = !child.enabled;
+                widget._cluster.persist();
+              });
+            },
+            icon: Icon(
+              Icons.child_care,
+              size: 20,
+              color: child.enabled ? Colors.amberAccent : Colors.blueGrey,
+            )),
         Expanded(
           child: SingleChildScrollView(
             child: creds,
@@ -155,50 +186,15 @@ class ClusterViewState extends State<ClusterView> {
     );
 
     return ListTile(
-      contentPadding: EdgeInsets.only(left: 8),
+      contentPadding: EdgeInsets.zero,
+      horizontalTitleGap: 0,
       key: Key("child $child"),
       title: row,
-      trailing: Checkbox(
-          activeColor: Colors.grey,
-          value: child.enabled,
-          onChanged: (bool? enabled) {
-            setState(() {
-              child.enabled = enabled ?? false;
-              widget._cluster.persist();
-            });
-          }),
+      trailing: _buildClusterMenuButton(child),
       onTap: () {
         _showClusterChild(child);
       },
-      // onLongPressStart: (LongPressStartDetails details) {
-      //   _showClusterChildMenu(details.globalPosition, child);
-      // },
     );
-  }
-
-  void _showClusterChildMenu(Offset position, ClusterChild child) async {
-    var itemRemove = PopupMenuItem(
-      child: Text("Remove"),
-      value: ClusterChildOpts.Remove,
-    );
-
-    var selected = await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
-      items: [itemRemove],
-    );
-
-    switch (selected) {
-      case ClusterChildOpts.Remove:
-        setState(() {
-          log("Removing $child");
-          widget._cluster.children.remove(child);
-          widget._cluster.persist();
-        });
-        break;
-      default:
-        log("Bad selection");
-    }
   }
 
   PopupMenuButton<ClusterOpts> _buildClusterPopUpButton() {
