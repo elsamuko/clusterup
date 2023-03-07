@@ -162,34 +162,26 @@ class ClusterViewState extends State<ClusterView> {
       ],
     );
 
-    Row row = Row(
-      children: <Widget>[
-        IconButton(
-            onPressed: () {
-              setState(() {
-                child.enabled = !child.enabled;
-                widget._cluster.persist();
-              });
-            },
-            icon: Icon(
-              Icons.child_care,
-              size: 20,
-              color: child.enabled ? Colors.amberAccent : Colors.blueGrey,
-            )),
-        Expanded(
-          child: SingleChildScrollView(
-            child: creds,
-            scrollDirection: Axis.horizontal,
-          ),
-        ),
-      ],
-    );
-
     return ListTile(
       contentPadding: EdgeInsets.zero,
       horizontalTitleGap: 0,
       key: Key("child $child"),
-      title: row,
+      leading: IconButton(
+          onPressed: () {
+            setState(() {
+              child.enabled = !child.enabled;
+              widget._cluster.persist();
+            });
+          },
+          icon: Icon(
+            Icons.child_care,
+            size: 20,
+            color: child.enabled ? Colors.amberAccent : Colors.blueGrey,
+          )),
+      title: SingleChildScrollView(
+        child: creds,
+        scrollDirection: Axis.horizontal,
+      ),
       trailing: _buildClusterMenuButton(child),
       onTap: () {
         _showClusterChild(child);
