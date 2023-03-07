@@ -149,16 +149,16 @@ class ClusterViewState extends State<ClusterView> {
 
   Widget _buildChildRow(ClusterChild child) {
     Function amberIf = (bool cond) {
-      return TextStyle(color: cond ? Color(0xffa1a1a1) : Colors.amberAccent);
+      return TextStyle(color: cond ? Colors.amberAccent : Color(0xffa1a1a1));
     };
 
     Row creds = Row(
       children: <Widget>[
-        Text(child.user ?? child.parent.user, style: amberIf(child.user == null)),
+        Text(child.user ?? child.parent.user, style: amberIf(child.user != null)),
         Text("@", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text(child.host ?? child.parent.host, style: amberIf(child.host == null)),
+        Text(child.host ?? child.parent.host, style: amberIf(child.host != null)),
         Text(":", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port == null)),
+        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port != null)),
       ],
     );
 
