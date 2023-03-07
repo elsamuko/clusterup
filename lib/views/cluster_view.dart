@@ -99,9 +99,21 @@ class ClusterViewState extends State<ClusterView> {
   Widget _buildClusterChildren() {
     return Card(
         elevation: 6,
-        child: ListView.builder(
+        child: ReorderableListView.builder(
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
+          onReorder: (int oldIndex, int newIndex) {
+            // https://api.flutter.dev/flutter/material/ReorderableListView-class.html
+            setState(() {
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              log("Moved $oldIndex to $newIndex");
+              ClusterChild child = widget._cluster.children.removeAt(oldIndex);
+              widget._cluster.children.insert(newIndex, child);
+              widget._cluster.persist();
+            });
+          },
           itemCount: widget._cluster.children.length,
           itemBuilder: (context, i) {
             return _buildChildRow(widget._cluster.children[i]);
@@ -109,85 +121,72 @@ class ClusterViewState extends State<ClusterView> {
         ));
   }
 
+  PopupMenuButton<ClusterChildOpts> _buildClusterMenuButton(ClusterChild child) {
+    return PopupMenuButton<ClusterChildOpts>(
+      key: Key("clusterOptionsMenu"),
+      onSelected: (ClusterChildOpts result) {
+        switch (result) {
+          case ClusterChildOpts.Remove:
+            {
+              log("Remove");
+              setState(() {
+                log("Removing $child");
+                widget._cluster.children.remove(child);
+                widget._cluster.persist();
+              });
+            }
+            break;
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ClusterChildOpts>>[
+        const PopupMenuItem<ClusterChildOpts>(
+          value: ClusterChildOpts.Remove,
+          child: Text("Remove"),
+        ),
+      ],
+    );
+  }
+
   Widget _buildChildRow(ClusterChild child) {
     Function amberIf = (bool cond) {
-      return TextStyle(color: cond ? Color(0xffa1a1a1) : Colors.amberAccent);
+      return TextStyle(color: cond ? Colors.amberAccent : Color(0xffa1a1a1));
     };
 
     Row creds = Row(
       children: <Widget>[
-        Text(child.user ?? child.parent.user, style: amberIf(child.user == null)),
+        Text(child.user ?? child.parent.user, style: amberIf(child.user != null)),
         Text("@", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text(child.host ?? child.parent.host, style: amberIf(child.host == null)),
+        Text(child.host ?? child.parent.host, style: amberIf(child.host != null)),
         Text(":", style: TextStyle(color: Color(0xffa1a1a1))),
-        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port == null)),
+        Text((child.port ?? child.parent.port).toString(), style: amberIf(child.port != null)),
       ],
     );
 
-    Row row = Row(
-      children: <Widget>[
-        SizedBox(width: 4),
-        Icon(
-          Icons.child_care,
-          size: 18,
-          color: Color(0xffc7c7c7),
-        ),
-        SizedBox(width: 18),
-        Expanded(
-          child: SingleChildScrollView(
-            child: creds,
-            scrollDirection: Axis.horizontal,
-          ),
-        ),
-      ],
-    );
-
-    return GestureDetector(
-      child: ListTile(
-        contentPadding: EdgeInsets.only(left: 8),
-        title: row,
-        trailing: Checkbox(
-            activeColor: Colors.grey,
-            value: child.enabled,
-            onChanged: (bool? enabled) {
-              setState(() {
-                child.enabled = enabled ?? false;
-                widget._cluster.persist();
-              });
-            }),
-        onTap: () {
-          _showClusterChild(child);
-        },
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      horizontalTitleGap: 0,
+      key: Key("child $child"),
+      leading: IconButton(
+          onPressed: () {
+            setState(() {
+              child.enabled = !child.enabled;
+              widget._cluster.persist();
+            });
+          },
+          icon: Icon(
+            Icons.child_care,
+            size: 20,
+            color: child.enabled ? Colors.amberAccent : Colors.blueGrey,
+          )),
+      title: SingleChildScrollView(
+        child: creds,
+        scrollDirection: Axis.horizontal,
       ),
-      onLongPressStart: (LongPressStartDetails details) {
-        _showClusterChildMenu(details.globalPosition, child);
+      trailing: _buildClusterMenuButton(child),
+      onTap: () {
+        _showClusterChild(child);
       },
     );
-  }
-
-  void _showClusterChildMenu(Offset position, ClusterChild child) async {
-    var itemRemove = PopupMenuItem(
-      child: Text("Remove"),
-      value: ClusterChildOpts.Remove,
-    );
-
-    var selected = await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(position.dx, position.dy, 200, 200),
-      items: [itemRemove],
-    );
-
-    switch (selected) {
-      case ClusterChildOpts.Remove:
-        setState(() {
-          log("Removing $child");
-          widget._cluster.children.remove(child);
-          widget._cluster.persist();
-        });
-        break;
-      default:
-        log("Bad selection");
-    }
   }
 
   PopupMenuButton<ClusterOpts> _buildClusterPopUpButton() {
@@ -312,7 +311,7 @@ class ClusterViewState extends State<ClusterView> {
     List<Widget> widgets = [_buildClusterCard()];
     if (widget._cluster.children.isNotEmpty) {
       widgets.add(_buildClusterChildren());
-      widgets.add(SizedBox(height: 80));
+      widgets.add(SizedBox(height: 80)); // to scroll above the (+) button
     }
 
     return WillPopScope(
