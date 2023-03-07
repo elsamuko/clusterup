@@ -311,7 +311,7 @@ class ClusterViewState extends State<ClusterView> {
     List<Widget> widgets = [_buildClusterCard()];
     if (widget._cluster.children.isNotEmpty) {
       widgets.add(_buildClusterChildren());
-      widgets.add(SizedBox(height: 80));
+      widgets.add(SizedBox(height: 80)); // to scroll above the (+) button
     }
 
     return WillPopScope(
