@@ -88,9 +88,11 @@ class ClustersViewState extends State<ClustersView> {
           );
 
     return ListTile(
+      // contentPadding: EdgeInsets.zero,
+      horizontalTitleGap: 0,
       key: Key("cluster ${cluster.id}"),
       leading: Padding(
-        padding: const EdgeInsets.only(top: 3.0),
+        padding: const EdgeInsets.only(top: 3, right: 6),
         child: IconButton(
             padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
@@ -105,9 +107,7 @@ class ClustersViewState extends State<ClustersView> {
             )),
       ),
       title: SingleChildScrollView(
-        child: Text(
-          cluster.name,
-        ),
+        child: Text(cluster.name),
         scrollDirection: Axis.horizontal,
       ),
       trailing: Row(
