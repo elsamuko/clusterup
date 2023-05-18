@@ -88,7 +88,7 @@ class ClustersViewState extends State<ClustersView> {
           );
 
     return ListTile(
-      // contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.zero,
       horizontalTitleGap: 0,
       key: Key("cluster ${cluster.id}"),
       leading: Padding(
