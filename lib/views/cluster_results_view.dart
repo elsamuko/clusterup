@@ -12,7 +12,9 @@ class ClusterResultsViewState extends State<ClusterResultsView> {
 
   @override
   void initState() {
-    current = widget._cluster.lastAction();
+    if (widget._cluster.running) {
+      current = widget._cluster.lastAction();
+    }
 
     // set callback for results
     _cluster.onActionStarted = (RemoteActionPair pair) {
