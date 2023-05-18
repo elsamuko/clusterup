@@ -331,19 +331,21 @@ class ClusterViewState extends State<ClusterView> {
               title: Text(title),
               actions: checkButton,
             ),
-            floatingActionButton: FloatingActionButton(
-              key: Key("addChild"),
-              backgroundColor: Color(0xff616161),
-              foregroundColor: Color(0xffc7c7c7),
-              onPressed: () {
-                var current = _formKey.currentState;
-                if (current != null && current.validate()) {
-                  current.save();
-                }
-                addChild();
-              },
-              child: const Icon(Icons.add),
-            ),
+            floatingActionButton: widget._new
+                ? null
+                : FloatingActionButton(
+                    key: Key("addChild"),
+                    backgroundColor: Color(0xff616161),
+                    foregroundColor: Color(0xffc7c7c7),
+                    onPressed: () {
+                      var current = _formKey.currentState;
+                      if (current != null && current.validate()) {
+                        current.save();
+                      }
+                      addChild();
+                    },
+                    child: const Icon(Icons.add),
+                  ),
             bottomNavigationBar: bottomButtons,
             body: Scrollbar(child: ListView(children: widgets))));
   }
