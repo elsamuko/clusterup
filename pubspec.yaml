@@ -14,7 +14,7 @@ description: Display cluster health
 version: 1.6.0+9
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   ssh2: ^2.2.3          # MIT https://pub.dev/packages/ssh2/license
