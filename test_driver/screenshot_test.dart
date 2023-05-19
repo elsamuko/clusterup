@@ -104,6 +104,19 @@ $json
       request.write(multipart);
       /* HttpClientResponse response = */ await request.close();
 
+      // screenshot website
+      var result = await Process.run('bash', [
+        '-c',
+        'chromium-browser '
+            '--headless '
+            '--disable-gpu '
+            '--hide-scrollbars '
+            '--window-size=1024,768 '
+            '--screenshot="screenshots/web_load_save.png" '
+            '"http://localhost:3001"'
+      ]);
+      print("Screenshot saved to screenshots/screenshot_load_save_web.png");
+
       // return
       await driver.tap(find.text('Stop server'));
       await driver.tap(find.pageBack());
