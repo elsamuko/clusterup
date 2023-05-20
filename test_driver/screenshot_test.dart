@@ -141,7 +141,7 @@ $json
       // run
       await driver.tap(find.byValueKey('run'));
 
-      sleep(Duration(seconds: 10));
+      sleep(Duration(seconds: 3));
 
       // screenshot
       await takeScreenshot(driver, 'running');
