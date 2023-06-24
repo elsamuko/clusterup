@@ -2,11 +2,10 @@ import 'package:clusterup/cluster.dart';
 import 'package:clusterup/cluster_child.dart';
 import 'package:clusterup/db_persistence.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-// must be run on device for method getDatabasesPath
-// MissingPluginException: https://github.com/tekartik/sqflite/issues/49
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  databaseFactory = databaseFactoryFfi;
 
   test('DBPersistence', () async {
     await DBPersistence.deleteDB();
