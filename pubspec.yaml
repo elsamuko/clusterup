@@ -19,8 +19,9 @@ environment:
 dependencies:
   ssh2: ^2.2.3          # MIT https://pub.dev/packages/ssh2/license
   pointycastle: ^3.6.2  # MPL https://github.com/PointyCastle/pointycastle/blob/master/LICENSE
-  asn1lib: ^1.4.0       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
+  asn1lib: ^1.4.1       # BSD https://github.com/wstrange/asn1lib/blob/master/LICENSE
   sqflite: ^2.2.8+4     # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
+  sqflite_common_ffi: ^2.2.5 # BSD https://pub.dev/packages/sqflite_common_ffi/license
   path: ^1.8.2          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl: ^0.18.0         # BSD https://pub.dev/packages/intl/license
   http_server: ^1.0.0   # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
