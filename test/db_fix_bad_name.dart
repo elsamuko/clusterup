@@ -10,13 +10,13 @@ void main() {
 
   test('DBPersistence', () async {
     await DBPersistence.deleteDB();
-    String bad = [getDatabasesPath(), 'cluster_up.db'].join('/');
-    expect(bad, "Instance of 'Future<String>'/cluster_up.db");
+    String path = await getDatabasesPath();
+    String bad = "$path/Instance of 'Future<String>'/cluster_up.db";
+
+    // write bad named database from resources
     String fromResources = Directory.current.path + "/res/v1.db";
     expect(File(fromResources).existsSync(), true);
-
-    // write bad named database
-    Directory("${getDatabasesPath()}").createSync();
+    Directory("$path/${getDatabasesPath()}").createSync(recursive: true);
     File(fromResources).copySync(bad);
 
     // db had the wrong filename and was renamed
