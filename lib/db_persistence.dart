@@ -34,7 +34,7 @@ class DBPersistence {
     bool renamed = false;
 
     // fix for wrong filename in older versions
-    File badDbName = File([getDatabasesPath(), 'cluster_up.db'].join('/'));
+    File badDbName = File("$path/Instance of 'Future<String>'/cluster_up.db");
     if (badDbName.existsSync()) {
       log("renaming $badDbName to $dbName");
       badDbName.renameSync(dbName);
