@@ -14,21 +14,22 @@ import '../ssh_key.dart';
 import '../clusterup_data.dart';
 
 class ClustersViewState extends State<ClustersView> {
-  DBPersistence _db = DBPersistence();
+  Future<DBPersistence> _db = DBPersistence.create();
   ClusterUpData _data = ClusterUpData();
 
   @override
   void initState() {
-    _db.getSSHKey().then((sshKey) {
-      _data.sshKey = sshKey;
-      log("Loaded ssh key");
-      setState(() {});
-    });
+    _db.then((db) {
+      db.getSSHKey().then((sshKey) {
+        log("Loaded ssh key");
+        _data.sshKey = sshKey;
+      });
 
-    _db.readClusters().then((clusters) {
-      log("Loaded ${clusters.length} clusters");
-      _data.clusters = clusters;
-      setState(() {});
+      db.readClusters().then((clusters) {
+        log("Loaded ${clusters.length} clusters");
+        _data.clusters = clusters;
+        setState(() {});
+      });
     });
     super.initState();
   }
@@ -125,14 +126,15 @@ class ClustersViewState extends State<ClustersView> {
 
   void _showCluster(Cluster cluster) async {
     log("_showCluster : $cluster");
-    cluster.persist = () => _db.addCluster(cluster);
+    var db = await _db;
+    cluster.persist = () => db.addCluster(cluster);
     final Cluster? result =
         await Navigator.of(context).push(MaterialPageRoute<Cluster>(builder: (BuildContext context) {
       return ClusterView(_data.sshKey, cluster);
     }));
     if (result != null) {
       log("_showCluster : Updating $cluster");
-      _db.addCluster(result);
+      db.addCluster(result);
       setState(() {});
     }
   }
@@ -147,13 +149,14 @@ class ClustersViewState extends State<ClustersView> {
       ),
     );
 
-    setState(() {
-      if (result != null) {
-        log("Adding $result");
-        _data.clusters.add(result);
-        _db.addCluster(result);
-      }
-    });
+    if (result != null) {
+      log("Adding $result");
+      _data.clusters.add(result);
+      var db = await _db;
+      db.addCluster(result);
+    }
+
+    setState(() {});
   }
 
   void _keyMenu() async {
@@ -166,7 +169,8 @@ class ClustersViewState extends State<ClustersView> {
     );
 
     if (_data.sshKey != null) {
-      _db.setSSHKey(_data.sshKey);
+      var db = await _db;
+      db.setSSHKey(_data.sshKey);
     }
   }
 
@@ -191,9 +195,10 @@ class ClustersViewState extends State<ClustersView> {
 
     if (data != null) {
       _data = data;
-      setState(() {
-        _db.setClusters(_data.clusters);
-        _db.setSSHKey(_data.sshKey);
+      setState(() async {
+        var db = await _db;
+        db.setClusters(_data.clusters);
+        db.setSSHKey(_data.sshKey);
       });
     }
   }
@@ -224,16 +229,16 @@ class ClustersViewState extends State<ClustersView> {
   PopupMenuButton<ClusterOpts> _buildClusterMenuButton(Cluster cluster) {
     return PopupMenuButton<ClusterOpts>(
       key: Key("clusterOptionsMenu"),
-      onSelected: (ClusterOpts result) {
+      onSelected: (ClusterOpts result) async {
         switch (result) {
           case ClusterOpts.Remove:
             {
               log("Remove");
-              setState(() {
-                log("Removing $cluster");
-                _data.clusters.remove(cluster);
-                _db.removeCluster(cluster);
-              });
+              log("Removing $cluster");
+              _data.clusters.remove(cluster);
+              var db = await _db;
+              db.removeCluster(cluster);
+              setState(() {});
             }
             break;
           case ClusterOpts.LastRun:
