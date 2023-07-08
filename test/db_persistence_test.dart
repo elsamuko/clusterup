@@ -10,12 +10,16 @@ void main() {
   test('DBPersistence', () async {
     await DBPersistence.deleteDB();
 
-    var db = DBPersistence();
+    var db = await DBPersistence.create();
+
+    List<Cluster> read = await db.readClusters();
+    expect(read.isEmpty, true);
+
     Cluster input = Cluster(id: 1);
     input.children.add(ClusterChild(input, user: "user2"));
     db.addCluster(input);
 
-    List<Cluster> read = await db.readClusters();
+    read = await db.readClusters();
 
     expect(read.last.id, 1);
     expect(read.last.children.last.user, "user2");
