@@ -2,11 +2,55 @@ import 'package:clusterup/ssh_key.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:core';
 import 'dart:io';
+import 'package:path/path.dart';
 import 'cluster.dart';
 import 'cluster_child.dart';
+import 'log.dart';
+
+OnDatabaseCreateFn onCreate = (Database db, int version) {
+  db.execute(
+    "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, enabled INTEGER, actions TEXT)",
+  );
+  db.execute(
+    "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
+  );
+  db.execute(
+    "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, enabled INTEGER, PRIMARY KEY(parent,id))",
+  );
+};
 
 // https://flutter.dev/docs/cookbook/persistence/sqlite
 class DBPersistence {
+  String databasePath;
+  Database database;
+  bool renamed = false;
+
+  DBPersistence._(this.databasePath, this.database);
+
+  static Future<DBPersistence> create() async {
+    String path = await getDatabasesPath();
+    Directory(path).createSync(recursive: true);
+    String dbName = join(path, 'cluster_up.db');
+    bool renamed = false;
+
+    // fix for wrong filename in older versions
+    File badDbName = File("$path/Instance of 'Future<String>'/cluster_up.db");
+    if (badDbName.existsSync()) {
+      log("renaming $badDbName to $dbName");
+      badDbName.renameSync(dbName);
+      renamed = true;
+    }
+
+    Database db = await openDatabase(
+      dbName,
+      onCreate: onCreate,
+      version: 1,
+    );
+    var dbPersistence = DBPersistence._(path, db);
+    dbPersistence.renamed = renamed;
+    return dbPersistence;
+  }
+
   //! deletes DB file
   static Future<void> deleteDB() async {
     String filename = [await getDatabasesPath(), 'cluster_up.db'].join('/');
@@ -16,32 +60,15 @@ class DBPersistence {
     }
   }
 
-  final Future<Database> database = openDatabase(
-    [getDatabasesPath(), 'cluster_up.db'].join('/'),
-    onCreate: (db, version) {
-      db.execute(
-        "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, enabled INTEGER, actions TEXT)",
-      );
-      db.execute(
-        "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
-      );
-      db.execute(
-        "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, enabled INTEGER, PRIMARY KEY(parent,id))",
-      );
-    },
-    version: 1,
-  );
-
   Future<void> addCluster(Cluster cluster) async {
-    final Database db = await database;
-    await db.insert(
+    await database.insert(
       'clusters',
       cluster.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
     // remove old
-    db.delete(
+    database.delete(
       "children",
       where: "parent=?",
       whereArgs: [cluster.id],
@@ -54,8 +81,7 @@ class DBPersistence {
   }
 
   Future<void> _addChild(ClusterChild child) async {
-    final Database db = await database;
-    await db.insert(
+    await database.insert(
       'children',
       child.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -63,10 +89,9 @@ class DBPersistence {
   }
 
   Future<void> setClusters(List<Cluster> clusters) async {
-    final Database db = await database;
-    await db.delete('clusters');
+    await database.delete('clusters');
     clusters.forEach((cluster) async {
-      await db.insert(
+      await database.insert(
         'clusters',
         cluster.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
@@ -77,8 +102,7 @@ class DBPersistence {
   Future<void> setSSHKey(SSHKey? key) async {
     if (key == null) return;
 
-    final Database db = await database;
-    await db.insert(
+    await database.insert(
       'ssh_keys',
       key.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -86,8 +110,7 @@ class DBPersistence {
   }
 
   Future<SSHKey?> getSSHKey() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('ssh_keys');
+    final List<Map<String, dynamic>> maps = await database.query('ssh_keys');
     var keys = List.generate(maps.length, (i) {
       return SSHKey.fromPEM(
         maps[i]['private'] ?? "",
@@ -101,8 +124,7 @@ class DBPersistence {
   }
 
   Future<void> removeCluster(Cluster cluster) async {
-    final Database db = await database;
-    await db.delete(
+    await database.delete(
       'clusters',
       where: "id = ?",
       whereArgs: [cluster.id],
@@ -110,9 +132,8 @@ class DBPersistence {
   }
 
   Future<List<Cluster>> readClusters() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> clusters = await db.query('clusters');
-    final List<Map<String, dynamic>> children = await db.query('children');
+    final List<Map<String, dynamic>> clusters = await database.query('clusters');
+    final List<Map<String, dynamic>> children = await database.query('children');
 
     return List.generate(clusters.length, (i) {
       Cluster cluster = Cluster.fromMap(clusters[i]);

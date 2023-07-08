@@ -11,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('RunCommands', () async {
-    var db = DBPersistence();
+    var db = await DBPersistence.create();
     List<Cluster> read = await db.readClusters();
     SSHKey? key = await db.getSSHKey();
     Cluster cluster = read.first;
