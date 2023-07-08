@@ -11,6 +11,7 @@ void main() {
   test('DBPersistence', () async {
     await DBPersistence.deleteDB();
     String bad = [getDatabasesPath(), 'cluster_up.db'].join('/');
+    expect(bad, "Instance of 'Future<String>'/cluster_up.db");
     String fromResources = Directory.current.path + "/res/v1.db";
     expect(File(fromResources).existsSync(), true);
 
