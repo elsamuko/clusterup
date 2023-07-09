@@ -175,7 +175,7 @@ class ClusterViewState extends State<ClusterView> {
           },
           icon: Icon(
             Icons.child_care,
-            size: 20,
+            size: 24,
             color: child.enabled ? Colors.amberAccent : Colors.blueGrey,
           )),
       title: SingleChildScrollView(
