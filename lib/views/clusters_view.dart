@@ -195,11 +195,10 @@ class ClustersViewState extends State<ClustersView> {
 
     if (data != null) {
       _data = data;
-      setState(() async {
-        var db = await _db;
-        db.setClusters(_data.clusters);
-        db.setSSHKey(_data.sshKey);
-      });
+      var db = await _db;
+      db.setClusters(_data.clusters);
+      db.setSSHKey(_data.sshKey);
+      setState(() {});
     }
   }
 
