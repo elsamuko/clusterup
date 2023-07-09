@@ -27,6 +27,8 @@ class DBPersistence {
 
   DBPersistence._(this.databasePath, this.database);
 
+  // adb shell run-as com.devsamuko.clusterup ls -Rl databases/
+  // https://github.com/tekartik/sqflite/blob/master/sqflite/doc/opening_db.md
   static Future<DBPersistence> create() async {
     String path = await getDatabasesPath();
     Directory(path).createSync(recursive: true);
