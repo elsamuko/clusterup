@@ -28,7 +28,7 @@ dependencies:
   path_provider: ^2.0.13 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   font_awesome_flutter: ^10.4.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
   url_launcher: ^6.1.10 # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
-  package_info: ^2.0.2  # BSD https://github.com/flutter/plugins/blob/master/packages/package_info/LICENSE
+  package_info_plus: ^4.1.0  # BSD https://pub.dev/packages/package_info_plus/license
   flutter:
     sdk: flutter
 
