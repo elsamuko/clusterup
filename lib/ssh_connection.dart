@@ -9,14 +9,18 @@ class SSHConnectionResult {
   String error;
   List<String> output = [];
   SSHCredentials creds;
+
   SSHConnectionResult(this.success, this.creds, [this.error = ""]);
 }
 
 class SSHCredentials {
   String user;
   String host;
+  String password;
   int port;
-  SSHCredentials(this.user, this.host, this.port);
+
+  SSHCredentials(this.user, this.host, this.password, this.port);
+
   String toString() {
     return "$user@$host:$port";
   }
@@ -24,11 +28,13 @@ class SSHCredentials {
 
 // https://pub.dev/packages/ssh#-example-tab-
 class SSHConnection {
-  static Future<SSHConnectionResult> test(SSHCredentials creds, SSHKey key) async {
+  static Future<SSHConnectionResult> test(
+      SSHCredentials creds, SSHKey key) async {
     return run(creds, key, []);
   }
 
-  static Future<SSHConnectionResult> run(SSHCredentials creds, SSHKey key, List<String> commands) async {
+  static Future<SSHConnectionResult> run(
+      SSHCredentials creds, SSHKey key, List<String> commands) async {
     SSHConnectionResult rv = SSHConnectionResult(false, creds);
     SSHClient client = SSHClient(
       host: creds.host,
