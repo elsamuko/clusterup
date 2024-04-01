@@ -7,17 +7,36 @@ import 'cluster.dart';
 import 'cluster_child.dart';
 import 'log.dart';
 
-OnDatabaseCreateFn onCreate = (Database db, int version) {
-  db.execute(
+void onCreateV1(Database db, int version) async {
+  await db.execute(
     "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, enabled INTEGER, actions TEXT)",
   );
-  db.execute(
+  await db.execute(
     "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
   );
-  db.execute(
+  await db.execute(
     "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, enabled INTEGER, PRIMARY KEY(parent,id))",
   );
-};
+}
+
+void onCreateV2(Database db, int version) async {
+  await db.execute(
+    "CREATE TABLE clusters(id INTEGER PRIMARY KEY, name TEXT, user TEXT, host TEXT, port INTEGER, password TEXT, enabled INTEGER, actions TEXT)",
+  );
+  await db.execute(
+    "CREATE TABLE ssh_keys(id TEXT PRIMARY KEY, private TEXT)",
+  );
+  await db.execute(
+    "CREATE TABLE children(parent INTEGER, id INTEGER, user TEXT, host TEXT, port INTEGER, password TEXT, enabled INTEGER, PRIMARY KEY(parent,id))",
+  );
+}
+
+void updateToV2(Database db, int oldVersion, int newVersion) async {
+  if (oldVersion == 1) {
+    await db.execute('ALTER TABLE clusters ADD password TEXT');
+    await db.execute('ALTER TABLE children ADD password TEXT');
+  }
+}
 
 // https://flutter.dev/docs/cookbook/persistence/sqlite
 class DBPersistence {
@@ -29,7 +48,7 @@ class DBPersistence {
 
   // adb shell run-as com.devsamuko.clusterup ls -Rl databases/
   // https://github.com/tekartik/sqflite/blob/master/sqflite/doc/opening_db.md
-  static Future<DBPersistence> create() async {
+  static Future<DBPersistence> create([int version = 2]) async {
     String path = await getDatabasesPath();
     Directory(path).createSync(recursive: true);
     String dbName = join(path, 'cluster_up.db');
@@ -43,11 +62,25 @@ class DBPersistence {
       renamed = true;
     }
 
-    Database db = await openDatabase(
-      dbName,
-      onCreate: onCreate,
-      version: 1,
-    );
+    // open db v1 or v2
+    Database db = await () {
+      switch (version) {
+        case 1:
+          return openDatabase(
+            dbName,
+            onCreate: onCreateV1,
+            version: 1,
+          );
+        default:
+          return openDatabase(
+            dbName,
+            onCreate: onCreateV2,
+            onUpgrade: updateToV2,
+            version: 2,
+          );
+      }
+    }();
+
     var dbPersistence = DBPersistence._(path, db);
     dbPersistence.renamed = renamed;
     return dbPersistence;
