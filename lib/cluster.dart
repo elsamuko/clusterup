@@ -18,6 +18,7 @@ class Cluster {
   String name;
   String user;
   String host;
+  String password;
   int port;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
@@ -38,6 +39,7 @@ class Cluster {
       this.name = "",
       this.user = "",
       this.host = "",
+      this.password = "",
       this.port = 22,
       this.enabled = true,
       Set<RemoteAction>? actions,
@@ -64,6 +66,7 @@ class Cluster {
     if (this.name != other.name) return false;
     if (this.user != other.user) return false;
     if (this.host != other.host) return false;
+    if (this.password != other.password) return false;
     if (this.port != other.port) return false;
     if (!listEquals(this.children, other.children)) return false;
     if (!setEquals(this.actions, other.actions)) return false;
@@ -76,6 +79,7 @@ class Cluster {
       name.hashCode ^
       user.hashCode ^
       host.hashCode ^
+      password.hashCode ^
       port.hashCode ^
       children.hashCode ^
       actions.hashCode;
@@ -89,7 +93,7 @@ class Cluster {
   }
 
   SSHCredentials creds() {
-    return SSHCredentials(user, host, port);
+    return SSHCredentials(user, host, password, port);
   }
 
   Map<String, dynamic> toMap() {
@@ -106,6 +110,7 @@ class Cluster {
       'name': name,
       'user': user,
       'host': host,
+      'password': password,
       'port': port,
       'enabled': enabled ? 1 : 0,
       'actions': json,
@@ -139,7 +144,8 @@ class Cluster {
     return actions;
   }
 
-  static List<ClusterChild> childrenFromData(Cluster parent, List<dynamic>? data) {
+  static List<ClusterChild> childrenFromData(
+      Cluster parent, List<dynamic>? data) {
     List<ClusterChild> children = [];
     if (data != null) {
       data.forEach((dynamic one) {
@@ -156,6 +162,7 @@ class Cluster {
       name: data['name'] ?? "",
       user: data['user'] ?? "",
       host: data['host'] ?? "",
+      password: data['password'] ?? "",
       port: data['port'] ?? 22,
       enabled: (data['enabled'] ?? 1) == 1,
       actions: actionsFromBlob(data['actions']),
@@ -198,7 +205,8 @@ class Cluster {
     results = [RemoteActionPair(RemoteAction.getHostUpAction())];
     this.onActionStarted(results.first);
 
-    RemoteActionRunner runner = RemoteActionRunner(this.creds(), results.first.action, key);
+    RemoteActionRunner runner =
+        RemoteActionRunner(this.creds(), results.first.action, key);
     results.first.results.add(await runner.run());
     up = results.first.results.first.success();
     lastStatus = results.first.results.first.status;
@@ -211,7 +219,8 @@ class Cluster {
         results.add(RemoteActionPair(action));
         this.onActionStarted(results.last);
 
-        RemoteActionRunner runner = RemoteActionRunner(this.creds(), action, key);
+        RemoteActionRunner runner =
+            RemoteActionRunner(this.creds(), action, key);
         results.last.results.add(await runner.run());
 
         this.onActionFinished(results.last);
@@ -230,7 +239,8 @@ class Cluster {
 
     for (ClusterChild child in children) {
       if (child.enabled) {
-        RemoteActionRunner runner = RemoteActionRunner(child.creds(), results.first.action, key);
+        RemoteActionRunner runner =
+            RemoteActionRunner(child.creds(), results.first.action, key);
         results.first.results.add(await runner.run());
         child.up = results.first.results.last.success();
         if (results.first.results.last.status.index > lastStatus.index) {
@@ -248,7 +258,8 @@ class Cluster {
 
       for (ClusterChild child in children) {
         if (child.enabled && child.up) {
-          RemoteActionRunner runner = RemoteActionRunner(child.creds(), action, key);
+          RemoteActionRunner runner =
+              RemoteActionRunner(child.creds(), action, key);
           results.last.results.add(await runner.run());
         }
       }
