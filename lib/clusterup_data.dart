@@ -51,7 +51,7 @@ class ClusterUpData {
         });
       }
 
-      if (data.containsKey("key")) {
+      if (data.containsKey("key") && data["key"].containsKey("private")) {
         output.sshKey = SSHKey.fromPEM(data["key"]["private"]);
       }
     }
