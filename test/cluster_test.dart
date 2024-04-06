@@ -11,6 +11,7 @@ void main() {
       name: "name",
       user: "user",
       host: "host",
+      password: "pass",
       port: 22,
       actions: Set.of([RemoteAction.getActionFor("df")!]),
     );

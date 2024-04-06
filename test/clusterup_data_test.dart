@@ -29,6 +29,7 @@ s/NAKRvWDv52+0iZRWxTRie1/DQ/4dfKo2R07uctJcdnbw==
         name: "name",
         user: "user",
         host: "host",
+        password: "pass",
         port: 22,
         actions: Set.of([RemoteAction.getActionFor("df")!]),
       )
