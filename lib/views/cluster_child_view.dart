@@ -159,7 +159,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                                     key: Key("password"),
                                     onSaved: (String? value) {
-                                      if (value != null) {
+                                      if (value?.isNotEmpty ?? false) {
                                         widget._child.password = value;
                                       }
                                     },
