@@ -150,6 +150,26 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     onEditingComplete: validate,
                                   ),
                                   TextFormField(
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                      icon: Icon(Icons.password),
+                                      hintText: 'Password',
+                                      labelText: 'password',
+                                    ),
+                                    inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
+                                    key: Key("password"),
+                                    onSaved: (String? value) {
+                                      if (value != null) {
+                                        widget._child.password = value;
+                                      }
+                                    },
+                                    initialValue: widget._child.password,
+                                    validator: (String? value) {
+                                      return null;
+                                    },
+                                    onEditingComplete: validate,
+                                  ),
+                                  TextFormField(
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
                                       icon: Icon(Icons.local_airport),
