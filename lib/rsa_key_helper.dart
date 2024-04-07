@@ -85,12 +85,12 @@ class RsaKeyHelper {
     if (sequence.elements.first.runtimeType == ASN1Integer) {
       ASN1Integer modulus = sequence.elements[0] as ASN1Integer;
       ASN1Integer exponent = sequence.elements[1] as ASN1Integer;
-      pubKey = RSAPublicKey(modulus.valueAsBigInteger!, exponent.valueAsBigInteger!);
+      pubKey = RSAPublicKey(modulus.valueAsBigInteger, exponent.valueAsBigInteger);
     }
     // PKCS8 -> get PKCS1 part and reenter
     else {
       ASN1Object sub = sequence.elements[1];
-      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()!).nextObject() as ASN1Sequence;
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject() as ASN1Sequence;
       pubKey = _fromASN1ToPublicKey(subSequence);
     }
 
@@ -116,12 +116,12 @@ class RsaKeyHelper {
       ASN1Integer p = sequence.elements[4] as ASN1Integer;
       ASN1Integer q = sequence.elements[5] as ASN1Integer;
       privKey = RSAPrivateKey(
-          modulus.valueAsBigInteger!, privateExponent.valueAsBigInteger!, p.valueAsBigInteger, q.valueAsBigInteger);
+          modulus.valueAsBigInteger, privateExponent.valueAsBigInteger, p.valueAsBigInteger, q.valueAsBigInteger);
     }
     // PKCS8 -> get PKCS1 part and reenter
     else {
       ASN1Object sub = sequence.elements[2];
-      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()!).nextObject() as ASN1Sequence;
+      ASN1Sequence subSequence = ASN1Parser(sub.contentBytes()).nextObject() as ASN1Sequence;
       privKey = _fromASN1ToPrivateKey(subSequence);
     }
 
