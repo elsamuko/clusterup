@@ -102,10 +102,11 @@ $json
       request.headers.add("Content-Type", "multipart/form-data; boundary=$boundary");
       request.headers.add("Content-Length", multipart.length);
       request.write(multipart);
-      /* HttpClientResponse response = */ await request.close();
+      /* HttpClientResponse response = */
+      await request.close();
 
       // screenshot website
-      var result = await Process.run('bash', [
+      await Process.run('bash', [
         '-c',
         'chromium-browser '
             '--headless '
