@@ -18,7 +18,7 @@ class Cluster {
   String name;
   String user;
   String host;
-  String password;
+  String? password;
   int port;
   List<ClusterChild> children;
   Set<RemoteAction> actions;
@@ -39,7 +39,7 @@ class Cluster {
       this.name = "",
       this.user = "",
       this.host = "",
-      this.password = "",
+      this.password = null,
       this.port = 22,
       this.enabled = true,
       Set<RemoteAction>? actions,
@@ -162,7 +162,7 @@ class Cluster {
       name: data['name'] ?? "",
       user: data['user'] ?? "",
       host: data['host'] ?? "",
-      password: data['password'] ?? "",
+      password: data['password'],
       port: data['port'] ?? 22,
       enabled: (data['enabled'] ?? 1) == 1,
       actions: actionsFromBlob(data['actions']),
