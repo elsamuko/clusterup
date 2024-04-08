@@ -11,6 +11,14 @@ class ClusterChildViewState extends State<ClusterChildView> {
 
   final _formKey = GlobalKey<FormState>();
   bool testingConnection = false;
+  bool passwordEnabled = false;
+  String? passwordCached;
+
+  @override
+  void initState() {
+    passwordEnabled = widget._child.password != null;
+    super.initState();
+  }
 
   void validate() {
     var current = _formKey.currentState;
@@ -149,25 +157,47 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     },
                                     onEditingComplete: validate,
                                   ),
-                                  TextFormField(
-                                    obscureText: true,
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.password),
-                                      hintText: 'Password',
-                                      labelText: 'password',
+                                  ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    horizontalTitleGap: 16,
+                                    leading: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            passwordEnabled = !passwordEnabled;
+                                            log("password enabled: ${passwordEnabled}");
+                                            if (!passwordEnabled) {
+                                              passwordCached = widget._child.password;
+                                              widget._child.password = null;
+                                            } else {
+                                              widget._child.password = passwordCached;
+                                              passwordCached = null;
+                                            }
+                                          });
+                                        },
+                                        child: Icon(
+                                          passwordEnabled ? Icons.password : Icons.move_down,
+                                          color: passwordEnabled ? Color(0xffcac4d0) : Colors.amberAccent,
+                                        )),
+                                    title: TextFormField(
+                                      enabled: passwordEnabled,
+                                      obscureText: true,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Password',
+                                        labelText: 'password',
+                                      ),
+                                      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
+                                      key: Key("password"),
+                                      onSaved: (String? value) {
+                                        if (value != null && passwordEnabled) {
+                                          widget._child.password = value.isEmpty ? null : value;
+                                        }
+                                      },
+                                      initialValue: widget._child.password,
+                                      validator: (String? value) {
+                                        return null;
+                                      },
+                                      onEditingComplete: validate,
                                     ),
-                                    inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-                                    key: Key("password"),
-                                    onSaved: (String? value) {
-                                      if (value?.isNotEmpty ?? false) {
-                                        widget._child.password = value;
-                                      }
-                                    },
-                                    initialValue: widget._child.password,
-                                    validator: (String? value) {
-                                      return null;
-                                    },
-                                    onEditingComplete: validate,
                                   ),
                                   TextFormField(
                                     keyboardType: TextInputType.number,

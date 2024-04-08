@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clusterup/log.dart';
@@ -15,12 +16,15 @@ class ClusterViewState extends State<ClusterView> {
 
   final _formKey = GlobalKey<FormState>();
   bool testingConnection = false;
+  bool passwordEnabled = false;
+  String? passwordCached;
 
   @override
   void initState() {
     widget._cluster.onRunningFinished = () {
       setState(() {});
     };
+    passwordEnabled = widget._cluster.password != null;
     super.initState();
   }
 
@@ -410,25 +414,47 @@ class ClusterViewState extends State<ClusterView> {
                       },
                       onEditingComplete: validate,
                     ),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.password),
-                        hintText: 'Password',
-                        labelText: 'password',
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      horizontalTitleGap: 16,
+                      leading: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              passwordEnabled = !passwordEnabled;
+                              log("password enabled: ${passwordEnabled}");
+                              if (!passwordEnabled) {
+                                passwordCached = widget._cluster.password;
+                                widget._cluster.password = null;
+                              } else {
+                                widget._cluster.password = passwordCached;
+                                passwordCached = null;
+                              }
+                            });
+                          },
+                          child: Icon(
+                            passwordEnabled ? Icons.password : Icons.key,
+                            color: passwordEnabled ? Color(0xffcac4d0) : Colors.amberAccent,
+                          )),
+                      title: TextFormField(
+                        enabled: passwordEnabled,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Password',
+                          labelText: 'password',
+                        ),
+                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
+                        key: Key("password"),
+                        onSaved: (String? value) {
+                          if (value != null && passwordEnabled) {
+                            widget._cluster.password = value.isEmpty ? null : value;
+                          }
+                        },
+                        initialValue: widget._cluster.password,
+                        validator: (String? value) {
+                          return null;
+                        },
+                        onEditingComplete: validate,
                       ),
-                      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-                      key: Key("password"),
-                      onSaved: (String? value) {
-                        if (value != null) {
-                          widget._cluster.password = value;
-                        }
-                      },
-                      initialValue: widget._cluster.password,
-                      validator: (String? value) {
-                        return null;
-                      },
-                      onEditingComplete: validate,
                     ),
                     TextFormField(
                       keyboardType: TextInputType.number,
