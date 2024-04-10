@@ -73,10 +73,11 @@ class KeyViewState extends State<KeyView> {
             ));
           }
 
-          return WillPopScope(
-              onWillPop: () async {
+          return PopScope(
+              canPop: false,
+              onPopInvoked: (didPop) {
+                if (didPop) return;
                 Navigator.pop(context, widget._key);
-                return false;
               },
               child: Scaffold(
                   appBar: AppBar(
@@ -96,6 +97,7 @@ class KeyViewState extends State<KeyView> {
 
 class KeyView extends StatefulWidget {
   SSHKey? _key;
+
   KeyView(this._key);
 
   @override

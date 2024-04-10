@@ -76,16 +76,16 @@ class ClusterChildViewState extends State<ClusterChildView> {
             "Test",
           );
 
-    return WillPopScope(
-        onWillPop: () async {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
           var current = _formKey.currentState;
           if (!widget._new && current != null && current.validate()) {
             current.save();
             Navigator.pop(context, widget._child);
-            return false;
           } else {
             log("Abort new child");
-            return true;
           }
         },
         child: Scaffold(

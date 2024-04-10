@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LoadSaveViewState extends State<LoadSaveView> {
   LoadSaveViewState();
+
   String _base = "";
   String _ip = "";
   Server _server = Server(3001);
@@ -150,10 +151,11 @@ class LoadSaveViewState extends State<LoadSaveView> {
       ];
     }
 
-    return WillPopScope(
-        onWillPop: () async {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
           Navigator.pop(context, widget._data);
-          return false;
         },
         child: Scaffold(
           appBar: AppBar(title: Text("Load/Save configuration")),
@@ -169,6 +171,7 @@ class LoadSaveViewState extends State<LoadSaveView> {
 
 class LoadSaveView extends StatefulWidget {
   final ClusterUpData _data;
+
   LoadSaveView(this._data);
 
   @override

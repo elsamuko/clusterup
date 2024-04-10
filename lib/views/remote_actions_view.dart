@@ -42,10 +42,11 @@ class ActionsViewState extends State<ActionsView> {
   @override
   Widget build(BuildContext context) {
     String title = widget._selectable ? "Select Actions" : "Available Actions";
-    return WillPopScope(
-        onWillPop: () async {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
           Navigator.pop(context, widget._saved);
-          return false;
         },
         child: Scaffold(
             appBar: AppBar(

@@ -317,16 +317,16 @@ class ClusterViewState extends State<ClusterView> {
       widgets.add(SizedBox(height: 80)); // to scroll above the (+) button
     }
 
-    return WillPopScope(
-        onWillPop: () async {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
           var current = _formKey.currentState;
           if (current != null && current.validate() && !widget._new) {
             current.save();
             Navigator.pop(context, widget._cluster);
-            return false;
           } else {
             log("Abort new cluster");
-            return true;
           }
         },
         child: Scaffold(
