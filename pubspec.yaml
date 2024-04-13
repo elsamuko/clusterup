@@ -24,7 +24,8 @@ dependencies:
   sqflite_common_ffi: ^2.3.2+1 # BSD https://pub.dev/packages/sqflite_common_ffi/license
   path: ^1.8.2          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
   intl: ^0.18.0         # BSD https://pub.dev/packages/intl/license
-  http_server: ^1.0.0   # BSD https://github.com/dart-lang/http_server/blob/master/LICENSE
+  shelf: ^1.4.1         # BSD https://pub.dev/packages/shelf/license
+  shelf_static: ^1.1.2  # BSD https://pub.dev/packages/shelf_static/license
   path_provider: ^2.1.2 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   font_awesome_flutter: ^10.7.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
   url_launcher: ^6.2.5 # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
