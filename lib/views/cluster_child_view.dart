@@ -128,8 +128,8 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     key: Key("username"),
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                                     onSaved: (String? value) {
-                                      if (value?.isNotEmpty ?? false) {
-                                        widget._child.user = value;
+                                      if (value != null) {
+                                        widget._child.user = value.isEmpty ? null : value;
                                       }
                                     },
                                     initialValue: widget._child.user,
@@ -147,8 +147,8 @@ class ClusterChildViewState extends State<ClusterChildView> {
                                     key: Key("server"),
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
                                     onSaved: (String? value) {
-                                      if (value?.isNotEmpty ?? false) {
-                                        widget._child.host = value;
+                                      if (value != null) {
+                                        widget._child.host = value.isEmpty ? null : value;
                                       }
                                     },
                                     initialValue: widget._child.host,
