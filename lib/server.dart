@@ -68,7 +68,7 @@ class Server {
     var staticHandler = createStaticHandler(folder, defaultDocument: 'index.html');
     var dynHandler = const Pipeline().addMiddleware(logRequests()).addHandler(requestHandler);
     var handler = new Cascade().add(staticHandler).add(dynHandler).handler;
-    this.server = await shelf_io.serve(handler, 'localhost', socket);
+    this.server = await shelf_io.serve(handler, InternetAddress.anyIPv4, socket);
 
     if (this.server == null) {
       log("Could not start server");
