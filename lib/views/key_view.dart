@@ -46,7 +46,6 @@ class KeyViewState extends State<KeyView> {
                   SizedBox(height: 10),
                   TextButton(
                       style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                         backgroundColor: Colors.black87,
                         foregroundColor: Colors.amberAccent,
                       ),
