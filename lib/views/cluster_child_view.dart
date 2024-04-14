@@ -86,6 +86,7 @@ class ClusterChildViewState extends State<ClusterChildView> {
             Navigator.pop(context, widget._child);
           } else {
             log("Abort new child");
+            Navigator.pop(context, null);
           }
         },
         child: Scaffold(
