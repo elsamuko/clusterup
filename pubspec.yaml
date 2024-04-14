@@ -23,13 +23,13 @@ dependencies:
   sqflite: ^2.3.2       # MIT https://github.com/tekartik/sqflite/blob/master/LICENSE
   sqflite_common_ffi: ^2.3.2+1 # BSD https://pub.dev/packages/sqflite_common_ffi/license
   path: ^1.8.2          # BSD https://github.com/dart-lang/path/blob/master/LICENSE
-  intl: ^0.18.0         # BSD https://pub.dev/packages/intl/license
+  intl: ^0.19.0         # BSD https://pub.dev/packages/intl/license
   shelf: ^1.4.1         # BSD https://pub.dev/packages/shelf/license
   shelf_static: ^1.1.2  # BSD https://pub.dev/packages/shelf_static/license
   path_provider: ^2.1.2 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   font_awesome_flutter: ^10.7.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
   url_launcher: ^6.2.5 # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
-  package_info_plus: ^4.2.0  # BSD https://pub.dev/packages/package_info_plus/license
+  package_info_plus: ^7.0.0  # BSD https://pub.dev/packages/package_info_plus/license
   mockito: ^5.4.4
   flutter:
     sdk: flutter
@@ -44,7 +44,7 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  test: ^1.21.1
+  test: ^1.24.9
   build_runner: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
