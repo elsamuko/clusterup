@@ -28,8 +28,9 @@ dependencies:
   shelf_static: ^1.1.2  # BSD https://pub.dev/packages/shelf_static/license
   path_provider: ^2.1.2 # BSD https://github.com/flutter/plugins/blob/master/packages/path_provider/path_provider/LICENSE
   font_awesome_flutter: ^10.7.0 # MIT https://github.com/fluttercommunity/font_awesome_flutter/blob/master/LICENSE.md
-  url_launcher: ^6.2.5 # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
+  url_launcher: ^6.2.5  # BSD https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/LICENSE
   package_info_plus: ^7.0.0  # BSD https://pub.dev/packages/package_info_plus/license
+  dart_eval: ^0.7.9     # BSD https://pub.dev/packages/dart_eval/license
   mockito: ^5.4.4
   flutter:
     sdk: flutter
