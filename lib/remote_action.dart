@@ -268,9 +268,21 @@ class RemoteAction {
         description = "queries kernel version",
         commands = ["uname -r"],
         filter = ((lines) {
-          // must be one line
-          if (lines.length != 1) return RemoteActionResult.unknown();
-          return RemoteActionResult.success(lines.first);
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+          List filter(List<String> lines) {
+            // must be one line
+            if (lines.length != 1) return [RemoteActionStatus.Unknown.index, ""];
+            return [RemoteActionStatus.Success.index, lines.first];
+          }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
+
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getCPULoadAction()
