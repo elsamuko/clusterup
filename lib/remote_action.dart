@@ -207,31 +207,42 @@ class RemoteAction {
         description = "checks available updates with apt",
         commands = ["apt list --upgradeable"],
         filter = ((lines) {
-          // no updates available -> success
-          if (lines.length < 2) {
-            return RemoteActionResult.success("No updates available");
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+          List filter(List<String> lines) {
+            // sth went wrong
+            if (lines.length < 2) return [RemoteActionStatus.Success.index, "No updates available"];
+
+            // remove "Listing... Done" message
+            lines.removeAt(0);
+
+            int security = 0;
+            int other = 0;
+
+            for (var i = 0; i < lines.length; i++) {
+              if (lines[i].contains("-security "))
+                security++;
+              else
+                other++;
+            }
+
+            String filtered =
+                "$security security update${(security == 1) ? "" : "s"}, $other other update${(other == 1) ? "" : "s"}";
+
+            if (security > 0) return [RemoteActionStatus.Error.index, filtered];
+            if (other > 0) return [RemoteActionStatus.Warning.index, filtered];
+            if (lines.isEmpty) return [RemoteActionStatus.Success.index, filtered];
+
+            return [RemoteActionStatus.Unknown.index, ""];
           }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
 
-          // remove "Listing... Done" message
-          lines.removeAt(0);
-
-          int security = 0;
-          int other = 0;
-
-          lines.forEach((line) {
-            if (line.contains("-security "))
-              security++;
-            else
-              other++;
-          });
-
-          String filtered = "$security security update${pluralS(security)}, $other other update${pluralS(other)}";
-
-          if (security > 0) return RemoteActionResult.error(filtered);
-          if (other > 0) return RemoteActionResult.warning(filtered);
-          if (lines.isEmpty) return RemoteActionResult.success(filtered);
-
-          return RemoteActionResult.unknown();
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getLsbDescriptionAction()
