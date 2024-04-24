@@ -1,5 +1,7 @@
 import 'package:clusterup/ssh_connection.dart';
 import 'package:intl/intl.dart';
+import 'package:dart_eval/dart_eval.dart';
+import 'package:dart_eval/stdlib/core.dart';
 
 typedef Filter = RemoteActionResult Function(List<String> lines);
 
@@ -8,6 +10,7 @@ enum RemoteActionStatus { Unknown, Success, Warning, Error }
 class RemoteActionPair {
   RemoteAction action;
   List<RemoteActionResult> results = [];
+
   RemoteActionPair(this.action);
 }
 
@@ -15,6 +18,7 @@ class RemoteActionResult {
   RemoteActionStatus status = RemoteActionStatus.Unknown;
   String filtered = "";
   SSHCredentials? from;
+
   RemoteActionResult(this.status, {this.filtered = ""});
 
   bool unknown() {
@@ -37,14 +41,17 @@ class RemoteActionResult {
     status = RemoteActionStatus.Success;
     this.filtered = filtered;
   }
+
   RemoteActionResult.warning([String filtered = ""]) {
     status = RemoteActionStatus.Warning;
     this.filtered = filtered;
   }
+
   RemoteActionResult.error([String filtered = ""]) {
     status = RemoteActionStatus.Error;
     this.filtered = filtered;
   }
+
   RemoteActionResult.unknown() {
     status = RemoteActionStatus.Unknown;
   }
@@ -55,6 +62,7 @@ class RemoteAction {
   String description;
   List<String> commands = [];
   Filter filter;
+  String filtercode = "";
 
   static String pluralS(int count) {
     return (count == 1) ? "" : "s";
@@ -170,15 +178,28 @@ class RemoteAction {
         description = "checks uptime",
         commands = ["uptime -s"],
         filter = ((lines) {
-          // sth went wrong
-          if (lines.length < 1) return RemoteActionResult.unknown();
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
-          DateFormat format = DateFormat("yyyy-MM-dd hh:mm:ss");
-          DateTime started = format.parse(lines[0]);
-          int days = DateTime.now().difference(started).inDays;
-          String filtered = "$days day${pluralS(days)}";
+          List filter(List<String> lines) {
+            // sth went wrong
+            if (lines.length < 1) return [RemoteActionStatus.Unknown.index, ""];
 
-          return RemoteActionResult.success(filtered);
+            DateTime started = DateTime.parse(lines[0]);
+            DateTime now = DateTime.now();
+
+            int days = now.difference(started).inDays;
+            String filtered = "$days day${(days == 1) ? "" : "s"}";
+
+            return [RemoteActionStatus.Success.index, filtered];
+          }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
+
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getAptUpdatesAvailableAction()
