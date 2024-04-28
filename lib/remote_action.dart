@@ -250,17 +250,29 @@ class RemoteAction {
         description = "queries distribution information",
         commands = ["lsb_release -d"],
         filter = ((lines) {
-          // must be one line
-          if (lines.length != 1) return RemoteActionResult.unknown();
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
-          String line = lines.first;
-          String search = "Description:\t";
+          List filter(List<String> lines) {
+            // sth went wrong
+            if (lines.length < 1) return [RemoteActionStatus.Unknown.index, ""];
 
-          if (line.startsWith(search)) {
-            return RemoteActionResult.success(line.substring(search.length));
-          } else {
-            return RemoteActionResult.warning("Invalid description");
+            String line = lines.first;
+            String search = "Description:\t";
+
+            if (line.startsWith(search)) {
+              return [RemoteActionStatus.Success.index, line.substring(search.length)];
+            } else {
+              return [RemoteActionStatus.Warning.index, "Invalid description"];
+            }
           }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
+
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getUnameAction()
