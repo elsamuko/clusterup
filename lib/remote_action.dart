@@ -132,7 +132,19 @@ class RemoteAction {
       : name = "up",
         description = "checks if host is up",
         filter = ((lines) {
-          return RemoteActionResult.success();
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+          List filter(List<String> lines) {
+            return [RemoteActionStatus.Success.index, ""];
+          }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
+
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getDiskFreeAction()
