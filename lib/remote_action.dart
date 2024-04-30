@@ -152,37 +152,49 @@ class RemoteAction {
         description = "checks free disk space on /",
         commands = ["df /"],
         filter = ((lines) {
-          // sth went wrong
-          if (lines.length < 2) {
-            return RemoteActionResult.unknown();
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+          List filter(List<String> lines) {
+            // sth went wrong
+            if (lines.length < 2) {
+              return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            RegExp regExp = RegExp("(\\d+)%");
+            RegExpMatch? match = regExp.firstMatch(lines[1]);
+
+            if (match == null) {
+              return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            if (match.groupCount != 1) {
+              return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            int? percent = int.tryParse(match[1] ?? "");
+
+            if (percent == null) {
+              return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            String filtered = "$percent% used space";
+
+            if (percent < 50)
+              return [RemoteActionStatus.Success.index, filtered];
+            else if (percent < 80)
+              return [RemoteActionStatus.Warning.index, filtered];
+            else if (percent >= 80) return [RemoteActionStatus.Error.index, filtered];
+
+            return [RemoteActionStatus.Unknown.index, ""];
           }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
 
-          RegExp regExp = RegExp("(\\d+)%");
-          RegExpMatch? match = regExp.firstMatch(lines[1]);
-
-          if (match == null) {
-            return RemoteActionResult.unknown();
-          }
-
-          if (match.groupCount != 1) {
-            return RemoteActionResult.unknown();
-          }
-
-          int? percent = int.tryParse(match[1] ?? "");
-
-          if (percent == null) {
-            return RemoteActionResult.unknown();
-          }
-
-          String filtered = "$percent% used space";
-
-          if (percent < 50)
-            return RemoteActionResult.success(filtered);
-          else if (percent < 80)
-            return RemoteActionResult.warning(filtered);
-          else if (percent >= 80) return RemoteActionResult.error(filtered);
-
-          return RemoteActionResult.unknown();
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 
   RemoteAction.getUptimeAction()
