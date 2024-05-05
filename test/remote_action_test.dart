@@ -10,6 +10,32 @@ void main() {
     ]);
 
     expect(result.status, RemoteActionStatus.Success);
+
+    result = action.filter([
+      "Filesystem      1K-blocks      Used  Available Use% Mounted on",
+      "/dev/sdd2      1906477340 300465836 1509144976  53% /"
+    ]);
+
+    expect(result.status, RemoteActionStatus.Warning);
+
+    result = action.filter([
+      "Filesystem      1K-blocks      Used  Available Use% Mounted on",
+      "/dev/sdd2      1906477340 300465836 1509144976  99% /"
+    ]);
+
+    expect(result.status, RemoteActionStatus.Error);
+  });
+
+  test('test action none', () {
+    RemoteAction action = RemoteAction.none();
+    RemoteActionResult result = action.filter([]);
+    expect(result.status, RemoteActionStatus.Success);
+  });
+
+  test('test action host up', () {
+    RemoteAction action = RemoteAction.getHostUpAction();
+    RemoteActionResult result = action.filter([]);
+    expect(result.status, RemoteActionStatus.Success);
   });
 
   test('test action uptime', () {
