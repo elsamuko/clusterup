@@ -328,40 +328,68 @@ class RemoteAction {
         // https://rosettacode.org/wiki/Linux_CPU_utilization#Dart
         commands = ["cat /proc/stat && sleep 1 && cat /proc/stat"],
         filter = ((lines) {
-          List<String> cpu = lines.where((String line) => line.startsWith("cpu  ")).toList();
-          List<List<int>> loads = cpu
-              .map((String line) =>
-                  line.substring("cpu  ".length).split(" ").map((String token) => int.tryParse(token) ?? 0).toList())
-              .toList();
+          String filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
-          // must be two lines with at least 4 tokens
-          if (loads.length != 2) return RemoteActionResult.unknown();
-          for (List<int> load in loads) {
-            if (load.length < 4) return RemoteActionResult.unknown();
+          List filter(List<String> lines) {
+            List<String> cpu = lines.where((String line) => line.startsWith("cpu  ")).toList();
+
+            List<List<String>> splitted = [];
+            for (int i = 0; i < cpu.length; ++i) {
+              splitted.add(cpu[i].substring(5).split(" "));
+            }
+
+            List<List<int>> loads = [];
+            for (int i = 0; i < splitted.length; ++i) {
+              loads.add([]);
+              for (int j = 0; j < splitted[i].length; ++j) {
+                loads[i].add(int.tryParse(splitted[i][j]) ?? 0);
+              }
+            }
+
+            // must be two lines with at least 4 tokens
+            if (loads.length != 2) return [RemoteActionStatus.Unknown.index, ""];
+            for (var i = 0; i < loads.length; i++) {
+              if (loads[i].length < 4) return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            List<List<int>> idleTotals = [];
+            for (int i = 0; i < loads.length; ++i) {
+              int sum = 0;
+              for (int j = 0; j < loads[i].length; ++j) {
+                sum += loads[i][j];
+              }
+              idleTotals.add([loads[i][3], sum]);
+            }
+
+            // must be two idles and two sums
+            if (idleTotals.length != 2) return [RemoteActionStatus.Unknown.index, ""];
+            for (List<int> idleTotal in idleTotals) {
+              if (idleTotal.length != 2) return [RemoteActionStatus.Unknown.index, ""];
+            }
+
+            int dTotal = idleTotals[0][0] - idleTotals[1][0];
+            int dLoad = idleTotals[0][1] - idleTotals[1][1];
+
+            double percent = 100.0 * (1.0 - dTotal / dLoad);
+            percent = (percent * 100).toInt() / 100;
+
+            String filtered = "${percent}%";
+
+            if (percent < 50.0)
+              return [RemoteActionStatus.Success.index, filtered];
+            else if (percent < 80.0)
+              return [RemoteActionStatus.Warning.index, filtered];
+            else if (percent >= 80.0) return [RemoteActionStatus.Error.index, filtered];
+
+            return [RemoteActionStatus.Unknown.index, ""];
           }
+          ''';
+          List<$String> arg = lines.map($String.new).toList();
+          List rv = eval(filtercode, function: 'filter', args: [arg]);
+          int status = rv[0].$reified;
+          String filtered = rv[1].$reified;
 
-          List<List<int>> idleTotals = //    [idle,     sum]
-              loads.map((List<int> times) => [times[3], times.reduce((int a, int b) => a + b)]).toList();
-
-          // must be two idles and two sums
-          if (idleTotals.length != 2) return RemoteActionResult.unknown();
-          for (List<int> idleTotal in idleTotals) {
-            if (idleTotal.length != 2) return RemoteActionResult.unknown();
-          }
-
-          int dTotal = idleTotals[0][0] - idleTotals[1][0];
-          int dLoad = idleTotals[0][1] - idleTotals[1][1];
-
-          double percent = 100.0 * (1.0 - dTotal / dLoad);
-
-          String filtered = "${percent.toStringAsFixed(2)}%";
-
-          if (percent < 50.0)
-            return RemoteActionResult.success(filtered);
-          else if (percent < 80.0)
-            return RemoteActionResult.warning(filtered);
-          else if (percent >= 80.0) return RemoteActionResult.error(filtered);
-
-          return RemoteActionResult.unknown();
+          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
         });
 }
