@@ -61,11 +61,19 @@ class RemoteAction {
   String name;
   String description;
   List<String> commands = [];
-  Filter filter;
-  String filtercode = "";
+  String filtercode = r'''
+          List filter(List<String> lines) {
+            return [1, ""];
+          }
+          ''';
 
-  static String pluralS(int count) {
-    return (count == 1) ? "" : "s";
+  RemoteActionResult filter(List<String> lines) {
+    List<$String> arg = lines.map($String.new).toList();
+    List rv = eval(filtercode, function: 'filter', args: [arg]);
+    int status = rv[0].$reified;
+    String filtered = rv[1].$reified;
+
+    return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
   }
 
   static Set<RemoteAction> allActions() {
@@ -124,35 +132,30 @@ class RemoteAction {
   RemoteAction.none()
       : name = "",
         description = "",
-        filter = ((lines) {
-          return RemoteActionResult.success();
-        });
-
-  RemoteAction.getHostUpAction()
-      : name = "up",
-        description = "checks if host is up",
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
             return [RemoteActionStatus.Success.index, ""];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
 
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
+  RemoteAction.getHostUpAction()
+      : name = "up",
+        description = "checks if host is up",
+        filtercode = r'''
+          enum RemoteActionStatus { Unknown, Success, Warning, Error }
+
+          List filter(List<String> lines) {
+            return [RemoteActionStatus.Success.index, ""];
+          }
+          ''';
 
   RemoteAction.getDiskFreeAction()
       : name = "df",
         description = "checks free disk space on /",
         commands = ["df /"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -189,20 +192,12 @@ class RemoteAction {
             return [RemoteActionStatus.Unknown.index, ""];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 
   RemoteAction.getUptimeAction()
       : name = "uptime",
         description = "checks uptime",
         commands = ["uptime -s"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -218,20 +213,12 @@ class RemoteAction {
             return [RemoteActionStatus.Success.index, filtered];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 
   RemoteAction.getAptUpdatesAvailableAction()
       : name = "apt.updates",
         description = "checks available updates with apt",
         commands = ["apt list --upgradeable"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -261,20 +248,12 @@ class RemoteAction {
             return [RemoteActionStatus.Unknown.index, ""];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 
   RemoteAction.getLsbDescriptionAction()
       : name = "lsb_release",
         description = "queries distribution information",
         commands = ["lsb_release -d"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -291,20 +270,12 @@ class RemoteAction {
             }
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 
   RemoteAction.getUnameAction()
       : name = "uname",
         description = "queries kernel version",
         commands = ["uname -r"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -313,13 +284,6 @@ class RemoteAction {
             return [RemoteActionStatus.Success.index, lines.first];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 
   RemoteAction.getCPULoadAction()
       : name = "CPU.load",
@@ -327,8 +291,7 @@ class RemoteAction {
         // parse and calculate the difference between two cpu lines in /proc/stat
         // https://rosettacode.org/wiki/Linux_CPU_utilization#Dart
         commands = ["cat /proc/stat && sleep 1 && cat /proc/stat"],
-        filter = ((lines) {
-          String filtercode = r'''
+        filtercode = r'''
           enum RemoteActionStatus { Unknown, Success, Warning, Error }
 
           List filter(List<String> lines) {
@@ -385,11 +348,4 @@ class RemoteAction {
             return [RemoteActionStatus.Unknown.index, ""];
           }
           ''';
-          List<$String> arg = lines.map($String.new).toList();
-          List rv = eval(filtercode, function: 'filter', args: [arg]);
-          int status = rv[0].$reified;
-          String filtered = rv[1].$reified;
-
-          return RemoteActionResult(RemoteActionStatus.values[status], filtered: filtered);
-        });
 }
