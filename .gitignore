@@ -3,6 +3,7 @@
 !.gitignore
 !*/
 !*.dart
+!*.kts
 screenshots
 
 build
