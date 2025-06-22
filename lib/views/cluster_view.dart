@@ -291,25 +291,31 @@ class ClusterViewState extends State<ClusterView> {
             "Run",
           );
 
-    Row bottomButtons = Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
-      TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: Colors.grey[700],
-            foregroundColor: Colors.white,
-          ),
-          onPressed: () async => _showLastRun(),
-          child: Text(
-            "Last run",
-          )),
-      TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: widget._cluster.running ? Color(0xff4d4d4d) : Color(0xffcc8d00),
-            foregroundColor: Colors.white,
-          ),
-          onPressed: () async => _run(),
-          key: Key("run"),
-          child: indicator)
-    ]);
+    NavigationBar bottomButtons = NavigationBar(
+      destinations: <Widget>[
+        Padding(
+            padding: EdgeInsets.all(10),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey[700],
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async => _showLastRun(),
+                child: Text(
+                  "Last run",
+                ))),
+        Padding(
+            padding: EdgeInsets.all(10),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: widget._cluster.running ? Color(0xff4d4d4d) : Color(0xffcc8d00),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async => _run(),
+                key: Key("run"),
+                child: indicator)),
+      ],
+    );
 
     List<Widget> widgets = [_buildClusterCard()];
     if (widget._cluster.children.isNotEmpty) {
